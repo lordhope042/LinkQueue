@@ -5,7 +5,7 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Pool } = require('pg');
-const path = require('path'); // ✅ Added for file serving
+const path = require('path');
 
 // ==================== CONFIG ====================
 dotenv.config();
@@ -18,10 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ Serve static files from root directory (where your HTML files are)
-app.use(express.static(path.join(__dirname)));
-
-// Also serve from public folder if it exists
+// ✅ Serve static files from the 'public' folder
 app.use(express.static(path.join(__dirname, 'public')));
 
 // ==================== DATABASE ====================
@@ -125,6 +122,22 @@ async function initializeTables() {
                 ['admin_001', 'Admin', 'admin@linkqueue.com', adminHash, 'admin']
             );
             console.log('✅ Default admin created');
+        }
+
+        // Create demo user if not exists
+        const demoCheck = await client.query(
+            `SELECT * FROM users WHERE email = $1`,
+            ['demo@linkqueue.com']
+        );
+
+        if (demoCheck.rows.length === 0) {
+            const demoHash = await bcrypt.hash('demo123', 10);
+            await client.query(
+                `INSERT INTO users (user_id, name, email, password_hash, role)
+                 VALUES ($1, $2, $3, $4, $5)`,
+                ['user_001', 'Demo User', 'demo@linkqueue.com', demoHash, 'user']
+            );
+            console.log('✅ Default demo user created');
         }
 
         console.log('✅ Tables initialized');
@@ -325,51 +338,25 @@ app.post('/api/queues', authenticateToken, async (req, res) => {
 });
 
 // ==================== FRONTEND ROUTES ====================
-// ✅ Serve HTML files for different routes
+// ✅ All HTML files are served from the 'public' folder automatically by express.static
+// These routes handle direct URL access and SPA-like navigation
 
-// Home page
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'index.html'));
-});
-
-// Login page
-app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'login.html'));
-});
-
-// Register page
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'register.html'));
-});
-
-// Dashboard (requires auth check on client side)
-app.get('/dashboard', (req, res) => {
-    res.sendFile(path.join(__dirname, 'user-dashboard.html'));
-});
-
-// Admin dashboard
-app.get('/admin', (req, res) => {
-    res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
-});
-
-// Join queue page
-app.get('/join', (req, res) => {
-    res.sendFile(path.join(__dirname, 'join-queue.html'));
-});
-
-// Catch-all route for SPA-like behavior (optional)
+// Catch-all route for client-side routing
+// This sends all non-API, non-static requests to index.html
 app.get('*', (req, res) => {
-    // If the request is for an API route that doesn't exist, return 404
+    // If it's an API request that wasn't handled, return 404
     if (req.path.startsWith('/api/')) {
         return res.status(404).json({ error: 'API endpoint not found' });
     }
     // Otherwise, serve index.html for client-side routing
-    res.sendFile(path.join(__dirname, 'index.html'));
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 // ==================== START SERVER ====================
 async function startServer() {
     console.log('\n🚀 Starting LinkQueue server...\n');
+    console.log('📁 Static files will be served from:', path.join(__dirname, 'public'));
+    console.log('🌐 HTML files location: public/*.html\n');
 
     initDatabase();
     await testDB();
@@ -384,6 +371,7 @@ async function startServer() {
         console.log('═══════════════════════════════════════════════');
         console.log('🔑 Test Credentials:');
         console.log('   Admin: admin@linkqueue.com / admin123');
+        console.log('   Demo:  demo@linkqueue.com / demo123');
         console.log('═══════════════════════════════════════════════\n');
     });
 }
