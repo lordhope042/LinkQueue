@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { Pool } = require('pg');
+const path = require('path'); // ✅ Added for file serving
 
 // ==================== CONFIG ====================
 dotenv.config();
@@ -16,7 +17,12 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static('public'));
+
+// ✅ Serve static files from root directory (where your HTML files are)
+app.use(express.static(path.join(__dirname)));
+
+// Also serve from public folder if it exists
+app.use(express.static(path.join(__dirname, 'public')));
 
 // ==================== DATABASE ====================
 let pool;
@@ -78,8 +84,11 @@ async function initializeTables() {
                 id SERIAL PRIMARY KEY,
                 queue_id VARCHAR(100) UNIQUE NOT NULL,
                 creator_id INTEGER REFERENCES users(id) ON DELETE CASCADE,
+                creator_email VARCHAR(100),
                 name VARCHAR(200) NOT NULL,
                 description TEXT,
+                expiry_hours INTEGER DEFAULT 2,
+                expires_at TIMESTAMP,
                 status VARCHAR(20) DEFAULT 'active',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -90,11 +99,33 @@ async function initializeTables() {
                 id SERIAL PRIMARY KEY,
                 participant_id VARCHAR(100) UNIQUE NOT NULL,
                 queue_id INTEGER REFERENCES queues(id) ON DELETE CASCADE,
+                queue_ref VARCHAR(100),
                 name VARCHAR(100) NOT NULL,
+                email VARCHAR(100),
+                phone VARCHAR(50),
+                is_guest BOOLEAN DEFAULT TRUE,
+                position INTEGER,
                 status VARCHAR(20) DEFAULT 'waiting',
-                joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                served_at TIMESTAMP
             )
         `);
+
+        // Create default admin user if not exists
+        const adminCheck = await client.query(
+            `SELECT * FROM users WHERE email = $1`,
+            ['admin@linkqueue.com']
+        );
+
+        if (adminCheck.rows.length === 0) {
+            const adminHash = await bcrypt.hash('admin123', 10);
+            await client.query(
+                `INSERT INTO users (user_id, name, email, password_hash, role)
+                 VALUES ($1, $2, $3, $4, $5)`,
+                ['admin_001', 'Admin', 'admin@linkqueue.com', adminHash, 'admin']
+            );
+            console.log('✅ Default admin created');
+        }
 
         console.log('✅ Tables initialized');
     } catch (err) {
@@ -111,14 +142,14 @@ function authenticateToken(req, res, next) {
 
     if (!token) return res.status(401).json({ error: 'Access denied' });
 
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET || 'linkqueue_secret_2024', (err, user) => {
         if (err) return res.status(403).json({ error: 'Invalid token' });
         req.user = user;
         next();
     });
 }
 
-// ==================== ROUTES ====================
+// ==================== API ROUTES ====================
 
 // Health check
 app.get('/api/health', async (req, res) => {
@@ -135,43 +166,71 @@ app.get('/api/health', async (req, res) => {
 
     res.json({
         status: 'ok',
-        database: dbStatus
+        database: dbStatus,
+        timestamp: new Date().toISOString()
     });
 });
 
 // Register
-app.post('/api/auth/register', async (req, res) => {
+app.post('/api/register', async (req, res) => {
     const { name, email, password } = req.body;
 
+    if (!name || !email || !password) {
+        return res.status(400).json({ error: 'All fields required' });
+    }
+
     try {
+        // Check if user exists
+        const existing = await pool.query(
+            'SELECT * FROM users WHERE email = $1',
+            [email.toLowerCase()]
+        );
+
+        if (existing.rows.length > 0) {
+            return res.status(400).json({ error: 'Email already registered' });
+        }
+
         const hash = await bcrypt.hash(password, 10);
+        const userId = `user_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 
         const result = await pool.query(
             `INSERT INTO users (user_id, name, email, password_hash)
              VALUES ($1, $2, $3, $4)
-             RETURNING *`,
-            [`user_${Date.now()}`, name, email, hash]
+             RETURNING user_id, name, email, role`,
+            [userId, name, email.toLowerCase(), hash]
         );
 
-        res.json({ success: true, user: result.rows[0] });
+        const user = result.rows[0];
+        const token = jwt.sign(
+            { userId: user.user_id, email: user.email, name: user.name, role: user.role },
+            process.env.JWT_SECRET || 'linkqueue_secret_2024',
+            { expiresIn: '24h' }
+        );
+
+        res.json({ success: true, token, user });
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Register error:', err);
+        res.status(500).json({ error: 'Registration failed' });
     }
 });
 
 // Login
-app.post('/api/auth/login', async (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email and password required' });
+    }
 
     try {
         const result = await pool.query(
             `SELECT * FROM users WHERE email = $1`,
-            [email]
+            [email.toLowerCase()]
         );
 
         if (result.rows.length === 0) {
-            return res.status(400).json({ error: 'User not found' });
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const user = result.rows[0];
@@ -182,39 +241,150 @@ app.post('/api/auth/login', async (req, res) => {
         }
 
         const token = jwt.sign(
-            { id: user.id, email: user.email },
-            process.env.JWT_SECRET,
-            { expiresIn: '1d' }
+            { userId: user.user_id, email: user.email, name: user.name, role: user.role },
+            process.env.JWT_SECRET || 'linkqueue_secret_2024',
+            { expiresIn: '24h' }
         );
 
-        res.json({ token, user });
+        res.json({
+            success: true,
+            token,
+            user: {
+                userId: user.user_id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
 
     } catch (err) {
-        res.status(500).json({ error: err.message });
+        console.error('Login error:', err);
+        res.status(500).json({ error: 'Login failed' });
     }
 });
 
-// Example protected route
-app.get('/api/dashboard', authenticateToken, (req, res) => {
-    res.json({
-        message: 'Protected data',
-        user: req.user
-    });
+// Verify token
+app.get('/api/verify', authenticateToken, (req, res) => {
+    res.json({ success: true, user: req.user });
+});
+
+// Logout
+app.post('/api/logout', (req, res) => {
+    res.json({ success: true, message: 'Logged out' });
+});
+
+// Get user's queues
+app.get('/api/my-queues', authenticateToken, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT q.*, 
+             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status = 'waiting') as waiting_count
+             FROM queues q 
+             WHERE q.creator_email = $1 
+             ORDER BY q.created_at DESC`,
+            [req.user.email]
+        );
+
+        res.json({ success: true, queues: result.rows });
+    } catch (err) {
+        console.error('Get queues error:', err);
+        res.status(500).json({ error: 'Failed to fetch queues' });
+    }
+});
+
+// Create queue
+app.post('/api/queues', authenticateToken, async (req, res) => {
+    const { name, description, expiryHours = 2 } = req.body;
+
+    if (!name) {
+        return res.status(400).json({ error: 'Queue name required' });
+    }
+
+    try {
+        // Get user's ID
+        const userResult = await pool.query(
+            'SELECT id FROM users WHERE email = $1',
+            [req.user.email]
+        );
+
+        const queueId = `q_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
+        const expiresAt = new Date(Date.now() + expiryHours * 60 * 60 * 1000);
+
+        const result = await pool.query(
+            `INSERT INTO queues (queue_id, creator_id, creator_email, name, description, expiry_hours, expires_at)
+             VALUES ($1, $2, $3, $4, $5, $6, $7)
+             RETURNING *`,
+            [queueId, userResult.rows[0].id, req.user.email, name, description, expiryHours, expiresAt]
+        );
+
+        res.json({ success: true, queue: result.rows[0] });
+    } catch (err) {
+        console.error('Create queue error:', err);
+        res.status(500).json({ error: 'Failed to create queue' });
+    }
+});
+
+// ==================== FRONTEND ROUTES ====================
+// ✅ Serve HTML files for different routes
+
+// Home page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Login page
+app.get('/login', (req, res) => {
+    res.sendFile(path.join(__dirname, 'login.html'));
+});
+
+// Register page
+app.get('/register', (req, res) => {
+    res.sendFile(path.join(__dirname, 'register.html'));
+});
+
+// Dashboard (requires auth check on client side)
+app.get('/dashboard', (req, res) => {
+    res.sendFile(path.join(__dirname, 'user-dashboard.html'));
+});
+
+// Admin dashboard
+app.get('/admin', (req, res) => {
+    res.sendFile(path.join(__dirname, 'admin-dashboard.html'));
+});
+
+// Join queue page
+app.get('/join', (req, res) => {
+    res.sendFile(path.join(__dirname, 'join-queue.html'));
+});
+
+// Catch-all route for SPA-like behavior (optional)
+app.get('*', (req, res) => {
+    // If the request is for an API route that doesn't exist, return 404
+    if (req.path.startsWith('/api/')) {
+        return res.status(404).json({ error: 'API endpoint not found' });
+    }
+    // Otherwise, serve index.html for client-side routing
+    res.sendFile(path.join(__dirname, 'index.html'));
 });
 
 // ==================== START SERVER ====================
 async function startServer() {
-    console.log('\n🚀 Starting server...\n');
+    console.log('\n🚀 Starting LinkQueue server...\n');
 
     initDatabase();
     await testDB();
     await initializeTables();
 
     app.listen(PORT, '0.0.0.0', () => {
-        console.log('══════════════════════════════');
+        console.log('═══════════════════════════════════════════════');
         console.log(`✅ Server running on port ${PORT}`);
-        console.log(`🗄️ Database: ${dbConnected ? 'Connected' : 'Disconnected'}`);
-        console.log('══════════════════════════════\n');
+        console.log(`🌐 Website: http://localhost:${PORT}`);
+        console.log(`📡 API: http://localhost:${PORT}/api`);
+        console.log(`🗄️ Database: ${dbConnected ? '✅ Connected' : '❌ Disconnected'}`);
+        console.log('═══════════════════════════════════════════════');
+        console.log('🔑 Test Credentials:');
+        console.log('   Admin: admin@linkqueue.com / admin123');
+        console.log('═══════════════════════════════════════════════\n');
     });
 }
 
