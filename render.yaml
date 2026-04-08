@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: linkqueue-backend
+    runtime: node
+    plan: free
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: DB_HOST
+        fromDatabase:
+          name: linkqueue_db
+          property: host
+      - key: DB_USER
+        fromDatabase:
+          name: linkqueue_db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: linkqueue_db
+          property: password
+      - key: DB_NAME
+        fromDatabase:
+          name: linkqueue_db
+          property: database
+      - key: JWT_SECRET
+        generateValue: true
+      - key: PORT
+        value: 3000
+    buildCommand: npm install
+    startCommand: node server.js
+
+  - type: database
+    name: linkqueue_db
+    plan: free
+    databaseName: linkqueue_db
+    postgresMajorVersion: 15

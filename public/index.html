@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>LinkQueue | Smart Link-Based Queue System</title>
+  <!-- Google Fonts + Font Awesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a);
+      min-height: 100vh;
+      color: #eef5ff;
+    }
+
+    /* Glassmorphism Core */
+    .glass {
+      background: rgba(15, 25, 35, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: 2rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    /* Hero Section */
+    .hero {
+      text-align: center;
+      padding: 4rem 2rem;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #ffffff, #22D3EE, #5B21B6);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      font-size: 1.2rem;
+      opacity: 0.85;
+      max-width: 600px;
+      margin: 1rem auto 0;
+      line-height: 1.5;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      background: linear-gradient(95deg, #5B21B6, #7c3aed);
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 2rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      margin: 0.5rem;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(91, 33, 182, 0.3);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4);
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #22D3EE;
+      color: #22D3EE;
+      padding: 0.8rem 2rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      transition: all 0.2s ease;
+    }
+
+    .btn-outline:hover {
+      background: rgba(34, 211, 238, 0.1);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(34, 211, 238, 0.2);
+    }
+
+    .btn-secondary {
+      background: rgba(34, 211, 238, 0.12);
+      border: 1px solid #22D3EE;
+      color: #22D3EE;
+      padding: 0.7rem 1.5rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+
+    .btn-secondary:hover {
+      background: rgba(34, 211, 238, 0.25);
+      transform: translateY(-2px);
+    }
+
+    /* Feature Grid */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    .feature-card {
+      background: rgba(255, 255, 255, 0.04);
+      backdrop-filter: blur(8px);
+      padding: 1.8rem 1.5rem;
+      border-radius: 1.5rem;
+      text-align: center;
+      transition: all 0.3s ease;
+      border: 1px solid rgba(34, 211, 238, 0.1);
+    }
+
+    .feature-card:hover {
+      border-color: rgba(34, 211, 238, 0.4);
+      transform: translateY(-5px);
+      background: rgba(255, 255, 255, 0.07);
+    }
+
+    .feature-card i {
+      font-size: 2.5rem;
+      color: #22D3EE;
+      margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      font-weight: 600;
+    }
+
+    .feature-card p {
+      font-size: 0.9rem;
+      opacity: 0.8;
+    }
+
+    /* Navigation */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(5, 10, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #22D3EE);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo i {
+      color: #22D3EE;
+      background: none;
+      -webkit-background-clip: unset;
+      background-clip: unset;
+    }
+
+    .user-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .user-badge {
+      background: #5B21B6;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+    }
+
+    .logout-btn {
+      background: rgba(220, 38, 38, 0.7);
+      border: none;
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      color: white;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .logout-btn:hover {
+      background: rgba(220, 38, 38, 0.9);
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: #eef5ff;
+      text-decoration: none;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: #22D3EE;
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #22D3EE;
+      color: #0a0a1f;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      z-index: 1100;
+      animation: fadeInUp 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.error {
+      background: #ff4757;
+      color: white;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2.2rem;
+      }
+      .container {
+        padding: 1rem;
+      }
+      nav {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+      .nav-links {
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 1rem;
+      }
+      .hero {
+        padding: 2rem 1rem;
+      }
+      .feature-card {
+        padding: 1.2rem;
+      }
+      .user-info {
+        flex-direction: column;
+        gap: 0.5rem;
+      }
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #1e1e2f;
+      border-radius: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #22D3EE;
+      border-radius: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <i class="fas fa-link"></i> LinkQueue
+  </a>
+  <div class="nav-links" id="navLinks">
+    <a href="index.html">Home</a>
+    <a href="login.html">Login</a>
+    <a href="register.html">Register</a>
+  </div>
+  <div class="user-info" id="userInfo" style="display: none;">
+    <span class="user-badge" id="userNameDisplay"><i class="fas fa-user-circle"></i> User</span>
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</nav>
+
+<main class="container">
+  <div class="hero">
+    <h1>No lines. <span style="color:#22D3EE;">Just links.</span></h1>
+    <p>Smart Link-Based Queue System — Create queues, share links, join instantly.<br>Real-time tracking with glassmorphism UI & role-based dashboards.</p>
+    <div style="margin-top: 2rem; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.5rem;">
+      <a href="register.html" class="btn-primary" id="getStartedBtn">
+        <i class="fas fa-rocket"></i> Get Started
+      </a>
+      <a href="login.html" class="btn-outline" id="loginBtnNav">
+        <i class="fas fa-sign-in-alt"></i> Login
+      </a>
+      <a href="join-queue.html" class="btn-secondary" id="guestJoinBtn">
+        <i class="fas fa-user-friends"></i> Join as Guest
+      </a>
+    </div>
+  </div>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <i class="fas fa-link"></i>
+      <h3>Shareable Links</h3>
+      <p>Generate unique queue links, share anywhere — one click join.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-chart-line"></i>
+      <h3>Real-time Position</h3>
+      <p>Track your exact spot in line, updates instantly when served.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-clock"></i>
+      <h3>Auto Expiry</h3>
+      <p>Set expiry hours, queues auto-close — no stale data.</p>
+    </div>
+    <div class="feature-card">
+      <i class="fas fa-users-cog"></i>
+      <h3>Role Dashboards</h3>
+      <p>Admin, Queue Creator & Participant — full separation of concerns.</p>
+    </div>
+  </div>
+
+  <div style="margin-top: 4rem; text-align: center; padding: 2rem; background: rgba(255,255,255,0.02); border-radius: 2rem;">
+    <h3 style="margin-bottom: 1rem; font-weight: 600;"><i class="fas fa-magic"></i> How LinkQueue Works</h3>
+    <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 2rem; margin-top: 1.5rem;">
+      <div><i class="fas fa-plus-circle" style="color:#22D3EE;"></i> <strong>Create</strong><br><small>Queue in seconds</small></div>
+      <div><i class="fas fa-share-alt" style="color:#22D3EE;"></i> <strong>Share</strong><br><small>Send unique link</small></div>
+      <div><i class="fas fa-user-check" style="color:#22D3EE;"></i> <strong>Join</strong><br><small>Guest or registered</small></div>
+      <div><i class="fas fa-tachometer-alt" style="color:#22D3EE;"></i> <strong>Track</strong><br><small>Live position</small></div>
+      <div><i class="fas fa-check-double" style="color:#22D3EE;"></i> <strong>Serve</strong><br><small>Next participant</small></div>
+    </div>
+  </div>
+</main>
+
+<footer style="text-align: center; padding: 2rem; opacity: 0.6; font-size: 0.8rem; border-top: 1px solid rgba(34,211,238,0.1); margin-top: 2rem;">
+  <i class="fas fa-code-branch"></i> LinkQueue — No lines, just links. Built with glassmorphism & DSA principles.
+</footer>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+
+  function showToast(message, isError = false) {
+    let existingToast = document.querySelector('.toast');
+    if(existingToast) existingToast.remove();
+    let toast = document.createElement('div');
+    toast.className = 'toast' + (isError ? ' error' : '');
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-info-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+  }
+
+  // Update navigation based on login status
+  function updateNavigation(user) {
+    const navLinks = document.getElementById('navLinks');
+    const userInfo = document.getElementById('userInfo');
+    const userNameDisplay = document.getElementById('userNameDisplay');
+
+    if (user) {
+      navLinks.style.display = 'none';
+      userInfo.style.display = 'flex';
+      userNameDisplay.innerHTML = `<i class="fas fa-user-circle"></i> ${user.name}`;
+    } else {
+      navLinks.style.display = 'flex';
+      userInfo.style.display = 'none';
+    }
+  }
+
+  // Check if user is logged in
+  async function checkLoginStatus() {
+    const token = localStorage.getItem('auth_token');
+    const session = localStorage.getItem('linkqueue_session');
+
+    if (token && session) {
+      try {
+        const sessionData = JSON.parse(session);
+        
+        // Check if session is expired (24 hours)
+        if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('linkqueue_session');
+          updateNavigation(null);
+          return null;
+        }
+        
+        // Verify token with server
+        const response = await fetch(`${API_BASE}/my-queues`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          updateNavigation({ name: sessionData.name, role: sessionData.role });
+          return sessionData;
+        } else {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('linkqueue_session');
+          updateNavigation(null);
+          return null;
+        }
+      } catch(e) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('linkqueue_session');
+        updateNavigation(null);
+        return null;
+      }
+    }
+    updateNavigation(null);
+    return null;
+  }
+
+  // Handle logout
+  async function logout() {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      try {
+        await fetch(`${API_BASE}/logout`, {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      } catch(e) {}
+    }
+    
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('linkqueue_session');
+    localStorage.removeItem('my_participant_session');
+    updateNavigation(null);
+    showToast('Logged out successfully');
+    
+    // Refresh the page to update buttons
+    setTimeout(() => {
+      window.location.href = 'index.html';
+    }, 1000);
+  }
+
+  // Handle "Get Started" button click based on login status
+  function handleGetStarted(user) {
+    if (user) {
+      // User is logged in, redirect to appropriate dashboard
+      if (user.role === 'admin') {
+        window.location.href = 'admin-dashboard.html';
+      } else {
+        window.location.href = 'user-dashboard.html';
+      }
+    } else {
+      // User not logged in, redirect to register
+      window.location.href = 'register.html';
+    }
+  }
+
+  // Handle "Login" button click
+  function handleLogin() {
+    window.location.href = 'login.html';
+  }
+
+  // Handle "Join as Guest" button click
+  function handleGuestJoin() {
+    window.location.href = 'join-queue.html';
+  }
+
+  // Initialize page
+  async function init() {
+    const user = await checkLoginStatus();
+    
+    // Get button elements
+    const getStartedBtn = document.getElementById('getStartedBtn');
+    const loginBtnNav = document.getElementById('loginBtnNav');
+    const guestJoinBtn = document.getElementById('guestJoinBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Update Get Started button behavior
+    if (getStartedBtn) {
+      getStartedBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleGetStarted(user);
+      });
+    }
+    
+    // Update Login button behavior
+    if (loginBtnNav) {
+      loginBtnNav.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleLogin();
+      });
+    }
+    
+    // Update Guest Join button behavior
+    if (guestJoinBtn) {
+      guestJoinBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        handleGuestJoin();
+      });
+    }
+    
+    // Logout button
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        logout();
+      });
+    }
+    
+    // Highlight active nav link
+    const currentPage = window.location.pathname.split('/').pop() || 'index.html';
+    const navLinkElements = document.querySelectorAll('.nav-links a');
+    navLinkElements.forEach(link => {
+      if (link.getAttribute('href') === currentPage) {
+        link.style.color = '#22D3EE';
+        link.style.fontWeight = '600';
+      }
+    });
+    
+    // If user is logged in, update the Login/Register links in nav
+    if (user) {
+      const loginLink = document.querySelector('.nav-links a[href="login.html"]');
+      const registerLink = document.querySelector('.nav-links a[href="register.html"]');
+      if (loginLink) loginLink.style.display = 'none';
+      if (registerLink) registerLink.style.display = 'none';
+    } else {
+      const loginLink = document.querySelector('.nav-links a[href="login.html"]');
+      const registerLink = document.querySelector('.nav-links a[href="register.html"]');
+      if (loginLink) loginLink.style.display = 'inline-block';
+      if (registerLink) registerLink.style.display = 'inline-block';
+    }
+  }
+  
+  // Start the app
+  init();
+</script>
+</body>
+</html>

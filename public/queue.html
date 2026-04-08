@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Queue Status - LinkQueue</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">LinkQueue</div>
+            <div class="nav-links">
+                <a href="index.html">Home</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container queue-status-container">
+        <div id="queueInfo" class="queue-info-card">
+            <div style="margin-bottom: 1rem;">
+                <div class="feature-icon" style="font-size: 3rem;">🎫</div>
+            </div>
+            <h2 id="queueName" style="margin-bottom: 0.5rem;"></h2>
+            <div class="position-display">
+                <div class="position-number" id="positionNumber">--</div>
+                <div class="position-label">Your Position</div>
+            </div>
+            <div class="wait-time">
+                <span>⏱️ Estimated Wait Time: </span>
+                <strong id="waitTime" style="color: var(--primary);">--</strong>
+            </div>
+            <div class="people-ahead" style="margin: 0.5rem 0;">
+                <span>👥 People ahead of you: </span>
+                <strong id="peopleAhead">--</strong>
+            </div>
+            <div class="current-serving" style="margin: 0.5rem 0;">
+                <span>🔄 Currently serving: </span>
+                <strong id="currentServing">--</strong>
+            </div>
+            <div id="statusMessage" class="status-message"></div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

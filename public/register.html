@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>LinkQueue - Register</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a);
+      min-height: 100vh;
+      color: #eef5ff;
+    }
+
+    .glass {
+      background: rgba(15, 25, 35, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: 2rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(5, 10, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #22D3EE);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo i {
+      color: #22D3EE;
+    }
+
+    .nav-links a {
+      color: #eef5ff;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: #22D3EE;
+    }
+
+    .card {
+      padding: 2.5rem;
+      max-width: 480px;
+      margin: 2rem auto;
+    }
+
+    .card h2 {
+      margin-bottom: 0.5rem;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    .card-subtitle {
+      text-align: center;
+      opacity: 0.7;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .input-group {
+      position: relative;
+      margin: 0.8rem 0;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #22D3EE;
+      opacity: 0.7;
+      z-index: 1;
+    }
+
+    input, select {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      border-radius: 1rem;
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    input:focus, select:focus {
+      border-color: #22D3EE;
+      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #22D3EE;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .btn-primary {
+      background: linear-gradient(95deg, #5B21B6, #7c3aed);
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 2rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 1rem;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #22D3EE;
+      color: #22D3EE;
+      padding: 0.8rem 2rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .btn-outline:hover {
+      background: rgba(34, 211, 238, 0.1);
+    }
+
+    .error {
+      color: #ff6b6b;
+      font-size: 0.8rem;
+      margin-top: 0.3rem;
+      text-align: center;
+    }
+
+    .success {
+      color: #22D3EE;
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #22D3EE;
+      color: #0a0a1f;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      z-index: 1100;
+      animation: fadeInUp 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.error {
+      background: #ff4757;
+      color: white;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .role-select {
+      margin: 0.6rem 0;
+    }
+
+    .role-select label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    hr {
+      border-color: rgba(34, 211, 238, 0.2);
+      margin: 1.5rem 0;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      .card {
+        padding: 1.5rem;
+        margin: 1rem auto;
+      }
+      nav {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+      .nav-links a {
+        margin-left: 1rem;
+        margin-right: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <i class="fas fa-link"></i> LinkQueue
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="login.html">Login</a>
+    <a href="register.html" style="color:#22D3EE;">Register</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="card glass">
+    <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+    <div class="card-subtitle">Join LinkQueue to create queues or manage participants</div>
+    
+    <form id="registerForm">
+      <div class="input-group">
+        <i class="fas fa-user"></i>
+        <input type="text" id="regName" placeholder="Full Name" required autocomplete="off">
+      </div>
+      
+      <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="regEmail" placeholder="Email Address" required autocomplete="off">
+      </div>
+      
+      <div class="input-group password-wrapper">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="regPassword" placeholder="Password (min 4 characters)" required>
+        <button type="button" class="toggle-password" data-target="regPassword">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+      
+      <div class="role-select">
+        <label><i class="fas fa-tag"></i> Account Type</label>
+        <select id="regRole">
+          <option value="user">👤 Queue Creator & Participant (Standard)</option>
+          <option value="admin">🛡️ System Admin (Full Access)</option>
+        </select>
+      </div>
+      
+      <button type="submit" class="btn-primary" id="registerBtn">
+        <i class="fas fa-check-circle"></i> Register
+      </button>
+    </form>
+    
+    <hr>
+    
+    <div style="text-align: center;">
+      <p style="opacity: 0.7; margin-bottom: 1rem;">Already have an account?</p>
+      <a href="login.html" class="btn-outline">
+        <i class="fas fa-sign-in-alt"></i> Sign In
+      </a>
+    </div>
+    
+    <div id="registerMessage"></div>
+  </div>
+</div>
+<script>
+const API_BASE = 'http://localhost:3000/api';
+
+/* ================= Toast ================= */
+function showToast(message, isError = false) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = 'toast' + (isError ? ' error' : '');
+  toast.innerHTML = `
+    <i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i>
+    ${message}
+  `;
+
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3500);
+}
+
+/* ================= Button Loader ================= */
+function setLoading(btn, loading) {
+  if (!btn) return;
+
+  btn.disabled = loading;
+  btn.innerHTML = loading
+    ? '<i class="fas fa-spinner fa-pulse"></i> Processing...'
+    : '<i class="fas fa-check-circle"></i> Register';
+}
+
+/* ================= API Helper ================= */
+async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
+  const headers = {
+    'Content-Type': 'application/json'
+  };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+
+  const res = await fetch(`${API_BASE}${endpoint}`, {
+    method,
+    headers,
+    body: body ? JSON.stringify(body) : null
+  });
+
+  const data = await res.json().catch(() => ({}));
+
+  if (!res.ok) {
+    throw new Error(data.message || 'Request failed');
+  }
+
+  return data;
+}
+
+/* ================= Register ================= */
+async function registerUser(name, email, password, role) {
+  return await apiRequest('/register', 'POST', {
+    name: name.trim(),
+    email: email.trim().toLowerCase(),
+    password,
+    role
+  });
+}
+
+/* ================= Session Storage ================= */
+function saveSession(data) {
+  localStorage.setItem('auth_token', data.token);
+  localStorage.setItem('linkqueue_session', JSON.stringify({
+    userId: data.user.userId,
+    email: data.user.email,
+    name: data.user.name,
+    role: data.user.role,
+    loggedInAt: Date.now()
+  }));
+}
+
+/* ================= Session Check ================= */
+async function checkExistingSession() {
+  const token = localStorage.getItem('auth_token');
+  const session = localStorage.getItem('linkqueue_session');
+
+  if (!token || !session) return false;
+
+  try {
+    const sessionData = JSON.parse(session);
+
+    // Optional: local expiry check
+    if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) {
+      throw new Error('Session expired');
+    }
+
+    // Server validation
+    await apiRequest('/my-queues', 'GET', null, token);
+
+    redirectUser(sessionData.role);
+    return true;
+
+  } catch (err) {
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('linkqueue_session');
+    return false;
+  }
+}
+
+/* ================= Redirect ================= */
+function redirectUser(role) {
+  if (role === 'admin') {
+    window.location.href = 'admin-dashboard.html';
+  } else {
+    window.location.href = 'user-dashboard.html';
+  }
+}
+
+/* ================= Password Toggle ================= */
+document.querySelectorAll('.toggle-password').forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = document.getElementById(btn.dataset.target);
+    if (!target) return;
+
+    const isPassword = target.type === 'password';
+    target.type = isPassword ? 'text' : 'password';
+
+    const icon = btn.querySelector('i');
+    icon.classList.toggle('fa-eye');
+    icon.classList.toggle('fa-eye-slash');
+  });
+});
+
+/* ================= Form Submit ================= */
+document.getElementById('registerForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const name = document.getElementById('regName').value;
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  const role = document.getElementById('regRole').value;
+
+  const btn = document.getElementById('registerBtn');
+
+  if (!name || !email || !password) {
+    return showToast('All fields are required', true);
+  }
+
+  if (password.length < 4) {
+    return showToast('Password must be at least 4 characters', true);
+  }
+
+  if (!email.includes('@')) {
+    return showToast('Invalid email address', true);
+  }
+
+  try {
+    setLoading(btn, true);
+
+    const data = await registerUser(name, email, password, role);
+
+    saveSession(data);
+
+    showToast(data.message || 'Registration successful');
+
+    setTimeout(() => {
+      redirectUser(data.user.role);
+    }, 1200);
+
+  } catch (err) {
+    showToast(err.message, true);
+  } finally {
+    setLoading(btn, false);
+  }
+});
+
+/* ================= Init ================= */
+checkExistingSession();
+</script>
+</body>
+</html>

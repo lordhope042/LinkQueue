@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>LinkQueue - Login</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a);
+      min-height: 100vh;
+      color: #eef5ff;
+    }
+
+    .glass {
+      background: rgba(15, 25, 35, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: 2rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(5, 10, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #22D3EE);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo i {
+      color: #22D3EE;
+    }
+
+    .nav-links a {
+      color: #eef5ff;
+      text-decoration: none;
+      margin-left: 1.5rem;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: #22D3EE;
+    }
+
+    .card {
+      padding: 2.5rem;
+      max-width: 480px;
+      margin: 2rem auto;
+    }
+
+    .card h2 {
+      margin-bottom: 0.5rem;
+      text-align: center;
+      font-weight: 700;
+      font-size: 1.8rem;
+    }
+
+    .card-subtitle {
+      text-align: center;
+      opacity: 0.7;
+      margin-bottom: 2rem;
+      font-size: 0.9rem;
+    }
+
+    .input-group {
+      position: relative;
+      margin: 0.8rem 0;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #22D3EE;
+      opacity: 0.7;
+      z-index: 1;
+    }
+
+    input {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      border-radius: 1rem;
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    input:focus {
+      border-color: #22D3EE;
+      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+    }
+
+    .btn-primary {
+      background: linear-gradient(95deg, #5B21B6, #7c3aed);
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 2rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 1rem;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #22D3EE;
+      color: #22D3EE;
+      padding: 0.8rem 2rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      width: 100%;
+      margin-top: 1rem;
+    }
+
+    .btn-outline:hover {
+      background: rgba(34, 211, 238, 0.1);
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #22D3EE;
+      color: #0a0a1f;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      z-index: 1100;
+      animation: fadeInUp 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.error {
+      background: #ff4757;
+      color: white;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .demo-credentials {
+      background: rgba(34, 211, 238, 0.1);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+    }
+
+    .demo-credentials p {
+      margin: 0.3rem 0;
+    }
+
+    hr {
+      border-color: rgba(34, 211, 238, 0.2);
+      margin: 1.5rem 0;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #22D3EE;
+      background: transparent;
+      border: none;
+      font-size: 1rem;
+      z-index: 10;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+      .card {
+        padding: 1.5rem;
+        margin: 1rem auto;
+      }
+      nav {
+        flex-direction: column;
+        gap: 0.8rem;
+        padding: 1rem;
+      }
+      .nav-links a {
+        margin-left: 1rem;
+        margin-right: 1rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <a href="index.html" class="logo">
+    <i class="fas fa-link"></i> LinkQueue
+  </a>
+  <div class="nav-links">
+    <a href="index.html">Home</a>
+    <a href="login.html" style="color:#22D3EE;">Login</a>
+    <a href="register.html">Register</a>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="card glass">
+    <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+    <div class="card-subtitle">Login to manage queues or track your position</div>
+    
+    <form id="loginForm">
+      <div class="input-group">
+        <i class="fas fa-envelope"></i>
+        <input type="email" id="loginEmail" placeholder="Email Address" required autocomplete="email">
+      </div>
+      
+      <div class="input-group password-wrapper">
+        <i class="fas fa-lock"></i>
+        <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
+        <button type="button" class="toggle-password" id="togglePasswordBtn">
+          <i class="fas fa-eye"></i>
+        </button>
+      </div>
+      
+      <button type="submit" class="btn-primary" id="loginBtn">
+        <i class="fas fa-arrow-right-to-bracket"></i> Login
+      </button>
+    </form>
+    
+    <div class="demo-credentials">
+      <p><i class="fas fa-info-circle"></i> <strong>Demo Credentials</strong></p>
+      <p>📧 Admin: <span style="color:#22D3EE;">admin@linkqueue.com</span> / <span style="color:#22D3EE;">admin123</span></p>
+      <p>👤 User: <span style="color:#22D3EE;">demo@linkqueue.com</span> / <span style="color:#22D3EE;">demo123</span></p>
+      <p style="font-size:0.7rem; opacity:0.7;">Or <a href="register.html" style="color:#22D3EE;">create your own account</a></p>
+    </div>
+    
+    <hr>
+    
+    <div style="text-align: center;">
+      <p style="opacity: 0.7; margin-bottom: 1rem;">Don't have an account?</p>
+      <a href="register.html" class="btn-outline">
+        <i class="fas fa-user-plus"></i> Create Account
+      </a>
+    </div>
+    
+    <div id="loginMessage"></div>
+  </div>
+</div>
+
+<script>
+  const API_BASE = 'http://localhost:3000/api';
+  
+  function showToast(message, isError = false) {
+    let existingToast = document.querySelector('.toast');
+    if(existingToast) existingToast.remove();
+    let toast = document.createElement('div');
+    toast.className = 'toast' + (isError ? ' error' : '');
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+  
+  function setButtonLoading(btn, isLoading, originalText = null) {
+    if (!btn) return;
+    
+    if (isLoading) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Logging in...';
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = originalText || '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+    }
+  }
+  
+  // Password visibility toggle
+  document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+    const passwordInput = document.getElementById('loginPassword');
+    const icon = this.querySelector('i');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+    } else {
+      passwordInput.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+    }
+  });
+  
+  // Form submission
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    
+    if (!email || !password) {
+      showToast('Please enter both email and password', true);
+      return;
+    }
+    
+    if (!email.includes('@')) {
+      showToast('Please enter a valid email address', true);
+      return;
+    }
+    
+    const btn = document.getElementById('loginBtn');
+    const originalText = btn.innerHTML;
+    setButtonLoading(btn, true, originalText);
+    
+    try {
+      const response = await fetch(`${API_BASE}/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Login failed');
+      }
+      
+      // Store token and user info
+      if (data.token) {
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('linkqueue_session', JSON.stringify({
+          userId: data.user.userId,
+          email: data.user.email,
+          name: data.user.name,
+          role: data.user.role,
+          loggedInAt: Date.now()
+        }));
+      }
+      
+      showToast(data.message || `Welcome back, ${data.user.name}!`);
+      
+      // Redirect based on role
+      setTimeout(() => {
+        if (data.user.role === 'admin') {
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          window.location.href = 'user-dashboard.html';
+        }
+      }, 1200);
+      
+    } catch (error) {
+      console.error('Login error:', error);
+      showToast(error.message, true);
+      setButtonLoading(btn, false, originalText);
+    }
+  });
+  
+  // Check existing session on page load
+  (async function checkSession() {
+    const token = localStorage.getItem('auth_token');
+    const session = localStorage.getItem('linkqueue_session');
+    
+    if (token && session) {
+      try {
+        const sessionData = JSON.parse(session);
+        
+        // Check if session is expired (24 hours)
+        if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) {
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('linkqueue_session');
+          return;
+        }
+        
+        // Verify token with server
+        const response = await fetch(`${API_BASE}/my-queues`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (response.ok) {
+          // Session is valid, redirect to dashboard
+          showToast(`Welcome back, ${sessionData.name}! Redirecting...`);
+          setTimeout(() => {
+            window.location.href = sessionData.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+          }, 1500);
+        } else {
+          // Token invalid, clear storage
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('linkqueue_session');
+        }
+      } catch(e) {
+        localStorage.removeItem('auth_token');
+        localStorage.removeItem('linkqueue_session');
+      }
+    }
+  })();
+  
+  // Auto-fill demo credentials from URL parameter
+  const urlParams = new URLSearchParams(window.location.search);
+  const demoEmail = urlParams.get('demo');
+  if (demoEmail === 'admin') {
+    document.getElementById('loginEmail').value = 'admin@linkqueue.com';
+    document.getElementById('loginPassword').value = 'admin123';
+    showToast('Admin demo credentials loaded. Click Login to continue.');
+  } else if (demoEmail === 'user') {
+    document.getElementById('loginEmail').value = 'demo@linkqueue.com';
+    document.getElementById('loginPassword').value = 'demo123';
+    showToast('User demo credentials loaded. Click Login to continue.');
+  }
+</script>
+</body>
+</html>
