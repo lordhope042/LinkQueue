@@ -8,7 +8,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* --- [Your existing, excellent CSS styles remain exactly the same] --- */
+    /* --- Existing CSS styles remain exactly the same --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
     .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 2rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
@@ -41,10 +41,8 @@
     .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
     .toast.error { background: #ff4757; color: white; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    /* Loading Spinner */
     .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(34, 211, 238, 0.3); border-radius: 50%; border-top-color: #22D3EE; animation: spin 0.8s linear infinite; margin-right: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    /* Responsive */
     @media (max-width: 768px) {
       .hero h1 { font-size: 2.2rem; }
       .container { padding: 1rem; }
@@ -119,26 +117,28 @@
 
 <script>
   (function() {
-    // --- ENHANCED CONFIGURATION ---
+    // --- ✅ FIXED CONFIGURATION ---
     const CONFIG = {
       development: {
         API_BASE: 'http://localhost:3000/api',
         DEBUG: true
       },
       production: {
-        // !!! IMPORTANT: Replace this with your actual deployed backend URL !!!
-        API_BASE: 'https://linkqueue-backend.onrender.com/api', 
+        // ✅ When frontend and backend are on the SAME server, use RELATIVE path!
+        API_BASE: '/api',
         DEBUG: false
       }
     };
 
+    // Detect environment
     const ENV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
                 ? 'development' 
                 : 'production';
+    
     const API_BASE = CONFIG[ENV].API_BASE;
     const DEBUG = CONFIG[ENV].DEBUG;
 
-    // --- UTILITY FUNCTIONS (Enhanced) ---
+    // --- UTILITY FUNCTIONS ---
     const log = (...args) => DEBUG ? console.log('[LinkQueue]', ...args) : null;
     const error = (...args) => console.error('[LinkQueue Error]', ...args);
 
@@ -152,7 +152,6 @@
       setTimeout(() => toast.remove(), 3000);
     }
 
-    // Debounce function for performance
     function debounce(func, wait) {
       let timeout;
       return function executedFunction(...args) {
@@ -162,11 +161,10 @@
       };
     }
 
-    // Simple Rate Limiter (Frontend)
     const rateLimiter = (() => {
       let requestTimestamps = [];
       const RATE_LIMIT = 10;
-      const RATE_WINDOW = 60000; // 1 minute
+      const RATE_WINDOW = 60000;
       return {
         check: () => {
           const now = Date.now();
@@ -182,7 +180,6 @@
       };
     })();
 
-    // CSRF Token Management
     function getCSRFToken() {
       let token = localStorage.getItem('csrf_token');
       if (!token) {
@@ -192,7 +189,6 @@
       return token;
     }
 
-    // --- UI STATE MANAGEMENT ---
     function setLoadingState(element, isLoading) {
       if (!element) return;
       const btn = element.closest('button') || element;
@@ -211,14 +207,13 @@
       }
     }
 
-    // --- AUTHENTICATION & NAVIGATION (Enhanced) ---
+    // --- AUTHENTICATION & NAVIGATION ---
     function updateNavigation(user) {
       const navLinks = document.getElementById('navLinks');
       const userInfo = document.getElementById('userInfo');
       const userNameDisplay = document.getElementById('userNameDisplay');
 
       if (user) {
-        // User is logged in: Show dashboard links based on role
         const dashboardUrl = user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
         navLinks.innerHTML = `
           <a href="index.html">Home</a>
@@ -228,7 +223,6 @@
         userInfo.style.display = 'flex';
         userNameDisplay.innerHTML = `<i class="fas fa-user-circle" aria-hidden="true"></i> ${user.name}`;
       } else {
-        // User is logged out: Show default links
         navLinks.innerHTML = `
           <a href="index.html">Home</a>
           <a href="login.html">Login</a>
@@ -251,7 +245,6 @@
       try {
         const sessionData = JSON.parse(session);
         
-        // Check session expiry (24 hours)
         if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) {
           throw new Error('Session expired');
         }
@@ -260,9 +253,10 @@
           throw new Error('Rate limit reached during auth check');
         }
         
-        // Verify token with server (with timeout)
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        log(`Checking auth at: ${API_BASE}/my-queues`);
         
         const response = await fetch(`${API_BASE}/my-queues`, {
           headers: {
@@ -278,13 +272,11 @@
           throw new Error(`Auth verification failed: ${response.status}`);
         }
         
-        // Token is valid
         updateNavigation({ name: sessionData.name, role: sessionData.role });
         return sessionData;
         
       } catch (err) {
         error('Session validation failed:', err);
-        // Clear invalid session data
         localStorage.removeItem('auth_token');
         localStorage.removeItem('linkqueue_session');
         updateNavigation(null);
@@ -325,22 +317,20 @@
       setTimeout(() => { window.location.href = 'index.html'; }, 1000);
     }
 
-    // --- EVENT HANDLERS & INITIALIZATION ---
+    // --- INITIALIZATION ---
     const debouncedCheckLogin = debounce(checkLoginStatus, 200);
 
     async function init() {
-      log(`Running in ${ENV} mode. API Base: ${API_BASE}`);
+      log(`🚀 Running in ${ENV} mode`);
+      log(`📡 API Base: ${API_BASE}`);
       
-      // Check auth status on load
       const user = await checkLoginStatus();
       
-      // Get button elements
       const getStartedBtn = document.getElementById('getStartedBtn');
       const loginBtnNav = document.getElementById('loginBtnNav');
       const guestJoinBtn = document.getElementById('guestJoinBtn');
       const logoutBtn = document.getElementById('logoutBtn');
       
-      // Handle Get Started button
       if (getStartedBtn) {
         getStartedBtn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -352,7 +342,6 @@
         });
       }
       
-      // Handle Login button
       if (loginBtnNav) {
         loginBtnNav.addEventListener('click', (e) => {
           e.preventDefault();
@@ -360,7 +349,6 @@
         });
       }
       
-      // Handle Guest Join button
       if (guestJoinBtn) {
         guestJoinBtn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -368,7 +356,6 @@
         });
       }
       
-      // Logout button
       if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
           e.preventDefault();
@@ -376,7 +363,6 @@
         });
       }
       
-      // Highlight active nav link
       const currentPage = window.location.pathname.split('/').pop() || 'index.html';
       const navLinkElements = document.querySelectorAll('.nav-links a');
       navLinkElements.forEach(link => {
@@ -386,15 +372,11 @@
         }
       });
 
-      // Offline/Online Detection
       window.addEventListener('online', () => showToast('Back online!', false));
       window.addEventListener('offline', () => showToast('You are offline. Some features may be limited.', true));
-      
-      // Re-check auth status when coming back online (debounced)
       window.addEventListener('online', debouncedCheckLogin);
     }
     
-    // Start the app
     init();
   })();
 </script>
