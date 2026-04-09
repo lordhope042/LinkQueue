@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>LinkQueue - Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
+    .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 1.5rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4); }
+    .container { max-width: 1600px; margin: 0 auto; padding: 1.5rem; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(5, 10, 25, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34, 211, 238, 0.2); }
+    .logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #fff, #22D3EE); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: #eef5ff; text-decoration: none; font-weight: 500; }
+    .nav-links a:hover { color: #22D3EE; }
+    .user-info { display: flex; align-items: center; gap: 1rem; }
+    .admin-badge { background: linear-gradient(95deg, #dc2626, #ef4444); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
+    .logout-btn { background: rgba(220, 38, 38, 0.7); border: none; padding: 0.4rem 1rem; border-radius: 2rem; color: white; cursor: pointer; }
+    .dashboard-header { margin-bottom: 2rem; }
+    .dashboard-header h1 { font-size: 2rem; display: flex; align-items: center; gap: 0.5rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stat-card { background: rgba(0, 0, 0, 0.4); padding: 1.2rem; border-radius: 1.2rem; text-align: center; border-left: 3px solid #ef4444; cursor: pointer; transition: transform 0.2s; }
+    .stat-card:hover { transform: translateY(-3px); background: rgba(0, 0, 0, 0.5); }
+    .stat-card i { font-size: 2rem; color: #ef4444; margin-bottom: 0.5rem; }
+    .stat-number { font-size: 1.8rem; font-weight: 800; }
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(239, 68, 68, 0.3); padding-bottom: 0.5rem; }
+    .tab-btn { background: transparent; border: none; padding: 0.8rem 1.5rem; border-radius: 2rem; color: #eef5ff; cursor: pointer; font-weight: 500; transition: 0.2s; font-size: 1rem; }
+    .tab-btn.active { background: linear-gradient(95deg, #dc2626, #ef4444); color: white; }
+    .tab-btn:hover:not(.active) { background: rgba(239, 68, 68, 0.1); }
+    .tab-content { display: none; animation: fadeIn 0.3s; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th { text-align: left; padding: 0.8rem; background: rgba(239, 68, 68, 0.1); border-radius: 0.5rem 0.5rem 0 0; font-size: 0.85rem; }
+    .data-table td { padding: 0.8rem; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.9rem; }
+    .data-table tr:hover { background: rgba(255,255,255,0.03); }
+    .badge { padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; }
+    .badge-admin { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
+    .badge-user { background: rgba(34, 211, 238, 0.2); color: #22D3EE; }
+    .badge-active { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .badge-expired { background: rgba(107, 114, 128, 0.2); color: #9ca3af; }
+    .btn-small { padding: 0.3rem 0.8rem; border-radius: 1rem; font-size: 0.75rem; cursor: pointer; border: none; }
+    .btn-danger { background: rgba(220, 38, 38, 0.7); color: white; }
+    .btn-warning { background: rgba(245, 158, 11, 0.7); color: white; }
+    .btn-info { background: rgba(34, 211, 238, 0.2); border: 1px solid #22D3EE; color: #22D3EE; }
+    .action-btns { display: flex; gap: 0.3rem; flex-wrap: wrap; }
+    .search-bar { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .search-bar input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(239,68,68,0.4); padding: 0.7rem 1rem; border-radius: 2rem; color: white; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s; }
+    .toast.error { background: #ef4444; color: white; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
+    .modal-content { max-width: 700px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 1.5rem; }
+    .empty-state { text-align: center; padding: 3rem; opacity: 0.6; }
+    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .tabs { flex-wrap: wrap; } .data-table { font-size: 0.8rem; } }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo"><i class="fas fa-crown" style="color: #ef4444;"></i> LinkQueue Admin</a>
+  <div class="nav-links">
+    <a href="index.html"><i class="fas fa-home"></i> Home</a>
+    <a href="user-dashboard.html"><i class="fas fa-user"></i> User View</a>
+  </div>
+  <div class="user-info">
+    <span class="admin-badge" id="adminNameDisplay"><i class="fas fa-shield-alt"></i> Admin</span>
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+  </div>
+</nav>
+
+<div class="container">
+  <div class="dashboard-header">
+    <h1><i class="fas fa-crown" style="color: #ef4444;"></i> Admin Dashboard</h1>
+    <p style="opacity: 0.7; margin-top: 0.5rem;">Full system control and monitoring</p>
+  </div>
+
+  <div class="stats-grid" id="statsGrid">
+    <div class="stat-card" id="totalUsersStat"><i class="fas fa-users"></i><div class="stat-number" id="totalUsersCount">0</div><div>Total Users</div></div>
+    <div class="stat-card" id="totalQueuesStat"><i class="fas fa-list"></i><div class="stat-number" id="totalQueuesCount">0</div><div>Total Queues</div></div>
+    <div class="stat-card" id="activeQueuesStat"><i class="fas fa-clock"></i><div class="stat-number" id="activeQueuesAdminCount">0</div><div>Active Queues</div></div>
+    <div class="stat-card" id="totalParticipantsAdminStat"><i class="fas fa-user-friends"></i><div class="stat-number" id="totalParticipantsAdminCount">0</div><div>Participants</div></div>
+    <div class="stat-card" id="adminCountStat"><i class="fas fa-shield-alt"></i><div class="stat-number" id="adminCount">0</div><div>Admins</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="queues"><i class="fas fa-list"></i> All Queues</button>
+    <button class="tab-btn" data-tab="users"><i class="fas fa-users"></i> All Users</button>
+    <button class="tab-btn" data-tab="participants"><i class="fas fa-user-friends"></i> All Participants</button>
+  </div>
+
+  <!-- Queues Tab -->
+  <div id="queuesTab" class="tab-content active">
+    <div class="search-bar">
+      <input type="text" id="queueSearch" placeholder="Search queues by name or creator...">
+      <button class="btn-info" onclick="refreshQueues()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+    <div class="glass" style="padding: 1rem; overflow-x: auto;">
+      <table class="data-table" id="queuesTable">
+        <thead><tr><th>Queue Name</th><th>Creator</th><th>Participants</th><th>Status</th><th>Created</th><th>Expires</th><th>Actions</th></tr></thead>
+        <tbody id="queuesTableBody"><tr><td colspan="7" class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Users Tab -->
+  <div id="usersTab" class="tab-content">
+    <div class="search-bar">
+      <input type="text" id="userSearch" placeholder="Search users by name or email...">
+      <button class="btn-info" onclick="refreshUsers()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+    <div class="glass" style="padding: 1rem; overflow-x: auto;">
+      <table class="data-table" id="usersTable">
+        <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Queues Created</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody id="usersTableBody"><tr><td colspan="6" class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Participants Tab -->
+  <div id="participantsTab" class="tab-content">
+    <div class="search-bar">
+      <input type="text" id="participantSearch" placeholder="Search participants by name, email, or queue...">
+      <button class="btn-info" onclick="refreshParticipants()"><i class="fas fa-sync-alt"></i> Refresh</button>
+    </div>
+    <div class="glass" style="padding: 1rem; overflow-x: auto;">
+      <table class="data-table" id="participantsTable">
+        <thead><tr><th>Name</th><th>Email</th><th>Queue</th><th>Position</th><th>Status</th><th>Type</th><th>Joined</th><th>Actions</th></tr></thead>
+        <tbody id="participantsTableBody"><tr><td colspan="8" class="empty-state"><i class="fas fa-spinner fa-pulse"></i> Loading...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Modal -->
+<div id="adminModal" class="modal">
+  <div class="modal-content glass">
+    <h3 id="modalTitle"><i class="fas fa-info-circle"></i> Details</h3>
+    <div id="modalBody"></div>
+    <button class="btn-info" onclick="closeModal()" style="margin-top: 1rem; width: 100%;">Close</button>
+  </div>
+</div>
+
+<script>
+  const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+  console.log('🌐 Admin API:', API_BASE);
+
+  let allUsers = [];
+  let allQueues = [];
+  let allParticipants = [];
+  let currentAdmin = null;
+
+  function showToast(msg, err = false) {
+    const t = document.createElement('div');
+    t.className = 'toast' + (err ? ' error' : '');
+    t.innerHTML = `<i class="fas fa-${err ? 'exclamation-triangle' : 'check-circle'}"></i> ${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
+  }
+
+  function getToken() { return localStorage.getItem('auth_token'); }
+
+  async function apiRequest(endpoint, options = {}) {
+    const token = getToken();
+    const headers = { 'Content-Type': 'application/json', ...options.headers };
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || 'Request failed');
+    return data;
+  }
+
+  async function checkAdminSession() {
+    const token = getToken();
+    const session = localStorage.getItem('linkqueue_session');
+    if (!token || !session) { window.location.href = 'login.html'; return null; }
+    try {
+      const user = JSON.parse(session);
+      if (user.role !== 'admin') { window.location.href = 'user-dashboard.html'; return null; }
+      if (Date.now() - user.loggedInAt > 24 * 60 * 60 * 1000) throw new Error('Session expired');
+      currentAdmin = user;
+      document.getElementById('adminNameDisplay').innerHTML = `<i class="fas fa-shield-alt"></i> ${user.name}`;
+      return user;
+    } catch(e) {
+      localStorage.clear();
+      window.location.href = 'login.html';
+      return null;
+    }
+  }
+
+  // Admin API calls
+  async function getAllUsers() {
+    const res = await apiRequest('/admin/users');
+    return res.users || [];
+  }
+
+  async function getAllQueues() {
+    const res = await apiRequest('/admin/queues');
+    return res.queues || [];
+  }
+
+  async function getAllParticipants() {
+    const res = await apiRequest('/admin/participants');
+    return res.participants || [];
+  }
+
+  async function deleteUser(userId) {
+    return await apiRequest(`/admin/users/${userId}`, { method: 'DELETE' });
+  }
+
+  async function updateUserRole(userId, role) {
+    return await apiRequest(`/admin/users/${userId}/role`, { method: 'PUT', body: JSON.stringify({ role }) });
+  }
+
+  async function deleteQueueAdmin(queueId) {
+    return await apiRequest(`/admin/queues/${queueId}`, { method: 'DELETE' });
+  }
+
+  async function deleteParticipant(participantId) {
+    return await apiRequest(`/admin/participants/${participantId}`, { method: 'DELETE' });
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return String(s).replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+  }
+
+  function updateStats() {
+    document.getElementById('totalUsersCount').textContent = allUsers.length;
+    document.getElementById('totalQueuesCount').textContent = allQueues.length;
+    document.getElementById('activeQueuesAdminCount').textContent = allQueues.filter(q => q.status === 'active' && new Date(q.expires_at) > new Date()).length;
+    document.getElementById('totalParticipantsAdminCount').textContent = allParticipants.filter(p => p.status === 'waiting').length;
+    document.getElementById('adminCount').textContent = allUsers.filter(u => u.role === 'admin').length;
+  }
+
+  function renderQueuesTable(filter = '') {
+    const tbody = document.getElementById('queuesTableBody');
+    const filtered = allQueues.filter(q => 
+      q.name.toLowerCase().includes(filter) || 
+      (q.creator_email || '').toLowerCase().includes(filter)
+    );
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i> No queues found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(q => {
+      const isActive = q.status === 'active' && new Date(q.expires_at) > new Date();
+      return `<tr>
+        <td><i class="fas fa-ticket-alt"></i> ${escapeHtml(q.name)}</td>
+        <td>${escapeHtml(q.creator_email || 'Unknown')}</td>
+        <td>${q.waiting_count || 0}</td>
+        <td><span class="badge ${isActive ? 'badge-active' : 'badge-expired'}">${isActive ? 'Active' : 'Expired'}</span></td>
+        <td>${new Date(q.created_at).toLocaleDateString()}</td>
+        <td>${new Date(q.expires_at).toLocaleString()}</td>
+        <td class="action-btns">
+          <button class="btn-small btn-info" onclick="viewQueueDetails('${q.queue_id}')"><i class="fas fa-eye"></i></button>
+          <button class="btn-small btn-warning" onclick="viewQueueParticipants('${q.queue_id}')"><i class="fas fa-users"></i></button>
+          <button class="btn-small btn-danger" onclick="deleteQueueAdminConfirm('${q.queue_id}', '${escapeHtml(q.name)}')"><i class="fas fa-trash"></i></button>
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderUsersTable(filter = '') {
+    const tbody = document.getElementById('usersTableBody');
+    const filtered = allUsers.filter(u => 
+      u.name.toLowerCase().includes(filter) || 
+      u.email.toLowerCase().includes(filter)
+    );
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i> No users found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(u => {
+      const userQueues = allQueues.filter(q => q.creator_email === u.email).length;
+      return `<tr>
+        <td><i class="fas fa-user"></i> ${escapeHtml(u.name)}</td>
+        <td>${escapeHtml(u.email)}</td>
+        <td><span class="badge ${u.role === 'admin' ? 'badge-admin' : 'badge-user'}">${u.role}</span></td>
+        <td>${userQueues}</td>
+        <td>${new Date(u.created_at).toLocaleDateString()}</td>
+        <td class="action-btns">
+          ${u.role !== 'admin' ? `<button class="btn-small btn-warning" onclick="makeAdmin('${u.user_id}', '${escapeHtml(u.name)}')"><i class="fas fa-crown"></i> Make Admin</button>` : ''}
+          ${u.email !== currentAdmin?.email ? `<button class="btn-small btn-danger" onclick="deleteUserConfirm('${u.user_id}', '${escapeHtml(u.name)}')"><i class="fas fa-trash"></i></button>` : ''}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  function renderParticipantsTable(filter = '') {
+    const tbody = document.getElementById('participantsTableBody');
+    const filtered = allParticipants.filter(p => 
+      p.name.toLowerCase().includes(filter) || 
+      (p.email || '').toLowerCase().includes(filter) ||
+      (p.queue_name || '').toLowerCase().includes(filter)
+    );
+    if (!filtered.length) {
+      tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i> No participants found</td></tr>';
+      return;
+    }
+    tbody.innerHTML = filtered.map(p => `<tr>
+      <td>${escapeHtml(p.name)}</td>
+      <td>${escapeHtml(p.email || '—')}</td>
+      <td>${escapeHtml(p.queue_name || 'Unknown')}</td>
+      <td>#${p.position}</td>
+      <td><span class="badge ${p.status === 'waiting' ? 'badge-active' : 'badge-expired'}">${p.status}</span></td>
+      <td>${p.is_guest ? '👤 Guest' : '✅ Registered'}</td>
+      <td>${new Date(p.joined_at).toLocaleString()}</td>
+      <td class="action-btns">
+        <button class="btn-small btn-danger" onclick="deleteParticipantConfirm('${p.participant_id}', '${escapeHtml(p.name)}')"><i class="fas fa-trash"></i></button>
+      </td>
+    </tr>`).join('');
+  }
+
+  // Global functions for onclick
+  window.viewQueueDetails = async (queueId) => {
+    const queue = allQueues.find(q => q.queue_id === queueId);
+    if (!queue) return;
+    const participants = allParticipants.filter(p => p.queue_id === queue.id);
+    openModal(`Queue: ${queue.name}`, `
+      <p><strong>Creator:</strong> ${queue.creator_email}</p>
+      <p><strong>Status:</strong> ${queue.status}</p>
+      <p><strong>Created:</strong> ${new Date(queue.created_at).toLocaleString()}</p>
+      <p><strong>Expires:</strong> ${new Date(queue.expires_at).toLocaleString()}</p>
+      <hr><h4>Participants (${participants.length})</h4>
+      ${participants.map(p => `<div style="padding:0.3rem 0;">#${p.position} - ${escapeHtml(p.name)} (${p.status})</div>`).join('') || '<p>No participants</p>'}
+    `);
+  };
+
+  window.viewQueueParticipants = (queueId) => {
+    const queue = allQueues.find(q => q.queue_id === queueId);
+    if (!queue) return;
+    const participants = allParticipants.filter(p => p.queue_id === queue.id && p.status === 'waiting');
+    openModal(`Waiting: ${queue.name}`, participants.map(p => `<div class="participant-item">#${p.position} - ${escapeHtml(p.name)}</div>`).join('') || '<p>No waiting participants</p>');
+  };
+
+  window.deleteQueueAdminConfirm = async (queueId, name) => {
+    if (confirm(`Delete queue "${name}" permanently?`)) {
+      try {
+        await deleteQueueAdmin(queueId);
+        showToast('Queue deleted');
+        await refreshAll();
+      } catch(e) { showToast(e.message, true); }
+    }
+  };
+
+  window.deleteUserConfirm = async (userId, name) => {
+    if (confirm(`Delete user "${name}" permanently? This will also delete all their queues.`)) {
+      try {
+        await deleteUser(userId);
+        showToast('User deleted');
+        await refreshAll();
+      } catch(e) { showToast(e.message, true); }
+    }
+  };
+
+  window.makeAdmin = async (userId, name) => {
+    if (confirm(`Make "${name}" an admin?`)) {
+      try {
+        await updateUserRole(userId, 'admin');
+        showToast(`${name} is now an admin`);
+        await refreshAll();
+      } catch(e) { showToast(e.message, true); }
+    }
+  };
+
+  window.deleteParticipantConfirm = async (participantId, name) => {
+    if (confirm(`Remove "${name}" from queue?`)) {
+      try {
+        await deleteParticipant(participantId);
+        showToast('Participant removed');
+        await refreshAll();
+      } catch(e) { showToast(e.message, true); }
+    }
+  };
+
+  window.refreshQueues = () => { renderQueuesTable(document.getElementById('queueSearch')?.value || ''); };
+  window.refreshUsers = () => { renderUsersTable(document.getElementById('userSearch')?.value || ''); };
+  window.refreshParticipants = () => { renderParticipantsTable(document.getElementById('participantSearch')?.value || ''); };
+
+  function openModal(title, body) {
+    document.getElementById('modalTitle').innerHTML = `<i class="fas fa-info-circle"></i> ${title}`;
+    document.getElementById('modalBody').innerHTML = body;
+    document.getElementById('adminModal').style.display = 'flex';
+  }
+
+  window.closeModal = () => { document.getElementById('adminModal').style.display = 'none'; };
+
+  async function refreshAll() {
+    try {
+      [allUsers, allQueues, allParticipants] = await Promise.all([getAllUsers(), getAllQueues(), getAllParticipants()]);
+      updateStats();
+      renderQueuesTable(document.getElementById('queueSearch')?.value || '');
+      renderUsersTable(document.getElementById('userSearch')?.value || '');
+      renderParticipantsTable(document.getElementById('participantSearch')?.value || '');
+    } catch(e) { showToast('Failed to load data: ' + e.message, true); }
+  }
+
+  async function init() {
+    if (!await checkAdminSession()) return;
+    await refreshAll();
+
+    // Tab switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        document.getElementById(btn.dataset.tab + 'Tab').classList.add('active');
+      });
+    });
+
+    // Search
+    document.getElementById('queueSearch').addEventListener('input', e => renderQueuesTable(e.target.value.toLowerCase()));
+    document.getElementById('userSearch').addEventListener('input', e => renderUsersTable(e.target.value.toLowerCase()));
+    document.getElementById('participantSearch').addEventListener('input', e => renderParticipantsTable(e.target.value.toLowerCase()));
+
+    // Stat clicks
+    document.getElementById('totalUsersStat').onclick = () => document.querySelector('[data-tab="users"]').click();
+    document.getElementById('totalQueuesStat').onclick = () => document.querySelector('[data-tab="queues"]').click();
+    document.getElementById('activeQueuesStat').onclick = () => { document.querySelector('[data-tab="queues"]').click(); document.getElementById('queueSearch').value = ''; renderQueuesTable(''); };
+    document.getElementById('totalParticipantsAdminStat').onclick = () => document.querySelector('[data-tab="participants"]').click();
+
+    document.getElementById('logoutBtn').onclick = () => { localStorage.clear(); window.location.href = 'index.html'; };
+  }
+
+  init();
+</script>
+</body>
+</html>
