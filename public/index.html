@@ -43,6 +43,20 @@
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(34, 211, 238, 0.3); border-radius: 50%; border-top-color: #22D3EE; animation: spin 0.8s linear infinite; margin-right: 8px; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    
+    /* Modal Styles */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
+    .modal { max-width: 480px; width: 90%; padding: 2rem; text-align: center; }
+    .modal h2 { margin-bottom: 1.5rem; font-size: 1.5rem; }
+    .modal .input-group { margin: 1.5rem 0; }
+    .modal input { width: 100%; padding: 1rem 1.5rem; font-size: 1rem; text-align: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(34,211,238,0.4); border-radius: 2rem; color: white; }
+    .modal input:focus { outline: none; border-color: #22D3EE; }
+    .modal input::placeholder { color: rgba(255,255,255,0.4); }
+    .modal-buttons { display: flex; gap: 1rem; margin-top: 1.5rem; }
+    .modal-buttons button { flex: 1; }
+    .queue-hint { font-size: 0.8rem; opacity: 0.6; margin-top: 1rem; }
+    .queue-hint code { background: rgba(34,211,238,0.1); padding: 0.2rem 0.5rem; border-radius: 0.5rem; }
+    
     @media (max-width: 768px) {
       .hero h1 { font-size: 2.2rem; }
       .container { padding: 1rem; }
@@ -51,6 +65,7 @@
       .hero { padding: 2rem 1rem; }
       .feature-card { padding: 1.2rem; }
       .user-info { flex-direction: column; gap: 0.5rem; }
+      .modal-buttons { flex-direction: column; }
     }
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: #1e1e2f; border-radius: 10px; }
@@ -64,7 +79,6 @@
     <i class="fas fa-link" aria-hidden="true"></i> LinkQueue
   </a>
   <div class="nav-links" id="navLinks">
-    <!-- Links will be dynamically populated by JavaScript -->
     <a href="index.html">Home</a>
     <a href="login.html">Login</a>
     <a href="register.html">Register</a>
@@ -86,9 +100,9 @@
       <a href="login.html" class="btn-outline" id="loginBtnNav">
         <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Login
       </a>
-      <a href="join-queue.html" class="btn-secondary" id="guestJoinBtn">
+      <button class="btn-secondary" id="guestJoinBtn">
         <i class="fas fa-user-friends" aria-hidden="true"></i> Join as Guest
-      </a>
+      </button>
     </div>
   </div>
 
@@ -115,30 +129,45 @@
   <i class="fas fa-code-branch"></i> LinkQueue — No lines, just links. Built with glassmorphism & DSA principles.
 </footer>
 
+<!-- Queue Code Modal -->
+<div class="modal-overlay" id="queueModal">
+  <div class="modal glass">
+    <h2><i class="fas fa-ticket-alt" style="color: #22D3EE;"></i> Join a Queue</h2>
+    <p style="opacity: 0.7; margin-bottom: 1rem;">Enter the queue link or code you received</p>
+    
+    <div class="input-group">
+      <input type="text" id="queueInput" placeholder="Paste link or enter queue code" autocomplete="off">
+    </div>
+    
+    <div class="queue-hint">
+      <i class="fas fa-info-circle"></i> Example: <code>q_123abc</code> or full link
+    </div>
+    
+    <div class="modal-buttons">
+      <button class="btn-primary" id="joinQueueBtn">
+        <i class="fas fa-arrow-right"></i> Join Queue
+      </button>
+      <button class="btn-outline" id="cancelModalBtn">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
 <script>
   (function() {
-    // --- ✅ FIXED CONFIGURATION ---
+    // --- CONFIGURATION ---
     const CONFIG = {
-      development: {
-        API_BASE: 'http://localhost:3000/api',
-        DEBUG: true
-      },
-      production: {
-        // ✅ When frontend and backend are on the SAME server, use RELATIVE path!
-        API_BASE: '/api',
-        DEBUG: false
-      }
+      development: { API_BASE: 'http://localhost:3000/api', DEBUG: true },
+      production: { API_BASE: '/api', DEBUG: false }
     };
 
-    // Detect environment
     const ENV = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
-                ? 'development' 
-                : 'production';
+                ? 'development' : 'production';
     
     const API_BASE = CONFIG[ENV].API_BASE;
     const DEBUG = CONFIG[ENV].DEBUG;
 
-    // --- UTILITY FUNCTIONS ---
     const log = (...args) => DEBUG ? console.log('[LinkQueue]', ...args) : null;
     const error = (...args) => console.error('[LinkQueue Error]', ...args);
 
@@ -207,6 +236,82 @@
       }
     }
 
+    // --- Extract queue ID from input (handles full URL or just code)
+    function extractQueueId(input) {
+      input = input.trim();
+      
+      // If it's a full URL, extract the queue ID
+      const urlPattern = /[?&](?:join|q)=([a-zA-Z0-9_]+)/;
+      const match = input.match(urlPattern);
+      if (match) return match[1];
+      
+      // If it looks like a queue ID (starts with q_)
+      if (input.startsWith('q_') && input.length > 10) return input;
+      
+      // If it's just alphanumeric with underscore
+      if (/^[a-zA-Z0-9_]+$/.test(input) && input.includes('_')) return input;
+      
+      return null;
+    }
+
+    // --- Validate queue exists before proceeding
+    async function validateQueue(queueId) {
+      try {
+        const response = await fetch(`${API_BASE}/queues/${queueId}`);
+        const data = await response.json();
+        return data.success && data.queue && data.queue.isActive;
+      } catch(e) {
+        return false;
+      }
+    }
+
+    // --- Modal handling
+    const modal = document.getElementById('queueModal');
+    const queueInput = document.getElementById('queueInput');
+    const joinQueueBtn = document.getElementById('joinQueueBtn');
+    const cancelModalBtn = document.getElementById('cancelModalBtn');
+
+    function openModal() {
+      modal.style.display = 'flex';
+      queueInput.value = '';
+      queueInput.focus();
+    }
+
+    function closeModal() {
+      modal.style.display = 'none';
+    }
+
+    async function handleJoinQueue() {
+      const input = queueInput.value.trim();
+      if (!input) {
+        showToast('Please enter a queue link or code', true);
+        return;
+      }
+
+      const queueId = extractQueueId(input);
+      if (!queueId) {
+        showToast('Invalid queue link or code format', true);
+        return;
+      }
+
+      setLoadingState(joinQueueBtn, true);
+      
+      try {
+        const isValid = await validateQueue(queueId);
+        if (!isValid) {
+          showToast('Queue not found or has expired', true);
+          setLoadingState(joinQueueBtn, false);
+          return;
+        }
+        
+        // Redirect to join page with queue ID
+        window.location.href = `join-queue.html?join=${queueId}`;
+      } catch(e) {
+        showToast('Error validating queue. Please try again.', true);
+        setLoadingState(joinQueueBtn, false);
+      }
+    }
+
     // --- AUTHENTICATION & NAVIGATION ---
     function updateNavigation(user) {
       const navLinks = document.getElementById('navLinks');
@@ -250,13 +355,11 @@
         }
 
         if (!rateLimiter.check()) {
-          throw new Error('Rate limit reached during auth check');
+          throw new Error('Rate limit reached');
         }
         
         const controller = new AbortController();
         const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        log(`Checking auth at: ${API_BASE}/my-queues`);
         
         const response = await fetch(`${API_BASE}/my-queues`, {
           headers: {
@@ -302,7 +405,7 @@
             }
           });
         } catch(e) {
-          log('Logout API call failed, clearing local session anyway');
+          log('Logout API call failed');
         }
       }
       
@@ -349,12 +452,41 @@
         });
       }
       
+      // ✅ NEW: Guest join opens modal instead of direct navigation
       if (guestJoinBtn) {
         guestJoinBtn.addEventListener('click', (e) => {
           e.preventDefault();
-          window.location.href = 'join-queue.html';
+          openModal();
         });
       }
+      
+      // Modal event listeners
+      if (joinQueueBtn) {
+        joinQueueBtn.addEventListener('click', handleJoinQueue);
+      }
+      
+      if (cancelModalBtn) {
+        cancelModalBtn.addEventListener('click', closeModal);
+      }
+      
+      // Close modal on overlay click
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      
+      // Close modal on Escape key
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') {
+          closeModal();
+        }
+      });
+      
+      // Enter key in input
+      queueInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          handleJoinQueue();
+        }
+      });
       
       if (logoutBtn) {
         logoutBtn.addEventListener('click', (e) => {
