@@ -201,18 +201,6 @@
       }
     }
 
-    .demo-credentials {
-      background: rgba(34, 211, 238, 0.1);
-      border-radius: 1rem;
-      padding: 1rem;
-      margin-top: 1.5rem;
-      font-size: 0.8rem;
-    }
-
-    .demo-credentials p {
-      margin: 0.3rem 0;
-    }
-
     hr {
       border-color: rgba(34, 211, 238, 0.2);
       margin: 1.5rem 0;
@@ -233,6 +221,23 @@
       border: none;
       font-size: 1rem;
       z-index: 10;
+    }
+    
+    .forgot-password {
+      text-align: right;
+      margin-top: 0.3rem;
+    }
+    
+    .forgot-password a {
+      color: #22D3EE;
+      text-decoration: none;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    
+    .forgot-password a:hover {
+      opacity: 1;
     }
 
     @media (max-width: 768px) {
@@ -287,17 +292,14 @@
         </button>
       </div>
       
+      <div class="forgot-password">
+        <a href="#"><i class="fas fa-question-circle"></i> Forgot password?</a>
+      </div>
+      
       <button type="submit" class="btn-primary" id="loginBtn">
         <i class="fas fa-arrow-right-to-bracket"></i> Login
       </button>
     </form>
-    
-    <div class="demo-credentials">
-      <p><i class="fas fa-info-circle"></i> <strong>Demo Credentials</strong></p>
-      <p>📧 Admin: <span style="color:#22D3EE;">admin@linkqueue.com</span> / <span style="color:#22D3EE;">admin123</span></p>
-      <p>👤 User: <span style="color:#22D3EE;">demo@linkqueue.com</span> / <span style="color:#22D3EE;">demo123</span></p>
-      <p style="font-size:0.7rem; opacity:0.7;">Or <a href="register.html" style="color:#22D3EE;">create your own account</a></p>
-    </div>
     
     <hr>
     
@@ -313,7 +315,18 @@
 </div>
 
 <script>
-  const API_BASE = 'http://localhost:3000/api';
+  // ✅ FIXED: Dynamic API configuration that works in both development and production
+  const API_BASE = (() => {
+    const hostname = window.location.hostname;
+    // If running on localhost, use localhost:3000
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3000/api';
+    }
+    // Otherwise (on Render), use relative path
+    return '/api';
+  })();
+  
+  console.log('🌐 API Base URL:', API_BASE);
   
   function showToast(message, isError = false) {
     let existingToast = document.querySelector('.toast');
@@ -374,7 +387,10 @@
     setButtonLoading(btn, true, originalText);
     
     try {
-      const response = await fetch(`${API_BASE}/login`, {
+      const url = `${API_BASE}/login`;
+      console.log(`📡 POST ${url}`);
+      
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -385,7 +401,7 @@
       const data = await response.json();
       
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.error || data.message || 'Login failed');
       }
       
       // Store token and user info
@@ -434,8 +450,11 @@
           return;
         }
         
+        const url = `${API_BASE}/my-queues`;
+        console.log(`📡 GET ${url} (session check)`);
+        
         // Verify token with server
-        const response = await fetch(`${API_BASE}/my-queues`, {
+        const response = await fetch(url, {
           headers: {
             'Authorization': `Bearer ${token}`
           }
@@ -453,24 +472,12 @@
           localStorage.removeItem('linkqueue_session');
         }
       } catch(e) {
+        console.log('Session check failed:', e.message);
         localStorage.removeItem('auth_token');
         localStorage.removeItem('linkqueue_session');
       }
     }
   })();
-  
-  // Auto-fill demo credentials from URL parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const demoEmail = urlParams.get('demo');
-  if (demoEmail === 'admin') {
-    document.getElementById('loginEmail').value = 'admin@linkqueue.com';
-    document.getElementById('loginPassword').value = 'admin123';
-    showToast('Admin demo credentials loaded. Click Login to continue.');
-  } else if (demoEmail === 'user') {
-    document.getElementById('loginEmail').value = 'demo@linkqueue.com';
-    document.getElementById('loginPassword').value = 'demo123';
-    showToast('User demo credentials loaded. Click Login to continue.');
-  }
 </script>
 </body>
 </html>
