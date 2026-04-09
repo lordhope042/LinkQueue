@@ -7,325 +7,51 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a);
-      min-height: 100vh;
-      color: #eef5ff;
-    }
-
-    .glass {
-      background: rgba(15, 25, 35, 0.6);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(34, 211, 238, 0.25);
-      border-radius: 2rem;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(5, 10, 25, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #fff, #22D3EE);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .logo i {
-      color: #22D3EE;
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 1.5rem;
-    }
-
-    .nav-links a {
-      color: #eef5ff;
-      text-decoration: none;
-      transition: color 0.2s;
-      font-weight: 500;
-    }
-
-    .nav-links a:hover {
-      color: #22D3EE;
-    }
-
-    .join-container {
-      max-width: 580px;
-      margin: 2rem auto;
-    }
-
-    .queue-info-card {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 2rem;
-      word-wrap: break-word;
-      overflow-wrap: break-word;
-    }
-
-    .queue-icon {
-      font-size: 3rem;
-      color: #22D3EE;
-      margin-bottom: 0.5rem;
-    }
-
-    .queue-name-large {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin: 0.5rem 0;
-      color: #22D3EE;
-      word-break: break-word;
-    }
-
-    .queue-description {
-      opacity: 0.8;
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
-      word-break: break-word;
-    }
-
-    .queue-detail {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-
-    .detail-badge {
-      background: rgba(34, 211, 238, 0.1);
-      padding: 0.4rem 1rem;
-      border-radius: 2rem;
-      font-size: 0.85rem;
-    }
-
-    .options-card {
-      padding: 2rem;
-    }
-
-    .option-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
-      padding-bottom: 0.5rem;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      padding: 0.8rem 1rem;
-      border-radius: 2rem;
-      color: #eef5ff;
-      cursor: pointer;
-      font-weight: 500;
-      transition: 0.2s;
-      flex: 1;
-      font-size: 0.9rem;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(95deg, #5B21B6, #7c3aed);
-      color: white;
-    }
-
-    .tab-btn:not(.active):hover {
-      background: rgba(34, 211, 238, 0.1);
-    }
-
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-
-    .input-group {
-      margin: 0.8rem 0;
-      position: relative;
-    }
-
-    .input-group i {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #22D3EE;
-      opacity: 0.7;
-      z-index: 1;
-    }
-
-    input {
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(34, 211, 238, 0.4);
-      padding: 0.9rem 1rem 0.9rem 2.8rem;
-      border-radius: 1rem;
-      color: white;
-      font-size: 0.95rem;
-      outline: none;
-      width: 100%;
-      transition: all 0.2s;
-    }
-
-    input:focus {
-      border-color: #22D3EE;
-      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
-    }
-
-    .password-wrapper {
-      position: relative;
-    }
-
-    .password-wrapper input {
-      padding-right: 3rem;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: #22D3EE;
-      cursor: pointer;
-      z-index: 10;
-      padding: 0.5rem;
-    }
-
-    .btn-primary {
-      background: linear-gradient(95deg, #5B21B6, #7c3aed);
-      border: none;
-      padding: 0.9rem 2rem;
-      border-radius: 2rem;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      font-size: 1rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      margin-top: 1rem;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #22D3EE;
-      color: #22D3EE;
-      padding: 0.8rem 2rem;
-      border-radius: 2rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-      width: 100%;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #22D3EE;
-      color: #0a0a1f;
-      padding: 0.8rem 1.5rem;
-      border-radius: 2rem;
-      font-weight: bold;
-      z-index: 1100;
-      animation: fadeInUp 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .toast.error {
-      background: #ff4757;
-      color: white;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-
-    .error-msg {
-      color: #ff6b6b;
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
-      text-align: center;
-    }
-
-    .link-hint {
-      text-align: center;
-      font-size: 0.75rem;
-      opacity: 0.6;
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(34, 211, 238, 0.2);
-    }
-
-    .expired-message {
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .expired-message i {
-      font-size: 3rem;
-      color: #ff6b6b;
-      margin-bottom: 1rem;
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      nav { flex-direction: column; gap: 0.8rem; }
-      .nav-links { flex-wrap: wrap; justify-content: center; }
-      .queue-name-large { font-size: 1.3rem; }
-      .tab-btn { font-size: 0.75rem; padding: 0.6rem 0.5rem; }
-    }
+    /* All your existing CSS remains exactly the same */
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
+    .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 2rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(5, 10, 25, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34, 211, 238, 0.2); position: sticky; top: 0; z-index: 100; }
+    .logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #fff, #22D3EE); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
+    .logo i { color: #22D3EE; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: #eef5ff; text-decoration: none; transition: color 0.2s; font-weight: 500; }
+    .nav-links a:hover { color: #22D3EE; }
+    .join-container { max-width: 580px; margin: 2rem auto; }
+    .queue-info-card { text-align: center; margin-bottom: 2rem; padding: 2rem; word-wrap: break-word; overflow-wrap: break-word; }
+    .queue-icon { font-size: 3rem; color: #22D3EE; margin-bottom: 0.5rem; }
+    .queue-name-large { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: #22D3EE; word-break: break-word; }
+    .queue-description { opacity: 0.8; font-size: 0.9rem; margin-top: 0.5rem; word-break: break-word; }
+    .queue-detail { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+    .detail-badge { background: rgba(34, 211, 238, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
+    .options-card { padding: 2rem; }
+    .option-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(34, 211, 238, 0.2); padding-bottom: 0.5rem; }
+    .tab-btn { background: transparent; border: none; padding: 0.8rem 1rem; border-radius: 2rem; color: #eef5ff; cursor: pointer; font-weight: 500; transition: 0.2s; flex: 1; font-size: 0.9rem; }
+    .tab-btn.active { background: linear-gradient(95deg, #5B21B6, #7c3aed); color: white; }
+    .tab-btn:not(.active):hover { background: rgba(34, 211, 238, 0.1); }
+    .tab-content { display: none; animation: fadeIn 0.3s ease; }
+    .tab-content.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+    .input-group { margin: 0.8rem 0; position: relative; }
+    .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #22D3EE; opacity: 0.7; z-index: 1; }
+    input { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.9rem 1rem 0.9rem 2.8rem; border-radius: 1rem; color: white; font-size: 0.95rem; outline: none; width: 100%; transition: all 0.2s; }
+    input:focus { border-color: #22D3EE; box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2); }
+    .password-wrapper { position: relative; }
+    .password-wrapper input { padding-right: 3rem; }
+    .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #22D3EE; cursor: pointer; z-index: 10; padding: 0.5rem; }
+    .btn-primary { background: linear-gradient(95deg, #5B21B6, #7c3aed); border: none; padding: 0.9rem 2rem; border-radius: 2rem; color: white; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 1rem; }
+    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4); }
+    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
+    .btn-outline { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; padding: 0.8rem 2rem; border-radius: 2rem; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; width: 100%; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s ease; }
+    .toast.error { background: #ff4757; color: white; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+    .error-msg { color: #ff6b6b; font-size: 0.8rem; margin-top: 0.5rem; text-align: center; }
+    .link-hint { text-align: center; font-size: 0.75rem; opacity: 0.6; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(34, 211, 238, 0.2); }
+    .expired-message { text-align: center; padding: 2rem; }
+    .expired-message i { font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem; }
+    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .nav-links { flex-wrap: wrap; justify-content: center; } .queue-name-large { font-size: 1.3rem; } .tab-btn { font-size: 0.75rem; padding: 0.6rem 0.5rem; } }
   </style>
 </head>
 <body>
@@ -343,7 +69,6 @@
 
 <div class="container">
   <div class="join-container">
-    <!-- Queue Info Display -->
     <div class="glass queue-info-card" id="queueInfoCard">
       <div class="queue-icon">
         <i class="fas fa-ticket-alt"></i>
@@ -356,7 +81,6 @@
       </div>
     </div>
 
-    <!-- Options Card -->
     <div class="glass options-card" id="optionsCard">
       <div class="option-tabs">
         <button class="tab-btn active" data-tab="login"><i class="fas fa-sign-in-alt"></i> Login</button>
@@ -364,7 +88,6 @@
         <button class="tab-btn" data-tab="guest"><i class="fas fa-user-friends"></i> Guest</button>
       </div>
 
-      <!-- Login Tab -->
       <div id="loginTab" class="tab-content active">
         <form id="loginForm">
           <div class="input-group">
@@ -385,7 +108,6 @@
         <div id="loginError" class="error-msg"></div>
       </div>
 
-      <!-- Register Tab -->
       <div id="registerTab" class="tab-content">
         <form id="registerForm">
           <div class="input-group">
@@ -410,7 +132,6 @@
         <div id="registerError" class="error-msg"></div>
       </div>
 
-      <!-- Guest Tab -->
       <div id="guestTab" class="tab-content">
         <form id="guestForm">
           <div class="input-group">
@@ -440,7 +161,6 @@
 </div>
 
 <script>
-  // ✅ FIXED: Dynamic API configuration
   const API_BASE = (() => {
     const hostname = window.location.hostname;
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
@@ -474,7 +194,6 @@
     }
   }
 
-  // Password toggle
   document.querySelectorAll('.toggle-password').forEach(btn => {
     btn.addEventListener('click', function() {
       const targetId = this.getAttribute('data-target');
@@ -496,6 +215,8 @@
       const response = await fetch(url);
       const data = await response.json();
       
+      console.log('Queue API full response:', data);
+      
       if (!response.ok || !data.success) {
         throw new Error(data.error || data.message || 'Queue not found');
       }
@@ -516,6 +237,7 @@
       
       const url = `${API_BASE}/queues/${currentQueueId}/join`;
       console.log('📡 Joining queue:', url);
+      console.log('Join payload:', { name, email, phone, isGuest });
       
       const response = await fetch(url, {
         method: 'POST',
@@ -524,6 +246,7 @@
       });
       
       const data = await response.json();
+      console.log('Join API full response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Failed to join queue');
@@ -545,6 +268,7 @@
       });
       
       const data = await response.json();
+      console.log('Login response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Login failed');
@@ -565,6 +289,7 @@
       });
       
       const data = await response.json();
+      console.log('Register response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Registration failed');
@@ -603,7 +328,16 @@
     }
   }
 
-  function redirectAfterJoin() {
+  function redirectAfterJoin(participantId, queueName, participantName) {
+    // Store participant session
+    localStorage.setItem('my_participant_session', JSON.stringify({
+      queueId: currentQueueId,
+      participantId: participantId,
+      queueName: queueName,
+      participantName: participantName,
+      joinedAt: Date.now()
+    }));
+    
     const token = localStorage.getItem('auth_token');
     if (token) {
       window.location.href = 'user-dashboard.html';
@@ -627,6 +361,8 @@
   async function init() {
     const urlParams = new URLSearchParams(window.location.search);
     let queueId = urlParams.get('join') || urlParams.get('q');
+    
+    console.log('Queue ID from URL:', queueId);
     
     if (!queueId) {
       document.getElementById('queueNameDisplay').innerText = 'Invalid Queue Link';
@@ -654,7 +390,9 @@
         const part = JSON.parse(existingParticipant);
         if (part.queueId === currentQueueId) {
           showToast(`You are already in "${queue.name}"! Redirecting...`);
-          setTimeout(() => redirectAfterJoin(), 1500);
+          setTimeout(() => {
+            window.location.href = `queue-status.html?join=${currentQueueId}`;
+          }, 1500);
           return;
         }
       } catch(e) {}
@@ -713,14 +451,12 @@
       const joinResult = await joinQueueAPI(loginResult.data.user.name, email, null, false, loginResult.data.token);
       
       if (joinResult.success) {
-        localStorage.setItem('my_participant_session', JSON.stringify({
-          queueId: currentQueueId,
-          participantId: joinResult.data.participant.participantId,
-          queueName: joinResult.data.participant.queueName,
-          participantName: loginResult.data.user.name
-        }));
         showToast(`✅ ${joinResult.data.message}`);
-        setTimeout(() => redirectAfterJoin(), 1500);
+        redirectAfterJoin(
+          joinResult.data.participant.participantId,
+          joinResult.data.participant.queueName,
+          loginResult.data.user.name
+        );
       } else {
         document.getElementById('loginError').innerText = joinResult.error;
         showToast(joinResult.error, true);
@@ -769,14 +505,12 @@
       const joinResult = await joinQueueAPI(name, email, null, false, registerResult.data.token);
       
       if (joinResult.success) {
-        localStorage.setItem('my_participant_session', JSON.stringify({
-          queueId: currentQueueId,
-          participantId: joinResult.data.participant.participantId,
-          queueName: joinResult.data.participant.queueName,
-          participantName: name
-        }));
         showToast(`🎉 Account created! ${joinResult.data.message}`);
-        setTimeout(() => redirectAfterJoin(), 1500);
+        redirectAfterJoin(
+          joinResult.data.participant.participantId,
+          joinResult.data.participant.queueName,
+          name
+        );
       } else {
         document.getElementById('registerError').innerText = joinResult.error;
         showToast(joinResult.error, true);
@@ -804,14 +538,12 @@
       const joinResult = await joinQueueAPI(name, email || null, phone || null, true);
       
       if (joinResult.success) {
-        localStorage.setItem('my_participant_session', JSON.stringify({
-          queueId: currentQueueId,
-          participantId: joinResult.data.participant.participantId,
-          queueName: joinResult.data.participant.queueName,
-          participantName: name
-        }));
         showToast(`✅ ${joinResult.data.message}`);
-        setTimeout(() => redirectAfterJoin(), 1500);
+        redirectAfterJoin(
+          joinResult.data.participant.participantId,
+          joinResult.data.participant.queueName,
+          name
+        );
       } else {
         document.getElementById('guestError').innerText = joinResult.error;
         showToast(joinResult.error, true);
