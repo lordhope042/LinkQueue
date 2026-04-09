@@ -7,36 +7,36 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* --- All existing CSS remains exactly the same --- */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
     .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 1.5rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4); }
     .container { max-width: 1200px; margin: 0 auto; padding: 1.5rem; }
     nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(5, 10, 25, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34, 211, 238, 0.2); position: sticky; top: 0; z-index: 100; }
     .logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #fff, #22D3EE); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-    .nav-links a { color: #eef5ff; text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; font-weight: 500; }
+    .nav-links { display: flex; gap: 1.5rem; }
+    .nav-links a { color: #eef5ff; text-decoration: none; transition: color 0.2s; font-weight: 500; }
     .nav-links a:hover { color: #22D3EE; }
-    .queue-header-card { text-align: center; margin-bottom: 2rem; padding: 1.5rem; }
+    .queue-header-card { text-align: center; margin-bottom: 2rem; padding: 1.5rem; word-wrap: break-word; }
     .queue-icon { font-size: 2.5rem; color: #22D3EE; margin-bottom: 0.5rem; }
-    .queue-name { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: #22D3EE; }
-    .queue-description { opacity: 0.8; margin-bottom: 1rem; }
+    .queue-name { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: #22D3EE; word-break: break-word; }
+    .queue-description { opacity: 0.8; margin-bottom: 1rem; word-break: break-word; }
     .queue-stats { display: flex; justify-content: center; gap: 1.5rem; flex-wrap: wrap; margin-top: 1rem; }
     .stat-badge { background: rgba(34, 211, 238, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
     .position-card { text-align: center; padding: 2rem; margin-bottom: 2rem; }
     .position-number { font-size: 4rem; font-weight: 800; color: #22D3EE; margin: 0.5rem 0; }
     .position-label { font-size: 1rem; opacity: 0.7; letter-spacing: 2px; }
     .waiting-time { margin-top: 0.5rem; font-size: 0.9rem; color: #a5f3fc; }
-    .queue-visual { margin-bottom: 2rem; }
     .section-title { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600; }
     .participant-list { max-height: 400px; overflow-y: auto; }
     .participant-item { background: rgba(0, 0, 0, 0.3); padding: 0.8rem 1rem; border-radius: 1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem; transition: 0.2s; }
-    .participant-item.current { background: linear-gradient(95deg, rgba(91, 33, 182, 0.4), rgba(34, 211, 238, 0.2)); border-left: 4px solid #22D3EE; transform: scale(1.02); }
+    .participant-item.current { background: linear-gradient(95deg, rgba(91, 33, 182, 0.4), rgba(34, 211, 238, 0.2)); border-left: 4px solid #22D3EE; }
     .participant-position { font-weight: 700; min-width: 50px; font-size: 1.1rem; }
-    .participant-name { flex: 1; font-weight: 500; }
+    .participant-name { flex: 1; font-weight: 500; word-break: break-word; }
     .participant-status { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 1rem; background: rgba(34, 211, 238, 0.2); }
     .current-indicator { background: #22D3EE; color: #0a0a1f; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; }
     .btn-refresh { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; padding: 0.6rem 1.2rem; border-radius: 2rem; cursor: pointer; transition: 0.2s; width: 100%; margin-top: 1rem; font-size: 1rem; }
     .btn-refresh:hover { background: rgba(34, 211, 238, 0.1); }
+    .btn-primary { background: linear-gradient(95deg, #5B21B6, #7c3aed); border: none; padding: 0.6rem 1.2rem; border-radius: 2rem; color: white; font-weight: 600; cursor: pointer; width: 100%; margin-top: 1rem; font-size: 1rem; }
     .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s ease; }
     .toast.error { background: #ff4757; color: white; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
@@ -44,7 +44,11 @@
     .auto-refresh { text-align: center; font-size: 0.7rem; opacity: 0.5; margin-top: 1rem; }
     .expired-message { text-align: center; padding: 3rem; }
     .expired-message i { font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem; }
-    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .queue-name { font-size: 1.3rem; } .position-number { font-size: 2.5rem; } .participant-item { flex-wrap: wrap; } }
+    .share-section { margin-top: 1rem; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 1rem; }
+    .share-link { display: flex; gap: 0.5rem; margin-top: 0.5rem; }
+    .share-link input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(34,211,238,0.4); padding: 0.5rem; border-radius: 0.5rem; color: white; font-size: 0.8rem; }
+    .copy-btn { background: #22D3EE; color: #0a0a1f; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.8rem; }
+    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .nav-links { flex-wrap: wrap; justify-content: center; } .queue-name { font-size: 1.3rem; } .position-number { font-size: 2.5rem; } .participant-item { flex-wrap: wrap; } }
   </style>
 </head>
 <body>
@@ -61,7 +65,6 @@
 </nav>
 
 <div class="container" id="mainContainer">
-  <!-- Content will be dynamically loaded -->
   <div style="text-align: center; padding: 3rem;">
     <i class="fas fa-spinner fa-pulse fa-2x" style="color: #22D3EE;"></i>
     <p style="margin-top: 1rem;">Loading queue status...</p>
@@ -69,7 +72,7 @@
 </div>
 
 <script>
-  // ✅ FIXED: Dynamic API configuration
+  // ✅ Dynamic API configuration
   const API_BASE = (() => {
     const hostname = window.location.hostname;
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
@@ -82,6 +85,7 @@
   
   let currentQueueId = null;
   let currentParticipantId = null;
+  let currentParticipantName = null;
   let autoRefreshInterval = null;
 
   function showToast(message, isError = false) {
@@ -94,7 +98,6 @@
     setTimeout(() => toast.remove(), 3000);
   }
 
-  // Fetch queue status from API
   async function fetchQueueStatus(queueId) {
     try {
       const url = `${API_BASE}/queues/${queueId}/status`;
@@ -114,7 +117,6 @@
     }
   }
 
-  // Fetch participant position from API
   async function fetchParticipantPosition(participantId) {
     try {
       const url = `${API_BASE}/participants/${participantId}/position`;
@@ -145,10 +147,19 @@
     return `${Math.floor(diffMins / 60)}h ${diffMins % 60}m ago`;
   }
 
+  function generateShareLink(queueId) {
+    return `${window.location.origin}/join-queue.html?join=${queueId}`;
+  }
+
+  function copyShareLink() {
+    const link = generateShareLink(currentQueueId);
+    navigator.clipboard.writeText(link);
+    showToast('📋 Share link copied to clipboard!');
+  }
+
   async function renderQueueStatus() {
     const container = document.getElementById('mainContainer');
     
-    // Fetch queue data from API
     const queueData = await fetchQueueStatus(currentQueueId);
     
     if (!queueData || !queueData.queue) {
@@ -166,15 +177,13 @@
     const queue = queueData.queue;
     const participants = queueData.participants || [];
     
-    // Find current participant position
+    // Find current participant position if we have a participant ID
     let currentPosition = null;
-    let currentParticipantData = null;
     
     if (currentParticipantId) {
       const positionData = await fetchParticipantPosition(currentParticipantId);
       if (positionData) {
         currentPosition = positionData.position;
-        currentParticipantData = positionData;
       } else {
         // Participant may have been served
         currentParticipantId = null;
@@ -196,14 +205,14 @@
       return;
     }
     
-    // If participant not found (maybe was served), show message
+    // If participant was served
     if (currentParticipantId && !currentPosition) {
       container.innerHTML = `
         <div class="glass expired-message" style="max-width: 500px; margin: 3rem auto;">
           <i class="fas fa-check-circle" style="color: #22D3EE;"></i>
           <h2>You've Been Served!</h2>
           <p>Your turn has come. Thank you for using LinkQueue!</p>
-          <button onclick="clearSessionAndReload()" class="btn-refresh" style="margin-top: 1rem;">Clear & Continue</button>
+          <button onclick="clearSessionAndReload()" class="btn-primary" style="margin-top: 1rem;">Start Over</button>
         </div>
       `;
       if (autoRefreshInterval) clearInterval(autoRefreshInterval);
@@ -214,15 +223,27 @@
     const ahead = currentPosition ? participants.filter(p => p.position < currentPosition) : [];
     const behind = currentPosition ? participants.filter(p => p.position > currentPosition) : [];
     
-    // Estimate wait time (assuming 2 minutes per person)
     const estimatedWaitMinutes = ahead.length * 2;
     const waitTimeText = estimatedWaitMinutes > 0 
       ? `Estimated wait: ~${estimatedWaitMinutes} minute${estimatedWaitMinutes > 1 ? 's' : ''}`
       : '🎉 You are next!';
     
-    // Render the full queue status page
+    // Check if user is logged in and is the queue creator
+    const token = localStorage.getItem('auth_token');
+    const session = localStorage.getItem('linkqueue_session');
+    let isQueueOwner = false;
+    
+    if (token && session) {
+      try {
+        const user = JSON.parse(session);
+        // We can't verify ownership without an API call, but we can check if they're logged in
+        isQueueOwner = true;
+      } catch(e) {}
+    }
+    
+    const shareLink = generateShareLink(currentQueueId);
+    
     container.innerHTML = `
-      <!-- Queue Info Header -->
       <div class="glass queue-header-card">
         <div class="queue-icon">
           <i class="fas fa-ticket-alt"></i>
@@ -230,21 +251,42 @@
         <div class="queue-name">${escapeHtml(queue.name)}</div>
         ${queue.description ? `<div class="queue-description">${escapeHtml(queue.description)}</div>` : ''}
         <div class="queue-stats">
-          <span class="stat-badge"><i class="fas fa-users"></i> ${participants.length} people waiting</span>
+          <span class="stat-badge"><i class="fas fa-users"></i> ${participants.length} waiting</span>
           <span class="stat-badge"><i class="fas fa-clock"></i> Expires: ${new Date(queue.expiresAt).toLocaleTimeString()}</span>
+        </div>
+        
+        <!-- Share Section -->
+        <div class="share-section">
+          <div style="font-size: 0.8rem; opacity: 0.7; margin-bottom: 0.5rem;">
+            <i class="fas fa-share-alt"></i> Share this queue
+          </div>
+          <div class="share-link">
+            <input type="text" value="${shareLink}" readonly id="shareLinkInput">
+            <button class="copy-btn" onclick="copyShareLink()"><i class="fas fa-copy"></i> Copy</button>
+          </div>
         </div>
       </div>
       
-      <!-- Current Position Card -->
+      ${currentPosition ? `
       <div class="glass position-card">
         <div class="position-label">YOUR POSITION</div>
-        <div class="position-number">${currentPosition ? '#' + currentPosition : '—'}</div>
+        <div class="position-number">#${currentPosition}</div>
         <div class="waiting-time">
           <i class="fas fa-hourglass-half"></i> ${currentPosition === 1 ? '🎉 You are next in line!' : waitTimeText}
         </div>
+        ${currentParticipantName ? `<div style="margin-top: 0.5rem; opacity: 0.7;">👤 ${escapeHtml(currentParticipantName)}</div>` : ''}
       </div>
+      ` : `
+      <div class="glass position-card">
+        <div class="position-label">QUEUE OVERVIEW</div>
+        <div class="position-number">${participants.length}</div>
+        <div class="waiting-time">
+          <i class="fas fa-users"></i> Total participants waiting
+        </div>
+        ${isQueueOwner ? '<div style="margin-top: 0.5rem; opacity: 0.7;">👑 You are the queue owner</div>' : ''}
+      </div>
+      `}
       
-      <!-- Queue Visual -->
       <div class="glass" style="padding: 1.5rem;">
         <div class="section-title">
           <i class="fas fa-list"></i> Queue Status
@@ -266,7 +308,6 @@
       </div>
     `;
     
-    // Attach refresh button event
     document.getElementById('manualRefreshBtn')?.addEventListener('click', () => {
       renderQueueStatus();
       showToast('🔄 Queue status refreshed!');
@@ -275,33 +316,31 @@
   
   function renderParticipantsList(participants, currentPosition) {
     if (participants.length === 0) {
-      return '<div class="empty-state"><i class="fas fa-user-friends"></i> No one is in the queue yet. Be the first!</div>';
+      return '<div class="empty-state"><i class="fas fa-user-friends"></i> No one is in the queue yet.</div>';
     }
     
     let html = '';
     
-    // Show people ahead (limit to 5 for readability)
-    const ahead = participants.filter(p => currentPosition && p.position < currentPosition);
-    const behind = participants.filter(p => currentPosition && p.position > currentPosition);
-    
-    if (ahead.length > 0) {
-      html += `<div style="margin-bottom: 1rem;"><i class="fas fa-arrow-up" style="color: #ffaa44;"></i> Ahead of you (${ahead.length})</div>`;
-      ahead.slice(-5).forEach((p) => {
-        html += `
-          <div class="participant-item">
-            <span class="participant-position">#${p.position}</span>
-            <span class="participant-name">${escapeHtml(p.name)}</span>
-            <span class="participant-status">joined ${formatTimeAgo(p.joinedAt)}</span>
-          </div>
-        `;
-      });
-      if (ahead.length > 5) {
-        html += `<div style="text-align: center; font-size: 0.7rem; opacity: 0.6; margin: 0.5rem 0;">+${ahead.length - 5} more ahead</div>`;
-      }
-    }
-    
-    // Current participant (YOU)
     if (currentPosition) {
+      const ahead = participants.filter(p => p.position < currentPosition);
+      const behind = participants.filter(p => p.position > currentPosition);
+      
+      if (ahead.length > 0) {
+        html += `<div style="margin-bottom: 1rem;"><i class="fas fa-arrow-up" style="color: #ffaa44;"></i> Ahead of you (${ahead.length})</div>`;
+        ahead.slice(-5).forEach((p) => {
+          html += `
+            <div class="participant-item">
+              <span class="participant-position">#${p.position}</span>
+              <span class="participant-name">${escapeHtml(p.name)}</span>
+              <span class="participant-status">joined ${formatTimeAgo(p.joinedAt)}</span>
+            </div>
+          `;
+        });
+        if (ahead.length > 5) {
+          html += `<div style="text-align: center; font-size: 0.7rem; opacity: 0.6; margin: 0.5rem 0;">+${ahead.length - 5} more ahead</div>`;
+        }
+      }
+      
       const currentParticipant = participants.find(p => p.position === currentPosition);
       html += `
         <div class="participant-item current" style="margin: 0.8rem 0;">
@@ -310,12 +349,25 @@
           <span class="participant-status">joined ${formatTimeAgo(currentParticipant?.joinedAt)}</span>
         </div>
       `;
-    }
-    
-    // Show people behind (limit to 5)
-    if (behind.length > 0) {
-      html += `<div style="margin-top: 1rem; margin-bottom: 1rem;"><i class="fas fa-arrow-down" style="color: #44ffaa;"></i> Behind you (${behind.length})</div>`;
-      behind.slice(0, 5).forEach((p) => {
+      
+      if (behind.length > 0) {
+        html += `<div style="margin-top: 1rem; margin-bottom: 1rem;"><i class="fas fa-arrow-down" style="color: #44ffaa;"></i> Behind you (${behind.length})</div>`;
+        behind.slice(0, 5).forEach((p) => {
+          html += `
+            <div class="participant-item">
+              <span class="participant-position">#${p.position}</span>
+              <span class="participant-name">${escapeHtml(p.name)}</span>
+              <span class="participant-status">joined ${formatTimeAgo(p.joinedAt)}</span>
+            </div>
+          `;
+        });
+        if (behind.length > 5) {
+          html += `<div style="text-align: center; font-size: 0.7rem; opacity: 0.6; margin-top: 0.5rem;">+${behind.length - 5} more behind</div>`;
+        }
+      }
+    } else {
+      // No current position - show all participants
+      participants.forEach((p) => {
         html += `
           <div class="participant-item">
             <span class="participant-position">#${p.position}</span>
@@ -324,9 +376,6 @@
           </div>
         `;
       });
-      if (behind.length > 5) {
-        html += `<div style="text-align: center; font-size: 0.7rem; opacity: 0.6; margin-top: 0.5rem;">+${behind.length - 5} more behind</div>`;
-      }
     }
     
     return html;
@@ -342,14 +391,18 @@
     });
   }
 
-  // Make clearSessionAndReload available globally for onclick
   window.clearSessionAndReload = function() {
     localStorage.removeItem('my_participant_session');
     window.location.href = 'index.html';
   };
 
+  window.copyShareLink = function() {
+    const link = generateShareLink(currentQueueId);
+    navigator.clipboard.writeText(link);
+    showToast('📋 Share link copied to clipboard!');
+  };
+
   async function init() {
-    // Get queue ID from URL
     const urlParams = new URLSearchParams(window.location.search);
     currentQueueId = urlParams.get('join') || urlParams.get('q');
     
@@ -365,13 +418,14 @@
       return;
     }
     
-    // Get participant session
+    // Get participant session if exists
     const stored = localStorage.getItem('my_participant_session');
     if (stored) {
       try {
         const session = JSON.parse(stored);
         if (session.queueId === currentQueueId) {
           currentParticipantId = session.participantId;
+          currentParticipantName = session.participantName;
         }
       } catch(e) {
         console.error('Error parsing session:', e);
@@ -392,22 +446,18 @@
       return;
     }
     
-    // Render initial status
     await renderQueueStatus();
     
-    // Set up auto-refresh every 10 seconds
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
     autoRefreshInterval = setInterval(async () => {
       await renderQueueStatus();
     }, 10000);
   }
   
-  // Clean up interval on page unload
   window.addEventListener('beforeunload', () => {
     if (autoRefreshInterval) clearInterval(autoRefreshInterval);
   });
   
-  // Start the app
   init();
 </script>
 </body>
