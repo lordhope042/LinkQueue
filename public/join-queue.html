@@ -7,58 +7,325 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    * {<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>LinkQueue - Join Queue</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <style>
-    /* --- All existing CSS remains exactly the same --- */
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
-    .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 2rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
-    .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(5, 10, 25, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34, 211, 238, 0.2); position: sticky; top: 0; z-index: 100; }
-    .logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #fff, #22D3EE); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-    .logo i { color: #22D3EE; }
-    .nav-links a { color: #eef5ff; text-decoration: none; margin-left: 1.5rem; transition: color 0.2s; font-weight: 500; }
-    .nav-links a:hover { color: #22D3EE; }
-    .join-container { max-width: 580px; margin: 2rem auto; }
-    .queue-info-card { text-align: center; margin-bottom: 2rem; padding: 2rem; }
-    .queue-icon { font-size: 3rem; color: #22D3EE; margin-bottom: 0.5rem; }
-    .queue-name-large { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: #22D3EE; }
-    .queue-description { opacity: 0.8; font-size: 0.9rem; margin-top: 0.5rem; }
-    .queue-detail { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
-    .detail-badge { background: rgba(34, 211, 238, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
-    .options-card { padding: 2rem; }
-    .option-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(34, 211, 238, 0.2); padding-bottom: 0.5rem; }
-    .tab-btn { background: transparent; border: none; padding: 0.8rem 1rem; border-radius: 2rem; color: #eef5ff; cursor: pointer; font-weight: 500; transition: 0.2s; flex: 1; font-size: 0.9rem; }
-    .tab-btn.active { background: linear-gradient(95deg, #5B21B6, #7c3aed); color: white; }
-    .tab-btn:not(.active):hover { background: rgba(34, 211, 238, 0.1); }
-    .tab-content { display: none; animation: fadeIn 0.3s ease; }
-    .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
-    .input-group { margin: 0.8rem 0; position: relative; }
-    .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #22D3EE; opacity: 0.7; }
-    input { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.9rem 1rem 0.9rem 2.8rem; border-radius: 1rem; color: white; font-size: 0.95rem; outline: none; width: 100%; transition: all 0.2s; }
-    input:focus { border-color: #22D3EE; box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2); }
-    .password-wrapper { position: relative; }
-    .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #22D3EE; cursor: pointer; z-index: 10; }
-    .btn-primary { background: linear-gradient(95deg, #5B21B6, #7c3aed); border: none; padding: 0.9rem 2rem; border-radius: 2rem; color: white; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 1rem; }
-    .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4); }
-    .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-outline { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; padding: 0.8rem 2rem; border-radius: 2rem; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; width: 100%; }
-    .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
-    .toast.error { background: #ff4757; color: white; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
-    .error-msg { color: #ff6b6b; font-size: 0.8rem; margin-top: 0.5rem; text-align: center; }
-    .link-hint { text-align: center; font-size: 0.75rem; opacity: 0.6; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(34, 211, 238, 0.2); }
-    .expired-message { text-align: center; padding: 2rem; }
-    .expired-message i { font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem; }
-    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .queue-name-large { font-size: 1.3rem; } .tab-btn { font-size: 0.75rem; padding: 0.6rem 0.5rem; } }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a);
+      min-height: 100vh;
+      color: #eef5ff;
+    }
+
+    .glass {
+      background: rgba(15, 25, 35, 0.6);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(34, 211, 238, 0.25);
+      border-radius: 2rem;
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      background: rgba(5, 10, 25, 0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.8rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #fff, #22D3EE);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .logo i {
+      color: #22D3EE;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-links a {
+      color: #eef5ff;
+      text-decoration: none;
+      transition: color 0.2s;
+      font-weight: 500;
+    }
+
+    .nav-links a:hover {
+      color: #22D3EE;
+    }
+
+    .join-container {
+      max-width: 580px;
+      margin: 2rem auto;
+    }
+
+    .queue-info-card {
+      text-align: center;
+      margin-bottom: 2rem;
+      padding: 2rem;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .queue-icon {
+      font-size: 3rem;
+      color: #22D3EE;
+      margin-bottom: 0.5rem;
+    }
+
+    .queue-name-large {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin: 0.5rem 0;
+      color: #22D3EE;
+      word-break: break-word;
+    }
+
+    .queue-description {
+      opacity: 0.8;
+      font-size: 0.9rem;
+      margin-top: 0.5rem;
+      word-break: break-word;
+    }
+
+    .queue-detail {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+
+    .detail-badge {
+      background: rgba(34, 211, 238, 0.1);
+      padding: 0.4rem 1rem;
+      border-radius: 2rem;
+      font-size: 0.85rem;
+    }
+
+    .options-card {
+      padding: 2rem;
+    }
+
+    .option-tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1.5rem;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+      padding-bottom: 0.5rem;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      padding: 0.8rem 1rem;
+      border-radius: 2rem;
+      color: #eef5ff;
+      cursor: pointer;
+      font-weight: 500;
+      transition: 0.2s;
+      flex: 1;
+      font-size: 0.9rem;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(95deg, #5B21B6, #7c3aed);
+      color: white;
+    }
+
+    .tab-btn:not(.active):hover {
+      background: rgba(34, 211, 238, 0.1);
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    .input-group {
+      margin: 0.8rem 0;
+      position: relative;
+    }
+
+    .input-group i {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #22D3EE;
+      opacity: 0.7;
+      z-index: 1;
+    }
+
+    input {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      padding: 0.9rem 1rem 0.9rem 2.8rem;
+      border-radius: 1rem;
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      transition: all 0.2s;
+    }
+
+    input:focus {
+      border-color: #22D3EE;
+      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .password-wrapper input {
+      padding-right: 3rem;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: transparent;
+      border: none;
+      color: #22D3EE;
+      cursor: pointer;
+      z-index: 10;
+      padding: 0.5rem;
+    }
+
+    .btn-primary {
+      background: linear-gradient(95deg, #5B21B6, #7c3aed);
+      border: none;
+      padding: 0.9rem 2rem;
+      border-radius: 2rem;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      font-size: 1rem;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      margin-top: 1rem;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid #22D3EE;
+      color: #22D3EE;
+      padding: 0.8rem 2rem;
+      border-radius: 2rem;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-block;
+      text-align: center;
+      width: 100%;
+    }
+
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #22D3EE;
+      color: #0a0a1f;
+      padding: 0.8rem 1.5rem;
+      border-radius: 2rem;
+      font-weight: bold;
+      z-index: 1100;
+      animation: fadeInUp 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    .toast.error {
+      background: #ff4757;
+      color: white;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    .error-msg {
+      color: #ff6b6b;
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      text-align: center;
+    }
+
+    .link-hint {
+      text-align: center;
+      font-size: 0.75rem;
+      opacity: 0.6;
+      margin-top: 1.5rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(34, 211, 238, 0.2);
+    }
+
+    .expired-message {
+      text-align: center;
+      padding: 2rem;
+    }
+
+    .expired-message i {
+      font-size: 3rem;
+      color: #ff6b6b;
+      margin-bottom: 1rem;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 1rem; }
+      nav { flex-direction: column; gap: 0.8rem; }
+      .nav-links { flex-wrap: wrap; justify-content: center; }
+      .queue-name-large { font-size: 1.3rem; }
+      .tab-btn { font-size: 0.75rem; padding: 0.6rem 0.5rem; }
+    }
   </style>
 </head>
 <body>
@@ -185,7 +452,6 @@
   console.log('🌐 API Base URL:', API_BASE);
   
   let currentQueueId = null;
-  let currentQueueData = null;
 
   function showToast(message, isError = false) {
     let existingToast = document.querySelector('.toast');
@@ -223,15 +489,12 @@
     });
   });
 
-  // Fetch queue info from API
   async function fetchQueueInfo(queueId) {
     try {
       const url = `${API_BASE}/queues/${queueId}`;
       console.log('📡 Fetching queue:', url);
       const response = await fetch(url);
       const data = await response.json();
-      
-      console.log('Queue API response:', data);
       
       if (!response.ok || !data.success) {
         throw new Error(data.error || data.message || 'Queue not found');
@@ -244,7 +507,6 @@
     }
   }
 
-  // Join queue via API
   async function joinQueueAPI(name, email, phone, isGuest = true, token = null) {
     try {
       const headers = { 'Content-Type': 'application/json' };
@@ -262,7 +524,6 @@
       });
       
       const data = await response.json();
-      console.log('Join response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Failed to join queue');
@@ -275,20 +536,15 @@
     }
   }
 
-  // Login via API
   async function loginAPI(email, password) {
     try {
-      const url = `${API_BASE}/login`;
-      console.log('📡 Login:', url);
-      
-      const response = await fetch(url, {
+      const response = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
       
       const data = await response.json();
-      console.log('Login response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Login failed');
@@ -300,20 +556,15 @@
     }
   }
 
-  // Register via API
   async function registerAPI(name, email, password) {
     try {
-      const url = `${API_BASE}/register`;
-      console.log('📡 Register:', url);
-      
-      const response = await fetch(url, {
+      const response = await fetch(`${API_BASE}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role: 'user' })
       });
       
       const data = await response.json();
-      console.log('Register response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Registration failed');
@@ -325,7 +576,6 @@
     }
   }
 
-  // Update UI with queue info
   function updateQueueInfoUI(queue) {
     if (!queue) return false;
     
@@ -341,8 +591,6 @@
       return true;
     } else {
       document.getElementById('expiryInfo').innerHTML = '<i class="fas fa-ban"></i> Queue Expired';
-      document.getElementById('optionsCard').style.opacity = '0.5';
-      document.getElementById('optionsCard').style.pointerEvents = 'none';
       document.getElementById('optionsCard').innerHTML = `
         <div class="expired-message">
           <i class="fas fa-clock"></i>
@@ -355,20 +603,15 @@
     }
   }
 
-  // Redirect to queue status page or dashboard
   function redirectAfterJoin() {
-    // Check if user is logged in
     const token = localStorage.getItem('auth_token');
     if (token) {
-      // Logged in users go to dashboard
       window.location.href = 'user-dashboard.html';
     } else {
-      // Guest users go to queue status page
       window.location.href = `queue-status.html?join=${currentQueueId}`;
     }
   }
 
-  // Tab switching
   function switchTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(tab => {
       tab.classList.remove('active');
@@ -381,12 +624,9 @@
     document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
   }
 
-  // Initialize page
   async function init() {
     const urlParams = new URLSearchParams(window.location.search);
     let queueId = urlParams.get('join') || urlParams.get('q');
-    
-    console.log('Queue ID from URL:', queueId);
     
     if (!queueId) {
       document.getElementById('queueNameDisplay').innerText = 'Invalid Queue Link';
@@ -396,11 +636,8 @@
     }
     
     currentQueueId = queueId;
-    
-    // Show loading state
     document.getElementById('queueNameDisplay').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading queue...';
     
-    // Fetch queue info
     const queue = await fetchQueueInfo(currentQueueId);
     if (!queue) {
       document.getElementById('queueNameDisplay').innerText = 'Queue Not Found';
@@ -409,10 +646,8 @@
       return;
     }
     
-    const isActive = updateQueueInfoUI(queue);
-    if (!isActive) return;
+    if (!updateQueueInfoUI(queue)) return;
     
-    // Check if user already has a participant session for this queue
     const existingParticipant = localStorage.getItem('my_participant_session');
     if (existingParticipant) {
       try {
@@ -425,7 +660,6 @@
       } catch(e) {}
     }
     
-    // Check if user is already logged in
     const token = localStorage.getItem('auth_token');
     const session = localStorage.getItem('linkqueue_session');
     if (token && session) {
@@ -439,16 +673,11 @@
     }
   }
 
-  // Setup event listeners
   function setupEventListeners() {
-    // Tab switching
     document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        switchTab(btn.getAttribute('data-tab'));
-      });
+      btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
     });
 
-    // Login form
     document.getElementById('loginForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim().toLowerCase();
@@ -472,7 +701,6 @@
         return;
       }
       
-      // Store session
       localStorage.setItem('auth_token', loginResult.data.token);
       localStorage.setItem('linkqueue_session', JSON.stringify({
         userId: loginResult.data.user.userId,
@@ -482,14 +710,7 @@
         loggedInAt: Date.now()
       }));
       
-      // Join queue
-      const joinResult = await joinQueueAPI(
-        loginResult.data.user.name, 
-        email, 
-        null, 
-        false, 
-        loginResult.data.token
-      );
+      const joinResult = await joinQueueAPI(loginResult.data.user.name, email, null, false, loginResult.data.token);
       
       if (joinResult.success) {
         localStorage.setItem('my_participant_session', JSON.stringify({
@@ -507,7 +728,6 @@
       }
     });
 
-    // Register form
     document.getElementById('registerForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('regName').value.trim();
@@ -537,7 +757,6 @@
         return;
       }
       
-      // Store session
       localStorage.setItem('auth_token', registerResult.data.token);
       localStorage.setItem('linkqueue_session', JSON.stringify({
         userId: registerResult.data.user.userId,
@@ -547,14 +766,7 @@
         loggedInAt: Date.now()
       }));
       
-      // Join queue
-      const joinResult = await joinQueueAPI(
-        name, 
-        email, 
-        null, 
-        false, 
-        registerResult.data.token
-      );
+      const joinResult = await joinQueueAPI(name, email, null, false, registerResult.data.token);
       
       if (joinResult.success) {
         localStorage.setItem('my_participant_session', JSON.stringify({
@@ -572,7 +784,6 @@
       }
     });
 
-    // Guest form
     document.getElementById('guestForm').addEventListener('submit', async (e) => {
       e.preventDefault();
       const name = document.getElementById('guestName').value.trim();
@@ -609,820 +820,6 @@
     });
   }
 
-  // Start the app
-  setupEventListeners();
-  init();
-</script>
-</body>
-</html>
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a);
-      min-height: 100vh;
-      color: #eef5ff;
-    }
-
-    .glass {
-      background: rgba(15, 25, 35, 0.6);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      border: 1px solid rgba(34, 211, 238, 0.25);
-      border-radius: 2rem;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05);
-    }
-
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      padding: 2rem;
-    }
-
-    nav {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 1rem 2rem;
-      background: rgba(5, 10, 25, 0.85);
-      backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
-      position: sticky;
-      top: 0;
-      z-index: 100;
-    }
-
-    .logo {
-      font-size: 1.8rem;
-      font-weight: 800;
-      background: linear-gradient(135deg, #fff, #22D3EE);
-      -webkit-background-clip: text;
-      background-clip: text;
-      color: transparent;
-      text-decoration: none;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .logo i {
-      color: #22D3EE;
-    }
-
-    .nav-links a {
-      color: #eef5ff;
-      text-decoration: none;
-      margin-left: 1.5rem;
-      transition: color 0.2s;
-      font-weight: 500;
-    }
-
-    .nav-links a:hover {
-      color: #22D3EE;
-    }
-
-    .join-container {
-      max-width: 580px;
-      margin: 2rem auto;
-    }
-
-    .queue-info-card {
-      text-align: center;
-      margin-bottom: 2rem;
-      padding: 2rem;
-    }
-
-    .queue-icon {
-      font-size: 3rem;
-      color: #22D3EE;
-      margin-bottom: 0.5rem;
-    }
-
-    .queue-name-large {
-      font-size: 1.8rem;
-      font-weight: 700;
-      margin: 0.5rem 0;
-      color: #22D3EE;
-    }
-
-    .queue-description {
-      opacity: 0.8;
-      font-size: 0.9rem;
-      margin-top: 0.5rem;
-    }
-
-    .queue-detail {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-
-    .detail-badge {
-      background: rgba(34, 211, 238, 0.1);
-      padding: 0.4rem 1rem;
-      border-radius: 2rem;
-      font-size: 0.85rem;
-    }
-
-    .options-card {
-      padding: 2rem;
-    }
-
-    .option-tabs {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1.5rem;
-      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
-      padding-bottom: 0.5rem;
-    }
-
-    .tab-btn {
-      background: transparent;
-      border: none;
-      padding: 0.8rem 1rem;
-      border-radius: 2rem;
-      color: #eef5ff;
-      cursor: pointer;
-      font-weight: 500;
-      transition: 0.2s;
-      flex: 1;
-      font-size: 0.9rem;
-    }
-
-    .tab-btn.active {
-      background: linear-gradient(95deg, #5B21B6, #7c3aed);
-      color: white;
-    }
-
-    .tab-btn:not(.active):hover {
-      background: rgba(34, 211, 238, 0.1);
-    }
-
-    .tab-content {
-      display: none;
-      animation: fadeIn 0.3s ease;
-    }
-
-    .tab-content.active {
-      display: block;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-
-    .input-group {
-      margin: 0.8rem 0;
-      position: relative;
-    }
-
-    .input-group i {
-      position: absolute;
-      left: 15px;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #22D3EE;
-      opacity: 0.7;
-    }
-
-    input {
-      background: rgba(0, 0, 0, 0.5);
-      border: 1px solid rgba(34, 211, 238, 0.4);
-      padding: 0.9rem 1rem 0.9rem 2.8rem;
-      border-radius: 1rem;
-      color: white;
-      font-size: 0.95rem;
-      outline: none;
-      width: 100%;
-      transition: all 0.2s;
-    }
-
-    input:focus {
-      border-color: #22D3EE;
-      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
-    }
-
-    .password-wrapper {
-      position: relative;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: #22D3EE;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    .btn-primary {
-      background: linear-gradient(95deg, #5B21B6, #7c3aed);
-      border: none;
-      padding: 0.9rem 2rem;
-      border-radius: 2rem;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      width: 100%;
-      font-size: 1rem;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      margin-top: 1rem;
-    }
-
-    .btn-primary:hover:not(:disabled) {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4);
-    }
-
-    .btn-primary:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    .btn-outline {
-      background: transparent;
-      border: 1px solid #22D3EE;
-      color: #22D3EE;
-      padding: 0.8rem 2rem;
-      border-radius: 2rem;
-      cursor: pointer;
-      text-decoration: none;
-      display: inline-block;
-      text-align: center;
-      width: 100%;
-    }
-
-    .toast {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #22D3EE;
-      color: #0a0a1f;
-      padding: 0.8rem 1.5rem;
-      border-radius: 2rem;
-      font-weight: bold;
-      z-index: 1100;
-      animation: fadeInUp 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    }
-
-    .toast.error {
-      background: #ff4757;
-      color: white;
-    }
-
-    @keyframes fadeInUp {
-      from { opacity: 0; transform: translateY(20px);}
-      to { opacity: 1; transform: translateY(0);}
-    }
-
-    .error-msg {
-      color: #ff6b6b;
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
-      text-align: center;
-    }
-
-    .link-hint {
-      text-align: center;
-      font-size: 0.75rem;
-      opacity: 0.6;
-      margin-top: 1.5rem;
-      padding-top: 1rem;
-      border-top: 1px solid rgba(34, 211, 238, 0.2);
-    }
-
-    .expired-message {
-      text-align: center;
-      padding: 2rem;
-    }
-
-    .expired-message i {
-      font-size: 3rem;
-      color: #ff6b6b;
-      margin-bottom: 1rem;
-    }
-
-    @media (max-width: 768px) {
-      .container { padding: 1rem; }
-      nav { flex-direction: column; gap: 0.8rem; }
-      .queue-name-large { font-size: 1.3rem; }
-      .tab-btn { font-size: 0.75rem; padding: 0.6rem 0.5rem; }
-    }
-  </style>
-</head>
-<body>
-
-<nav>
-  <a href="index.html" class="logo">
-    <i class="fas fa-link"></i> LinkQueue
-  </a>
-  <div class="nav-links">
-    <a href="index.html">Home</a>
-    <a href="login.html">Login</a>
-    <a href="register.html">Register</a>
-  </div>
-</nav>
-
-<div class="container">
-  <div class="join-container">
-    <!-- Queue Info Display -->
-    <div class="glass queue-info-card" id="queueInfoCard">
-      <div class="queue-icon">
-        <i class="fas fa-ticket-alt"></i>
-      </div>
-      <div class="queue-name-large" id="queueNameDisplay">Loading queue...</div>
-      <div class="queue-description" id="queueDescriptionDisplay"></div>
-      <div class="queue-detail" id="queueDetails">
-        <span class="detail-badge"><i class="fas fa-users"></i> <span id="participantCount">0</span> waiting</span>
-        <span class="detail-badge"><i class="fas fa-clock"></i> <span id="expiryInfo">Loading...</span></span>
-      </div>
-    </div>
-
-    <!-- Options Card -->
-    <div class="glass options-card" id="optionsCard">
-      <div class="option-tabs">
-        <button class="tab-btn active" data-tab="login"><i class="fas fa-sign-in-alt"></i> Login</button>
-        <button class="tab-btn" data-tab="register"><i class="fas fa-user-plus"></i> Register</button>
-        <button class="tab-btn" data-tab="guest"><i class="fas fa-user-friends"></i> Guest</button>
-      </div>
-
-      <!-- Login Tab -->
-      <div id="loginTab" class="tab-content active">
-        <form id="loginForm">
-          <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="loginEmail" placeholder="Email Address" required>
-          </div>
-          <div class="input-group password-wrapper">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="loginPassword" placeholder="Password" required>
-            <button type="button" class="toggle-password" data-target="loginPassword">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <button type="submit" class="btn-primary" id="loginBtn">
-            <i class="fas fa-arrow-right-to-bracket"></i> Login & Join Queue
-          </button>
-        </form>
-        <div id="loginError" class="error-msg"></div>
-      </div>
-
-      <!-- Register Tab -->
-      <div id="registerTab" class="tab-content">
-        <form id="registerForm">
-          <div class="input-group">
-            <i class="fas fa-user"></i>
-            <input type="text" id="regName" placeholder="Full Name" required>
-          </div>
-          <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="regEmail" placeholder="Email Address" required>
-          </div>
-          <div class="input-group password-wrapper">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="regPassword" placeholder="Password (min 4 characters)" required>
-            <button type="button" class="toggle-password" data-target="regPassword">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <button type="submit" class="btn-primary" id="registerBtn">
-            <i class="fas fa-user-plus"></i> Register & Join Queue
-          </button>
-        </form>
-        <div id="registerError" class="error-msg"></div>
-      </div>
-
-      <!-- Guest Tab -->
-      <div id="guestTab" class="tab-content">
-        <form id="guestForm">
-          <div class="input-group">
-            <i class="fas fa-user"></i>
-            <input type="text" id="guestName" placeholder="Your Full Name *" required>
-          </div>
-          <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="guestEmail" placeholder="Email Address (optional)">
-          </div>
-          <div class="input-group">
-            <i class="fas fa-phone"></i>
-            <input type="tel" id="guestPhone" placeholder="Phone Number (optional)">
-          </div>
-          <button type="submit" class="btn-primary" id="guestBtn">
-            <i class="fas fa-user-check"></i> Continue as Guest
-          </button>
-        </form>
-        <div id="guestError" class="error-msg"></div>
-      </div>
-
-      <div class="link-hint">
-        <i class="fas fa-info-circle"></i> After joining, you'll see your real-time position and who's ahead/behind you
-      </div>
-    </div>
-  </div>
-</div>
-
-<script>
-  const API_BASE = 'http://localhost:3000/api';
-  let currentQueueId = null;
-  let currentQueueData = null;
-
-  function showToast(message, isError = false) {
-    let existingToast = document.querySelector('.toast');
-    if (existingToast) existingToast.remove();
-    let toast = document.createElement('div');
-    toast.className = 'toast' + (isError ? ' error' : '');
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
-  }
-
-  function setButtonLoading(btn, isLoading, originalText) {
-    if (!btn) return;
-    if (isLoading) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing...';
-    } else {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
-    }
-  }
-
-  // Password toggle
-  document.querySelectorAll('.toggle-password').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const targetId = this.getAttribute('data-target');
-      const input = document.getElementById(targetId);
-      if (input) {
-        const type = input.type === 'password' ? 'text' : 'password';
-        input.type = type;
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-      }
-    });
-  });
-
-  // Fetch queue info from API
-  async function fetchQueueInfo(queueId) {
-    try {
-      console.log('Fetching queue:', `${API_BASE}/queues/${queueId}`);
-      const response = await fetch(`${API_BASE}/queues/${queueId}`);
-      const data = await response.json();
-      
-      console.log('Queue API response:', data);
-      
-      if (!response.ok || !data.success) {
-        throw new Error(data.message || 'Queue not found');
-      }
-      
-      return data.queue;
-    } catch (error) {
-      console.error('Error fetching queue:', error);
-      return null;
-    }
-  }
-
-  // Join queue via API
-  async function joinQueueAPI(name, email, phone, isGuest = true, token = null) {
-    try {
-      const headers = { 'Content-Type': 'application/json' };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
-      
-      const response = await fetch(`${API_BASE}/queues/${currentQueueId}/join`, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify({ name, email, phone, isGuest })
-      });
-      
-      const data = await response.json();
-      console.log('Join response:', data);
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Failed to join queue');
-      }
-      
-      return { success: true, data: data };
-    } catch (error) {
-      console.error('Join error:', error);
-      return { success: false, error: error.message };
-    }
-  }
-
-  // Login via API
-  async function loginAPI(email, password) {
-    try {
-      const response = await fetch(`${API_BASE}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
-      });
-      
-      const data = await response.json();
-      console.log('Login response:', data);
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
-      }
-      
-      return { success: true, data: data };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  // Register via API
-  async function registerAPI(name, email, password) {
-    try {
-      const response = await fetch(`${API_BASE}/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name, email, password, role: 'user' })
-      });
-      
-      const data = await response.json();
-      console.log('Register response:', data);
-      
-      if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
-      }
-      
-      return { success: true, data: data };
-    } catch (error) {
-      return { success: false, error: error.message };
-    }
-  }
-
-  // Update UI with queue info
-  function updateQueueInfoUI(queue) {
-    if (!queue) return false;
-    
-    document.getElementById('queueNameDisplay').innerText = queue.name;
-    if (queue.description) {
-      document.getElementById('queueDescriptionDisplay').innerText = queue.description;
-    }
-    document.getElementById('participantCount').innerText = queue.participantCount || 0;
-    
-    if (queue.isActive) {
-      const expiryDate = new Date(queue.expiresAt);
-      document.getElementById('expiryInfo').innerHTML = `<i class="fas fa-hourglass-half"></i> Expires: ${expiryDate.toLocaleString()}`;
-      return true;
-    } else {
-      document.getElementById('expiryInfo').innerHTML = '<i class="fas fa-ban"></i> Queue Expired';
-      document.getElementById('optionsCard').style.opacity = '0.5';
-      document.getElementById('optionsCard').style.pointerEvents = 'none';
-      document.getElementById('optionsCard').innerHTML = `
-        <div class="expired-message">
-          <i class="fas fa-clock"></i>
-          <h3>Queue Expired</h3>
-          <p>This queue is no longer accepting participants.</p>
-          <a href="index.html" class="btn-outline" style="margin-top: 1rem;">Go Home</a>
-        </div>
-      `;
-      return false;
-    }
-  }
-
-  // Redirect to queue status page
-  function redirectToQueueStatus() {
-    window.location.href = `queue-status.html?join=${currentQueueId}`;
-  }
-
-  // Tab switching
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.classList.remove('active');
-    });
-    document.getElementById(tabId + 'Tab').classList.add('active');
-    
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.remove('active');
-    });
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-  }
-
-  // Initialize page
-  async function init() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let queueId = urlParams.get('join') || urlParams.get('q');
-    
-    console.log('Queue ID from URL:', queueId);
-    
-    if (!queueId) {
-      document.getElementById('queueNameDisplay').innerText = 'Invalid Queue Link';
-      document.getElementById('optionsCard').style.display = 'none';
-      showToast('Invalid queue link. Please check the URL and try again.', true);
-      return;
-    }
-    
-    currentQueueId = queueId;
-    
-    // Show loading state
-    document.getElementById('queueNameDisplay').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading queue...';
-    
-    // Fetch queue info
-    const queue = await fetchQueueInfo(currentQueueId);
-    if (!queue) {
-      document.getElementById('queueNameDisplay').innerText = 'Queue Not Found';
-      document.getElementById('optionsCard').style.display = 'none';
-      showToast('This queue does not exist or has been deleted.', true);
-      return;
-    }
-    
-    const isActive = updateQueueInfoUI(queue);
-    if (!isActive) return;
-    
-    // Check if user already has a participant session
-    const existingParticipant = localStorage.getItem('my_participant_session');
-    if (existingParticipant) {
-      try {
-        const part = JSON.parse(existingParticipant);
-        if (part.queueId === currentQueueId) {
-          showToast(`You are already in "${queue.name}"! Redirecting...`);
-          setTimeout(() => redirectToQueueStatus(), 2000);
-          return;
-        }
-      } catch(e) {}
-    }
-    
-    // Check if user is already logged in
-    const token = localStorage.getItem('auth_token');
-    const session = localStorage.getItem('linkqueue_session');
-    if (token && session) {
-      try {
-        const user = JSON.parse(session);
-        if (user.loggedInAt && (Date.now() - user.loggedInAt) < 24 * 60 * 60 * 1000) {
-          document.getElementById('loginEmail').value = user.email;
-          showToast(`Welcome back ${user.name}! Enter your password to join.`);
-        }
-      } catch(e) {}
-    }
-  }
-
-  // Setup event listeners
-  function setupEventListeners() {
-    // Tab switching
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => {
-        switchTab(btn.getAttribute('data-tab'));
-      });
-    });
-
-    // Login form
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-      const password = document.getElementById('loginPassword').value;
-      const btn = document.getElementById('loginBtn');
-      const originalText = btn.innerHTML;
-      
-      if (!email || !password) {
-        showToast('Please enter email and password', true);
-        return;
-      }
-      
-      setButtonLoading(btn, true, originalText);
-      
-      const loginResult = await loginAPI(email, password);
-      if (!loginResult.success) {
-        document.getElementById('loginError').innerText = loginResult.error;
-        showToast(loginResult.error, true);
-        setButtonLoading(btn, false, originalText);
-        return;
-      }
-      
-      // Store session
-      localStorage.setItem('auth_token', loginResult.data.token);
-      localStorage.setItem('linkqueue_session', JSON.stringify({
-        userId: loginResult.data.user.userId,
-        email: loginResult.data.user.email,
-        name: loginResult.data.user.name,
-        role: loginResult.data.user.role,
-        loggedInAt: Date.now()
-      }));
-      
-      // Join queue
-      const joinResult = await joinQueueAPI(loginResult.data.user.name, email, null, false, loginResult.data.token);
-      if (joinResult.success) {
-        localStorage.setItem('my_participant_session', JSON.stringify({
-          queueId: currentQueueId,
-          participantId: joinResult.data.participant.participantId,
-          queueName: joinResult.data.participant.queueName,
-          participantName: loginResult.data.user.name
-        }));
-        showToast(joinResult.data.message);
-        setTimeout(() => redirectToQueueStatus(), 1500);
-      } else {
-        document.getElementById('loginError').innerText = joinResult.error;
-        showToast(joinResult.error, true);
-        setButtonLoading(btn, false, originalText);
-      }
-    });
-
-    // Register form
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim().toLowerCase();
-      const password = document.getElementById('regPassword').value;
-      const btn = document.getElementById('registerBtn');
-      const originalText = btn.innerHTML;
-      
-      if (!name || !email || !password) {
-        showToast('Please fill all fields', true);
-        return;
-      }
-      
-      if (password.length < 4) {
-        showToast('Password must be at least 4 characters', true);
-        return;
-      }
-      
-      setButtonLoading(btn, true, originalText);
-      
-      const registerResult = await registerAPI(name, email, password);
-      if (!registerResult.success) {
-        document.getElementById('registerError').innerText = registerResult.error;
-        showToast(registerResult.error, true);
-        setButtonLoading(btn, false, originalText);
-        return;
-      }
-      
-      // Store session
-      localStorage.setItem('auth_token', registerResult.data.token);
-      localStorage.setItem('linkqueue_session', JSON.stringify({
-        userId: registerResult.data.user.userId,
-        email: registerResult.data.user.email,
-        name: registerResult.data.user.name,
-        role: registerResult.data.user.role,
-        loggedInAt: Date.now()
-      }));
-      
-      // Join queue
-      const joinResult = await joinQueueAPI(name, email, null, false, registerResult.data.token);
-      if (joinResult.success) {
-        localStorage.setItem('my_participant_session', JSON.stringify({
-          queueId: currentQueueId,
-          participantId: joinResult.data.participant.participantId,
-          queueName: joinResult.data.participant.queueName,
-          participantName: name
-        }));
-        showToast(`Account created! ${joinResult.data.message}`);
-        setTimeout(() => redirectToQueueStatus(), 1500);
-      } else {
-        document.getElementById('registerError').innerText = joinResult.error;
-        showToast(joinResult.error, true);
-        setButtonLoading(btn, false, originalText);
-      }
-    });
-
-    // Guest form
-    document.getElementById('guestForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('guestName').value.trim();
-      const email = document.getElementById('guestEmail').value.trim();
-      const phone = document.getElementById('guestPhone').value.trim();
-      const btn = document.getElementById('guestBtn');
-      const originalText = btn.innerHTML;
-      
-      if (!name) {
-        document.getElementById('guestError').innerText = 'Please enter your name';
-        showToast('Please enter your name', true);
-        return;
-      }
-      
-      setButtonLoading(btn, true, originalText);
-      
-      const joinResult = await joinQueueAPI(name, email || null, phone || null, true);
-      if (joinResult.success) {
-        localStorage.setItem('my_participant_session', JSON.stringify({
-          queueId: currentQueueId,
-          participantId: joinResult.data.participant.participantId,
-          queueName: joinResult.data.participant.queueName,
-          participantName: name
-        }));
-        showToast(joinResult.data.message);
-        setTimeout(() => redirectToQueueStatus(), 1500);
-      } else {
-        document.getElementById('guestError').innerText = joinResult.error;
-        showToast(joinResult.error, true);
-        setButtonLoading(btn, false, originalText);
-      }
-    });
-  }
-
-  // Start the app
   setupEventListeners();
   init();
 </script>
