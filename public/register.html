@@ -22,8 +22,8 @@
     .card-subtitle { text-align: center; opacity: 0.7; margin-bottom: 2rem; font-size: 0.9rem; }
     .input-group { position: relative; margin: 0.8rem 0; }
     .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #22D3EE; opacity: 0.7; z-index: 1; }
-    input, select { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.9rem 1rem 0.9rem 2.8rem; border-radius: 1rem; color: white; font-size: 0.95rem; outline: none; width: 100%; transition: all 0.2s; }
-    input:focus, select:focus { border-color: #22D3EE; box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2); }
+    input { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.9rem 1rem 0.9rem 2.8rem; border-radius: 1rem; color: white; font-size: 0.95rem; outline: none; width: 100%; transition: all 0.2s; }
+    input:focus { border-color: #22D3EE; box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2); }
     input.error { border-color: #ff4757; }
     input.success { border-color: #22D3EE; }
     .password-wrapper { position: relative; }
@@ -36,93 +36,26 @@
     .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s ease; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3); }
     .toast.error { background: #ff4757; color: white; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-    .role-select { margin: 0.6rem 0; }
-    .role-select label { display: block; margin-bottom: 0.3rem; font-size: 0.85rem; opacity: 0.8; }
     hr { border-color: rgba(34, 211, 238, 0.2); margin: 1.5rem 0; }
     
-    /* ✅ New styles for password strength */
-    .password-requirements {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 1rem;
-      padding: 1rem;
-      margin: 1rem 0;
-      font-size: 0.85rem;
-    }
-    
-    .password-requirements h4 {
-      margin-bottom: 0.5rem;
-      color: #22D3EE;
-      font-weight: 600;
-    }
-    
-    .requirement {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin: 0.3rem 0;
-      opacity: 0.7;
-      transition: all 0.2s;
-    }
-    
-    .requirement.met {
-      opacity: 1;
-      color: #22D3EE;
-    }
-    
-    .requirement i {
-      font-size: 0.8rem;
-      width: 16px;
-    }
-    
-    .requirement.met i {
-      color: #22D3EE;
-    }
-    
-    .requirement:not(.met) i {
-      color: #ff4757;
-    }
-    
-    .password-strength-meter {
-      height: 4px;
-      background: rgba(255, 255, 255, 0.1);
-      border-radius: 2px;
-      margin: 0.5rem 0;
-      overflow: hidden;
-    }
-    
-    .password-strength-fill {
-      height: 100%;
-      width: 0%;
-      transition: width 0.3s ease, background 0.3s ease;
-      border-radius: 2px;
-    }
-    
+    /* Password strength styles */
+    .password-requirements { background: rgba(0, 0, 0, 0.3); border-radius: 1rem; padding: 1rem; margin: 1rem 0; font-size: 0.85rem; }
+    .password-requirements h4 { margin-bottom: 0.5rem; color: #22D3EE; font-weight: 600; }
+    .requirement { display: flex; align-items: center; gap: 0.5rem; margin: 0.3rem 0; opacity: 0.7; transition: all 0.2s; }
+    .requirement.met { opacity: 1; color: #22D3EE; }
+    .requirement i { font-size: 0.8rem; width: 16px; }
+    .requirement.met i { color: #22D3EE; }
+    .requirement:not(.met) i { color: #ff4757; }
+    .password-strength-meter { height: 4px; background: rgba(255, 255, 255, 0.1); border-radius: 2px; margin: 0.5rem 0; overflow: hidden; }
+    .password-strength-fill { height: 100%; width: 0%; transition: width 0.3s ease, background 0.3s ease; border-radius: 2px; }
     .strength-weak { background: #ff4757; width: 25%; }
     .strength-fair { background: #ffa502; width: 50%; }
     .strength-good { background: #eccc68; width: 75%; }
     .strength-strong { background: #22D3EE; width: 100%; }
-    
-    .password-match-indicator {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.3rem;
-      font-size: 0.8rem;
-    }
-    
-    .password-match-indicator i {
-      position: static;
-      transform: none;
-      color: inherit;
-    }
-    
-    .match-success {
-      color: #22D3EE;
-    }
-    
-    .match-error {
-      color: #ff4757;
-    }
+    .password-match-indicator { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.3rem; font-size: 0.8rem; }
+    .password-match-indicator i { position: static; transform: none; color: inherit; }
+    .match-success { color: #22D3EE; }
+    .match-error { color: #ff4757; }
     
     @media (max-width: 768px) {
       .container { padding: 1rem; }
@@ -153,23 +86,23 @@
     <form id="registerForm">
       <div class="input-group">
         <i class="fas fa-user"></i>
-        <input type="text" id="regName" placeholder="Full Name" required autocomplete="off">
+        <input type="text" id="regName" placeholder="Full Name" required autocomplete="name">
       </div>
       
       <div class="input-group">
         <i class="fas fa-envelope"></i>
-        <input type="email" id="regEmail" placeholder="Email Address" required autocomplete="off">
+        <input type="email" id="regEmail" placeholder="Email Address" required autocomplete="email">
       </div>
       
       <div class="input-group password-wrapper">
         <i class="fas fa-lock"></i>
-        <input type="password" id="regPassword" placeholder="Password" required>
+        <input type="password" id="regPassword" placeholder="Password" required autocomplete="new-password">
         <button type="button" class="toggle-password" data-target="regPassword">
           <i class="fas fa-eye"></i>
         </button>
       </div>
       
-      <!-- ✅ Password Requirements Section -->
+      <!-- Password Requirements Section -->
       <div class="password-requirements" id="passwordRequirements" style="display: none;">
         <h4><i class="fas fa-shield-alt"></i> Password Requirements</h4>
         <div class="requirement" id="reqLength">
@@ -199,21 +132,20 @@
         <div id="strengthText" style="font-size: 0.8rem; opacity: 0.7;">Enter a password</div>
       </div>
       
-      <!-- ✅ Confirm Password Field -->
+      <!-- Confirm Password Field -->
       <div class="input-group password-wrapper">
         <i class="fas fa-check-circle"></i>
-        <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required>
+        <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required autocomplete="new-password">
         <button type="button" class="toggle-password" data-target="regConfirmPassword">
           <i class="fas fa-eye"></i>
         </button>
       </div>
       
-      <!-- ✅ Password Match Indicator -->
+      <!-- Password Match Indicator -->
       <div class="password-match-indicator" id="passwordMatchIndicator" style="display: none;">
         <i class="fas fa-times-circle"></i>
         <span>Passwords do not match</span>
       </div>
-      
 
       <button type="submit" class="btn-primary" id="registerBtn">
         <i class="fas fa-check-circle"></i> Register
@@ -273,39 +205,26 @@ function setLoading(btn, loading) {
 
 /* ================= API Helper ================= */
 async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
-  const headers = {
-    'Content-Type': 'application/json'
-  };
-
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
-  }
+  const headers = { 'Content-Type': 'application/json' };
+  if (token) headers['Authorization'] = `Bearer ${token}`;
 
   const url = `${API_BASE}${endpoint}`;
   console.log(`📡 ${method} ${url}`);
 
-  const res = await fetch(url, {
-    method,
-    headers,
-    body: body ? JSON.stringify(body) : null
-  });
-
+  const res = await fetch(url, { method, headers, body: body ? JSON.stringify(body) : null });
   const data = await res.json().catch(() => ({}));
 
-  if (!res.ok) {
-    throw new Error(data.error || data.message || 'Request failed');
-  }
-
+  if (!res.ok) throw new Error(data.error || data.message || 'Request failed');
   return data;
 }
 
 /* ================= Register ================= */
-async function registerUser(name, email, password, role) {
+async function registerUser(name, email, password) {
   return await apiRequest('/register', 'POST', {
     name: name.trim(),
     email: email.trim().toLowerCase(),
-    password,
-    role
+    password
+    // role defaults to 'user' on backend
   });
 }
 
@@ -330,16 +249,10 @@ async function checkExistingSession() {
 
   try {
     const sessionData = JSON.parse(session);
-
-    if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) {
-      throw new Error('Session expired');
-    }
-
+    if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) throw new Error('Session expired');
     await apiRequest('/my-queues', 'GET', null, token);
-
     redirectUser(sessionData.role);
     return true;
-
   } catch (err) {
     console.log('Session invalid:', err.message);
     localStorage.removeItem('auth_token');
@@ -350,55 +263,37 @@ async function checkExistingSession() {
 
 /* ================= Redirect ================= */
 function redirectUser(role) {
-  if (role === 'admin') {
-    window.location.href = 'admin-dashboard.html';
-  } else {
-    window.location.href = 'user-dashboard.html';
-  }
+  window.location.href = role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
 }
 
-/* ================= ✅ Password Strength Validation ================= */
+/* ================= Password Strength Validation ================= */
 function validatePassword(password) {
-  const requirements = {
+  return {
     length: password.length >= 8,
     uppercase: /[A-Z]/.test(password),
     lowercase: /[a-z]/.test(password),
     number: /[0-9]/.test(password),
     special: /[!@#$%^&*(),.?":{}|<>]/.test(password)
   };
-  
-  return requirements;
 }
 
 function updatePasswordStrength(password) {
   const requirements = validatePassword(password);
   const metCount = Object.values(requirements).filter(v => v).length;
   
-  // Update requirement indicators
   document.getElementById('reqLength').classList.toggle('met', requirements.length);
-  document.getElementById('reqLength').querySelector('i').className = 
-    requirements.length ? 'fas fa-check-circle' : 'fas fa-times-circle';
-  
+  document.getElementById('reqLength').querySelector('i').className = requirements.length ? 'fas fa-check-circle' : 'fas fa-times-circle';
   document.getElementById('reqUppercase').classList.toggle('met', requirements.uppercase);
-  document.getElementById('reqUppercase').querySelector('i').className = 
-    requirements.uppercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
-  
+  document.getElementById('reqUppercase').querySelector('i').className = requirements.uppercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
   document.getElementById('reqLowercase').classList.toggle('met', requirements.lowercase);
-  document.getElementById('reqLowercase').querySelector('i').className = 
-    requirements.lowercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
-  
+  document.getElementById('reqLowercase').querySelector('i').className = requirements.lowercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
   document.getElementById('reqNumber').classList.toggle('met', requirements.number);
-  document.getElementById('reqNumber').querySelector('i').className = 
-    requirements.number ? 'fas fa-check-circle' : 'fas fa-times-circle';
-  
+  document.getElementById('reqNumber').querySelector('i').className = requirements.number ? 'fas fa-check-circle' : 'fas fa-times-circle';
   document.getElementById('reqSpecial').classList.toggle('met', requirements.special);
-  document.getElementById('reqSpecial').querySelector('i').className = 
-    requirements.special ? 'fas fa-check-circle' : 'fas fa-times-circle';
+  document.getElementById('reqSpecial').querySelector('i').className = requirements.special ? 'fas fa-check-circle' : 'fas fa-times-circle';
   
-  // Update strength meter
   const strengthFill = document.getElementById('strengthFill');
   const strengthText = document.getElementById('strengthText');
-  
   strengthFill.className = 'password-strength-fill';
   
   if (password.length === 0) {
@@ -417,7 +312,6 @@ function updatePasswordStrength(password) {
     strengthFill.classList.add('strength-strong');
     strengthText.textContent = 'Strong password!';
   }
-  
   return requirements;
 }
 
@@ -425,7 +319,6 @@ function isPasswordValid(requirements) {
   return Object.values(requirements).every(v => v === true);
 }
 
-/* ================= ✅ Password Match Validation ================= */
 function checkPasswordMatch() {
   const password = document.getElementById('regPassword').value;
   const confirmPassword = document.getElementById('regConfirmPassword').value;
@@ -448,44 +341,35 @@ function checkPasswordMatch() {
     indicator.querySelector('i').className = 'fas fa-times-circle';
     indicator.querySelector('span').textContent = 'Passwords do not match';
   }
-  
   return match;
 }
 
-/* ================= Password Toggle ================= */
+// Password toggle
 document.querySelectorAll('.toggle-password').forEach(btn => {
   btn.addEventListener('click', () => {
     const target = document.getElementById(btn.dataset.target);
     if (!target) return;
-
     const isPassword = target.type === 'password';
     target.type = isPassword ? 'text' : 'password';
-
     const icon = btn.querySelector('i');
     icon.classList.toggle('fa-eye');
     icon.classList.toggle('fa-eye-slash');
   });
 });
 
-/* ================= ✅ Password Input Events ================= */
+// Password input events
 const passwordInput = document.getElementById('regPassword');
 const confirmInput = document.getElementById('regConfirmPassword');
 const requirementsDiv = document.getElementById('passwordRequirements');
 
-passwordInput.addEventListener('focus', () => {
-  requirementsDiv.style.display = 'block';
-});
-
+passwordInput.addEventListener('focus', () => requirementsDiv.style.display = 'block');
 passwordInput.addEventListener('input', () => {
   updatePasswordStrength(passwordInput.value);
-  if (confirmInput.value) {
-    checkPasswordMatch();
-  }
+  if (confirmInput.value) checkPasswordMatch();
 });
-
 confirmInput.addEventListener('input', checkPasswordMatch);
 
-/* ================= Form Submit ================= */
+// Form submit
 document.getElementById('registerForm').addEventListener('submit', async (e) => {
   e.preventDefault();
 
@@ -493,44 +377,30 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const email = document.getElementById('regEmail').value;
   const password = document.getElementById('regPassword').value;
   const confirmPassword = document.getElementById('regConfirmPassword').value;
-  const role = document.getElementById('regRole').value;
-
   const btn = document.getElementById('registerBtn');
 
-  // Basic validation
   if (!name || !email || !password || !confirmPassword) {
     return showToast('All fields are required', true);
   }
-
   if (!email.includes('@')) {
     return showToast('Invalid email address', true);
   }
 
-  // ✅ Strong password validation
   const requirements = validatePassword(password);
   if (!isPasswordValid(requirements)) {
     requirementsDiv.style.display = 'block';
     return showToast('Password does not meet all requirements', true);
   }
-
-  // ✅ Password match validation
   if (password !== confirmPassword) {
     return showToast('Passwords do not match', true);
   }
 
   try {
     setLoading(btn, true);
-
-    const data = await registerUser(name, email, password, role);
-
+    const data = await registerUser(name, email, password);
     saveSession(data);
-
     showToast('Registration successful! Redirecting...');
-
-    setTimeout(() => {
-      redirectUser(data.user.role);
-    }, 1200);
-
+    setTimeout(() => redirectUser(data.user.role), 1200);
   } catch (err) {
     console.error('Registration error:', err);
     showToast(err.message || 'Registration failed', true);
@@ -539,7 +409,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   }
 });
 
-/* ================= Init ================= */
+// Init
 checkExistingSession();
 </script>
 </body>
