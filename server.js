@@ -536,6 +536,115 @@ app.delete('/api/queues/:queueId', authenticateToken, async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
+// ==================== ADMIN ROUTES ====================
+// Admin middleware
+function requireAdmin(req, res, next) {
+    const authHeader = req.headers['authorization'];
+    const token = authHeader && authHeader.split(' ')[1];
+    if (!token) return res.status(401).json({ error: 'Access denied' });
+    
+    const decoded = verifyToken(token);
+    if (!decoded) return res.status(403).json({ error: 'Invalid token' });
+    if (decoded.role !== 'admin') return res.status(403).json({ error: 'Admin access required' });
+    
+    req.user = decoded;
+    next();
+}
+
+// Get all users (admin only)
+app.get('/api/admin/users', requireAdmin, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT u.*, 
+             (SELECT COUNT(*) FROM queues WHERE creator_email = u.email) as queue_count
+             FROM users u ORDER BY u.created_at DESC`
+        );
+        res.json({ success: true, users: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all queues (admin only)
+app.get('/api/admin/queues', requireAdmin, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT q.*, 
+             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status = 'waiting') as waiting_count
+             FROM queues q ORDER BY q.created_at DESC`
+        );
+        res.json({ success: true, queues: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Get all participants (admin only)
+app.get('/api/admin/participants', requireAdmin, async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT p.*, q.name as queue_name, q.queue_id as queue_ref_id
+             FROM participants p 
+             JOIN queues q ON p.queue_id = q.id 
+             ORDER BY p.joined_at DESC`
+        );
+        res.json({ success: true, participants: result.rows });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete user (admin only)
+app.delete('/api/admin/users/:userId', requireAdmin, async (req, res) => {
+    try {
+        // Don't allow deleting the last admin
+        const adminCheck = await pool.query('SELECT COUNT(*) FROM users WHERE role = $1', ['admin']);
+        const userToDelete = await pool.query('SELECT role FROM users WHERE user_id = $1', [req.params.userId]);
+        
+        if (userToDelete.rows[0]?.role === 'admin' && parseInt(adminCheck.rows[0].count) <= 1) {
+            return res.status(400).json({ error: 'Cannot delete the last admin' });
+        }
+        
+        await pool.query('DELETE FROM users WHERE user_id = $1', [req.params.userId]);
+        res.json({ success: true, message: 'User deleted' });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Update user role (admin only)
+app.put('/api/admin/users/:userId/role', requireAdmin, async (req, res) => {
+    const { role } = req.body;
+    if (!['admin', 'user'].includes(role)) {
+        return res.status(400).json({ error: 'Invalid role' });
+    }
+    try {
+        await pool.query('UPDATE users SET role = $1 WHERE user_id = $2', [role, req.params.userId]);
+        res.json({ success: true, message: 'Role updated' });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete queue (admin only)
+app.delete('/api/admin/queues/:queueId', requireAdmin, async (req, res) => {
+    try {
+        await pool.query('DELETE FROM queues WHERE queue_id = $1', [req.params.queueId]);
+        res.json({ success: true, message: 'Queue deleted' });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
+
+// Delete participant (admin only)
+app.delete('/api/admin/participants/:participantId', requireAdmin, async (req, res) => {
+    try {
+        await pool.query('DELETE FROM participants WHERE participant_id = $1', [req.params.participantId]);
+        res.json({ success: true, message: 'Participant removed' });
+    } catch (err) {
+        res.status(500).json({ error: 'Server error' });
+    }
+});
 
 // ==================== FRONTEND ROUTES ====================
 app.get('*', (req, res) => {
