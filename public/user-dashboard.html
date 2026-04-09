@@ -119,7 +119,17 @@
 </div>
 
 <script>
-  const API_BASE = 'http://localhost:3000/api';
+  // ✅ FIXED: Dynamic API configuration that works in both development and production
+  const API_BASE = (() => {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3000/api';
+    }
+    return '/api';
+  })();
+  
+  console.log('🌐 API Base URL:', API_BASE);
+  
   let currentUser = null;
   let autoRefreshInterval = null;
 
@@ -146,13 +156,17 @@
     if (token) {
       headers['Authorization'] = `Bearer ${token}`;
     }
-    const response = await fetch(`${API_BASE}${endpoint}`, {
+    
+    const url = `${API_BASE}${endpoint}`;
+    console.log(`📡 ${options.method || 'GET'} ${url}`);
+    
+    const response = await fetch(url, {
       ...options,
       headers
     });
     const data = await response.json();
     if (!response.ok) {
-      throw new Error(data.message || 'Request failed');
+      throw new Error(data.error || data.message || 'Request failed');
     }
     return data;
   }
@@ -232,6 +246,12 @@
     document.getElementById('queueModal').style.display = 'none';
   }
 
+  // ✅ Generate live link based on current origin
+  function generateQueueLink(queueId) {
+    const baseUrl = window.location.origin;
+    return `${baseUrl}/join-queue.html?join=${queueId}`;
+  }
+
   async function renderDashboard() {
     const queues = await loadUserQueues();
     const activeQueues = queues.filter(q => new Date(q.expires_at) > new Date() && q.status === 'active');
@@ -254,7 +274,7 @@
     } else {
       myQueuesList.innerHTML = queues.map(queue => {
         const isActive = new Date(queue.expires_at) > new Date() && queue.status === 'active';
-        const queueLink = `${window.location.origin}/join-queue.html?join=${queue.queue_id}`;
+        const queueLink = generateQueueLink(queue.queue_id);
         return `
           <div class="queue-item">
             <div class="queue-header">
@@ -281,7 +301,7 @@
           navigator.clipboard.writeText(link);
           btn.innerText = 'Copied!';
           setTimeout(() => btn.innerText = 'Copy', 1500);
-          showToast('Link copied to clipboard!');
+          showToast('📋 Link copied to clipboard!');
         });
       });
       
@@ -311,20 +331,28 @@
       document.querySelectorAll('.serve-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const qid = btn.getAttribute('data-id');
-          const result = await serveNext(qid);
-          showToast(result.message);
-          renderDashboard();
-          updateMyQueueStatus();
+          try {
+            const result = await serveNext(qid);
+            showToast(`✅ ${result.message}`);
+            await renderDashboard();
+            await updateMyQueueStatus();
+          } catch(e) {
+            showToast(e.message, true);
+          }
         });
       });
       
       document.querySelectorAll('.delete-queue-btn').forEach(btn => {
         btn.addEventListener('click', async () => {
           const qid = btn.getAttribute('data-id');
-          if (confirm('Delete this queue permanently?')) {
-            await deleteQueue(qid);
-            renderDashboard();
-            showToast('Queue deleted');
+          if (confirm('Delete this queue permanently? This cannot be undone.')) {
+            try {
+              await deleteQueue(qid);
+              showToast('✅ Queue deleted successfully');
+              await renderDashboard();
+            } catch(e) {
+              showToast(e.message, true);
+            }
           }
         });
       });
@@ -356,7 +384,7 @@
         
         // Calculate estimated wait time (2 minutes per person ahead)
         const waitMinutes = aheadCount * 2;
-        const waitText = waitMinutes > 0 ? `~${waitMinutes} min${waitMinutes > 1 ? 's' : ''}` : 'You are next!';
+        const waitText = waitMinutes > 0 ? `~${waitMinutes} min${waitMinutes > 1 ? 's' : ''}` : '🎉 You are next!';
         
         container.innerHTML = `
           <div class="position-card">
@@ -370,7 +398,7 @@
               <span><i class="fas fa-arrow-down"></i> Behind: ${behindCount}</span>
             </div>
             <div class="progress-bar" style="background: rgba(255,255,255,0.1); border-radius: 1rem; height: 8px; margin-top: 0.5rem;">
-              <div style="width: ${(positionData.position / totalWaiting) * 100}%; background: #22D3EE; border-radius: 1rem; height: 100%;"></div>
+              <div style="width: ${((totalWaiting - positionData.position) / totalWaiting) * 100}%; background: #22D3EE; border-radius: 1rem; height: 100%;"></div>
             </div>
             <div class="queue-info" style="margin-top: 0.5rem;">
               <span class="status-badge status-waiting"><i class="fas fa-clock"></i> Waiting</span>
@@ -448,24 +476,32 @@
         return;
       }
       
+      const btn = document.getElementById('createQueueBtn');
+      const originalText = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
+      
       try {
         const result = await createQueue(name, expiry, description);
-        const queueLink = `${window.location.origin}/join-queue.html?join=${result.queue.queueId}`;
+        const queueLink = generateQueueLink(result.queue.queue_id);
         document.getElementById('createFeedback').innerHTML = `<span style="color:#22D3EE;">✅ Queue "${name}" created!<br><span style="font-size:0.7rem;">Share link: ${queueLink}</span></span>`;
         document.getElementById('queueName').value = '';
         document.getElementById('queueDescription').value = '';
         navigator.clipboard.writeText(queueLink);
-        showToast('Queue created! Link copied to clipboard.');
+        showToast('🎉 Queue created! Link copied to clipboard.');
         await renderDashboard();
-        setTimeout(() => document.getElementById('createFeedback').innerHTML = '', 5000);
+        setTimeout(() => document.getElementById('createFeedback').innerHTML = '', 8000);
       } catch(e) {
         showToast(e.message, true);
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalText;
       }
     });
     
     document.getElementById('refreshStatusBtn').addEventListener('click', async () => {
       await updateMyQueueStatus();
-      showToast('Status refreshed!');
+      showToast('🔄 Status refreshed!');
     });
     
     // Make position stat card clickable
