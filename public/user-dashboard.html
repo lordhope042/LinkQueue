@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* All CSS remains the same as your current version */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
     .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 1.5rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4); }
@@ -18,66 +17,64 @@
     .user-badge { background: #5B21B6; padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
     .logout-btn { background: rgba(220, 38, 38, 0.7); border: none; padding: 0.4rem 1rem; border-radius: 2rem; color: white; cursor: pointer; }
     .dashboard-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; flex-wrap: wrap; gap: 1rem; }
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1rem; margin-bottom: 2rem; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-bottom: 2rem; }
     .stat-card { background: rgba(0, 0, 0, 0.4); padding: 1.2rem; border-radius: 1.2rem; text-align: center; border-left: 3px solid #22D3EE; cursor: pointer; transition: transform 0.2s; }
     .stat-card:hover { transform: translateY(-3px); background: rgba(0, 0, 0, 0.5); }
-    .stat-card i { font-size: 2rem; color: #22D3EE; margin-bottom: 0.5rem; }
+    .stat-card i { font-size: 1.8rem; color: #22D3EE; margin-bottom: 0.5rem; }
     .stat-number { font-size: 1.8rem; font-weight: 800; }
-    .queue-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(380px, 1fr)); gap: 1.5rem; margin-bottom: 2rem; }
-    .queue-card { padding: 1.3rem; }
-    .queue-card h3 { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 1.2rem; }
-    input, textarea { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.7rem 1rem; border-radius: 1rem; color: white; font-size: 0.9rem; outline: none; width: 100%; margin: 0.4rem 0; }
+    .stat-label { font-size: 0.8rem; opacity: 0.7; }
+    .queue-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem; }
+    .queue-card { padding: 1.5rem; }
+    .queue-card h3 { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.2rem; font-size: 1.1rem; }
+    input, textarea { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.8rem 1rem; border-radius: 1rem; color: white; font-size: 0.9rem; outline: none; width: 100%; margin: 0.4rem 0; }
     input:focus, textarea:focus { border-color: #22D3EE; }
-    .btn-primary { background: linear-gradient(95deg, #5B21B6, #7c3aed); border: none; padding: 0.7rem 1.2rem; border-radius: 2rem; color: white; font-weight: 600; cursor: pointer; width: 100%; transition: transform 0.2s; }
+    .btn { padding: 0.7rem 1.2rem; border-radius: 2rem; cursor: pointer; font-weight: 600; transition: all 0.2s; border: none; }
+    .btn-primary { background: linear-gradient(95deg, #5B21B6, #7c3aed); color: white; width: 100%; }
     .btn-primary:hover:not(:disabled) { transform: translateY(-2px); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-outline { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; transition: all 0.2s; }
+    .btn-outline { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; }
     .btn-outline:hover { background: rgba(34, 211, 238, 0.1); }
-    .btn-danger { background: rgba(220, 38, 38, 0.7); border: none; padding: 0.5rem 1rem; border-radius: 2rem; color: white; cursor: pointer; }
-    .btn-warning { background: rgba(245, 158, 11, 0.7); border: none; padding: 0.5rem 1rem; border-radius: 2rem; color: white; cursor: pointer; }
-    .btn-info { background: rgba(34, 211, 238, 0.2); border: 1px solid #22D3EE; color: #22D3EE; padding: 0.5rem 1rem; border-radius: 2rem; cursor: pointer; }
-    .btn-success { background: rgba(34, 197, 94, 0.7); border: none; padding: 0.5rem 1rem; border-radius: 2rem; color: white; cursor: pointer; }
-    .queue-item { background: rgba(0, 0, 0, 0.3); padding: 0.8rem; border-radius: 1rem; margin-bottom: 0.8rem; border-left: 3px solid #22D3EE; }
-    .queue-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 0.5rem; }
-    .queue-name { font-weight: 700; font-size: 1rem; }
+    .btn-danger { background: rgba(220, 38, 38, 0.7); color: white; }
+    .btn-warning { background: rgba(245, 158, 11, 0.7); color: white; }
+    .btn-info { background: rgba(34, 211, 238, 0.2); border: 1px solid #22D3EE; color: #22D3EE; }
+    .btn-success { background: rgba(34, 197, 94, 0.7); color: white; }
+    .queue-item { background: rgba(0, 0, 0, 0.3); padding: 1rem; border-radius: 1rem; margin-bottom: 0.8rem; border-left: 3px solid #22D3EE; }
+    .queue-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem; }
+    .queue-name { font-weight: 700; }
     .queue-stats { font-size: 0.75rem; opacity: 0.7; }
-    .queue-stage-container { margin: 0.8rem 0; padding: 0.5rem; background: rgba(0,0,0,0.2); border-radius: 0.8rem; }
-    .stage-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.4rem 0; }
+    .stage-container { margin: 0.8rem 0; padding: 0.8rem; background: rgba(0,0,0,0.2); border-radius: 0.8rem; }
+    .stage-row { display: flex; align-items: center; gap: 0.8rem; padding: 0.3rem 0; }
     .stage-icon { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; }
     .stage-icon.serving { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 1px solid #22c55e; }
     .stage-icon.next { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
-    .stage-icon.waiting { background: rgba(34, 211, 238, 0.2); color: #22D3EE; border: 1px solid #22D3EE; }
     .stage-info { flex: 1; }
-    .stage-label { font-size: 0.7rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
-    .stage-name { font-weight: 600; font-size: 0.9rem; }
+    .stage-label { font-size: 0.65rem; opacity: 0.7; text-transform: uppercase; }
+    .stage-name { font-weight: 600; font-size: 0.85rem; }
     .stage-name.empty { opacity: 0.5; font-style: italic; }
     .grace-timer { font-size: 0.7rem; color: #f59e0b; margin-top: 0.2rem; }
-    .grace-timer i { margin-right: 0.3rem; }
-    .waiting-count { font-size: 0.75rem; opacity: 0.7; margin-top: 0.3rem; text-align: center; }
-    .participant-list { max-height: 200px; overflow-y: auto; margin-top: 0.5rem; }
-    .participant { background: rgba(255, 255, 255, 0.05); padding: 0.4rem 0.6rem; border-radius: 0.6rem; margin: 0.3rem 0; display: flex; justify-content: space-between; font-size: 0.8rem; }
-    .participant.serving { background: rgba(34, 197, 94, 0.15); border-left: 3px solid #22c55e; }
-    .participant.next { background: rgba(245, 158, 11, 0.15); border-left: 3px solid #f59e0b; }
-    .link-share { background: #0f172a; padding: 0.4rem; border-radius: 0.6rem; font-size: 0.65rem; word-break: break-all; margin: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
-    .copy-btn { background: #22D3EE; color: #0a0a1f; border: none; padding: 0.2rem 0.6rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.7rem; }
-    .flex-btns { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
-    .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s ease; }
+    .waiting-count { font-size: 0.75rem; opacity: 0.7; margin-top: 0.5rem; text-align: center; }
+    .link-share { background: #0f172a; padding: 0.5rem; border-radius: 0.6rem; font-size: 0.7rem; margin: 0.5rem 0; display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; }
+    .copy-btn { background: #22D3EE; color: #0a0a1f; border: none; padding: 0.3rem 0.8rem; border-radius: 0.5rem; cursor: pointer; font-size: 0.7rem; }
+    .flex-btns { display: flex; gap: 0.4rem; margin-top: 0.5rem; flex-wrap: wrap; }
+    .flex-btns .btn { padding: 0.4rem 0.8rem; font-size: 0.75rem; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s; }
     .toast.error { background: #ff4757; color: white; }
     @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .empty-state { text-align: center; padding: 2rem; opacity: 0.6; }
-    .position-card { background: rgba(0, 0, 0, 0.3); border-radius: 1rem; padding: 1rem; margin-top: 1rem; }
-    .position-number-large { font-size: 3rem; font-weight: 800; color: #22D3EE; text-align: center; }
-    .queue-info { font-size: 0.8rem; text-align: center; margin-top: 0.5rem; opacity: 0.7; }
-    .status-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; }
+    .position-card { background: rgba(0, 0, 0, 0.3); border-radius: 1rem; padding: 1.2rem; }
+    .position-number { font-size: 3rem; font-weight: 800; color: #22D3EE; text-align: center; }
+    .status-badge { display: inline-block; padding: 0.2rem 0.8rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; }
     .status-serving { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
     .status-next { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
     .status-waiting { background: rgba(34, 211, 238, 0.2); color: #22D3EE; }
-    .status-served { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
-    .status-skipped { background: rgba(239, 68, 68, 0.2); color: #ef4444; }
     hr { border-color: rgba(34, 211, 238, 0.2); margin: 1rem 0; }
     .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center; }
-    .modal-content { max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; }
-    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .queue-grid { grid-template-columns: 1fr; } }
+    .modal-content { max-width: 600px; width: 90%; max-height: 80vh; overflow-y: auto; padding: 1.5rem; }
+    .participant-item { background: rgba(255,255,255,0.05); padding: 0.5rem 0.8rem; border-radius: 0.6rem; margin: 0.3rem 0; display: flex; justify-content: space-between; font-size: 0.85rem; }
+    .participant-item.serving { background: rgba(34, 197, 94, 0.15); border-left: 3px solid #22c55e; }
+    .participant-item.next { background: rgba(245, 158, 11, 0.15); border-left: 3px solid #f59e0b; }
+    @media (max-width: 1024px) { .queue-grid { grid-template-columns: 1fr; } .stats-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .stats-grid { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
@@ -88,540 +85,325 @@
     <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
   </div>
 </nav>
+
 <div class="container">
   <div class="dashboard-header">
     <h1><i class="fas fa-tachometer-alt"></i> My Dashboard</h1>
-    <div style="display: flex; gap: 0.5rem;">
-      <button class="btn-outline" id="refreshAllBtn"><i class="fas fa-sync-alt"></i> Refresh All</button>
-    </div>
+    <button class="btn-outline" id="refreshAllBtn"><i class="fas fa-sync-alt"></i> Refresh All</button>
   </div>
 
-  <div class="stats-grid" id="statsGrid">
-    <div class="stat-card" id="myQueuesStat"><i class="fas fa-list"></i><div class="stat-number" id="myQueuesCount">0</div><div>My Queues</div></div>
-    <div class="stat-card" id="totalParticipantsStat"><i class="fas fa-users"></i><div class="stat-number" id="totalParticipantsCount">0</div><div>Total Waiting</div></div>
-    <div class="stat-card" id="activeQueuesStat"><i class="fas fa-clock"></i><div class="stat-number" id="activeQueuesCount">0</div><div>Active Queues</div></div>
-    <div class="stat-card" id="myPositionStat"><i class="fas fa-chart-line"></i><div class="stat-number" id="myPositionCount">—</div><div>My Position</div></div>
+  <!-- Stats Overview -->
+  <div class="stats-grid">
+    <div class="stat-card" id="myQueuesStat"><i class="fas fa-list"></i><div class="stat-number" id="myQueuesCount">0</div><div class="stat-label">My Queues</div></div>
+    <div class="stat-card" id="totalWaitingStat"><i class="fas fa-users"></i><div class="stat-number" id="totalWaitingCount">0</div><div class="stat-label">Total Waiting</div></div>
+    <div class="stat-card" id="activeQueuesStat"><i class="fas fa-play-circle"></i><div class="stat-number" id="activeQueuesCount">0</div><div class="stat-label">Active Queues</div></div>
+    <div class="stat-card" id="myPositionStat"><i class="fas fa-map-pin"></i><div class="stat-number" id="myPositionCount">—</div><div class="stat-label">My Position</div></div>
   </div>
 
+  <!-- Main Grid -->
   <div class="queue-grid">
+    <!-- Create Queue Card -->
     <div class="glass queue-card">
       <h3><i class="fas fa-plus-circle" style="color:#22D3EE;"></i> Create New Queue</h3>
-      <input type="text" id="queueName" placeholder="Queue name (e.g., 'Clinic Waitlist')">
+      <input type="text" id="queueName" placeholder="Queue name">
       <input type="number" id="expiryHours" placeholder="Expiry hours" value="2" min="1" max="72">
       <textarea id="queueDescription" placeholder="Description (optional)" rows="2"></textarea>
-      <button id="createQueueBtn" class="btn-primary"><i class="fas fa-link"></i> Create Queue & Get Link</button>
-      <div id="createFeedback" style="font-size:0.75rem; margin-top:0.5rem;"></div>
+      <button class="btn btn-primary" id="createQueueBtn"><i class="fas fa-link"></i> Create & Copy Link</button>
+      <div id="createFeedback" style="font-size:0.75rem; margin-top:0.5rem; text-align:center;"></div>
     </div>
 
+    <!-- My Queues Card -->
     <div class="glass queue-card">
-      <h3><i class="fas fa-flag-checkered"></i> My Queues</h3>
-      <div id="myQueuesList">
+      <h3><i class="fas fa-list-ul"></i> My Queues</h3>
+      <div id="myQueuesList" style="max-height: 350px; overflow-y: auto;">
         <div class="empty-state"><i class="fas fa-inbox"></i> No queues created yet</div>
       </div>
     </div>
 
+    <!-- My Queue Status Card -->
     <div class="glass queue-card">
       <h3><i class="fas fa-chart-line"></i> My Queue Status</h3>
       <div id="myQueueStatusContent">
-        <div class="empty-state"><i class="fas fa-info-circle"></i> You haven't joined any queue yet.<br>Use a shared queue link to join.</div>
+        <div class="empty-state"><i class="fas fa-info-circle"></i> You haven't joined any queue yet.<br>Use a shared link to join.</div>
       </div>
-      <button id="refreshStatusBtn" class="btn-outline" style="width:100%; margin-top:0.5rem;"><i class="fas fa-sync-alt"></i> Refresh Status</button>
-      <hr>
-      <div style="text-align: center; font-size: 0.7rem; opacity: 0.6;">
-        <i class="fas fa-link"></i> Join a queue using a shared link
-      </div>
+      <button class="btn btn-outline" id="refreshStatusBtn" style="width:100%; margin-top:0.5rem;"><i class="fas fa-sync-alt"></i> Refresh Status</button>
     </div>
   </div>
 </div>
 
-<!-- Queue Details Modal -->
+<!-- Modal -->
 <div id="queueModal" class="modal">
-  <div class="modal-content glass" style="padding: 1.5rem;">
+  <div class="modal-content glass">
     <h3 id="modalTitle"><i class="fas fa-users"></i> Queue Details</h3>
     <div id="modalBody"></div>
-    <button class="btn-outline" onclick="closeModal()" style="margin-top: 1rem; width: 100%;">Close</button>
+    <button class="btn btn-outline" onclick="closeModal()" style="margin-top: 1rem; width: 100%;">Close</button>
   </div>
 </div>
 
 <script>
-  const API_BASE = (() => {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:3000/api';
-    }
-    return '/api';
-  })();
-  
-  console.log('🌐 API Base URL:', API_BASE);
-  
+  // ==================== CONFIG ====================
+  const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+  console.log('🌐 API:', API_BASE);
+
+  // ==================== STATE ====================
   let currentUser = null;
-  let autoRefreshInterval = null;
-  let queuesCache = {};
+  let refreshTimer = null;
 
-  function showToast(message, isError = false) {
-    let existingToast = document.querySelector('.toast');
-    if(existingToast) existingToast.remove();
-    let toast = document.createElement('div');
-    toast.className = 'toast' + (isError ? ' error' : '');
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3000);
+  // ==================== UTILITIES ====================
+  function toast(msg, err = false) {
+    const t = document.createElement('div');
+    t.className = 'toast' + (err ? ' error' : '');
+    t.innerHTML = `<i class="fas fa-${err ? 'exclamation-triangle' : 'check-circle'}"></i> ${msg}`;
+    document.body.appendChild(t);
+    setTimeout(() => t.remove(), 3000);
   }
 
-  function getToken() {
-    return localStorage.getItem('auth_token');
+  function esc(str) {
+    if (!str) return '';
+    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
   }
+
+  function formatTime(seconds) {
+    if (seconds <= 0) return 'Expired';
+    const m = Math.floor(seconds / 60), s = seconds % 60;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  }
+
+  function getToken() { return localStorage.getItem('auth_token'); }
 
   async function apiRequest(endpoint, options = {}) {
     const token = getToken();
     const headers = { 'Content-Type': 'application/json', ...options.headers };
     if (token) headers['Authorization'] = `Bearer ${token}`;
-    
-    const url = `${API_BASE}${endpoint}`;
-    const response = await fetch(url, { ...options, headers });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || data.message || 'Request failed');
+    const res = await fetch(`${API_BASE}${endpoint}`, { ...options, headers });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || 'Request failed');
     return data;
   }
 
+  // ==================== API CALLS ====================
   async function checkSession() {
-    const token = getToken();
-    const session = localStorage.getItem('linkqueue_session');
-    
+    const token = getToken(), session = localStorage.getItem('linkqueue_session');
     if (!token || !session) { window.location.href = 'login.html'; return null; }
-    
     try {
       const user = JSON.parse(session);
-      if (Date.now() - user.loggedInAt > 24 * 60 * 60 * 1000) throw new Error('Session expired');
+      if (Date.now() - user.loggedInAt > 24*60*60*1000) throw new Error('Expired');
       await apiRequest('/my-queues');
       return user;
-    } catch(e) {
-      localStorage.removeItem('auth_token');
-      localStorage.removeItem('linkqueue_session');
-      window.location.href = 'login.html';
-      return null;
-    }
+    } catch { localStorage.clear(); window.location.href = 'login.html'; return null; }
   }
 
-  async function loadUserQueues() {
-    try {
-      const data = await apiRequest('/my-queues');
-      return data.queues || [];
-    } catch(e) { return []; }
+  async function loadQueues() {
+    try { return (await apiRequest('/my-queues')).queues || []; } 
+    catch { return []; }
   }
 
-  async function getEnhancedQueueStatus(queueId) {
-    try {
-      return await apiRequest(`/queues/${queueId}/enhanced-status`);
-    } catch(e) { return null; }
+  async function getEnhancedStatus(queueId) {
+    try { return await apiRequest(`/queues/${queueId}/enhanced-status`); } 
+    catch { return null; }
   }
 
-  async function createQueue(name, expiryHours, description) {
-    return await apiRequest('/queues', { method: 'POST', body: JSON.stringify({ name, expiryHours, description }) });
-  }
-
-  async function deleteQueue(queueId) {
-    return await apiRequest(`/queues/${queueId}`, { method: 'DELETE' });
-  }
-
-  async function serveNext(queueId) {
-    return await apiRequest(`/queues/${queueId}/serve`, { method: 'POST' });
-  }
-
-  async function initializeQueue(queueId) {
-    return await apiRequest(`/queues/${queueId}/initialize`, { method: 'POST' });
-  }
-
-  async function skipNext(queueId) {
-    return await apiRequest(`/queues/${queueId}/skip-next`, { method: 'POST' });
-  }
-
-  async function getParticipantPosition(participantId) {
+  async function getPosition(participantId) {
     try { return await apiRequest(`/participants/${participantId}/position`); } 
-    catch(e) { return null; }
+    catch { return null; }
   }
 
+  async function createQueue(name, expiry, desc) {
+    return apiRequest('/queues', { method: 'POST', body: JSON.stringify({ name, expiryHours: expiry, description: desc }) });
+  }
+
+  async function deleteQueue(id) { return apiRequest(`/queues/${id}`, { method: 'DELETE' }); }
+  async function serveNext(id) { return apiRequest(`/queues/${id}/serve`, { method: 'POST' }); }
+  async function initQueue(id) { return apiRequest(`/queues/${id}/initialize`, { method: 'POST' }); }
+  async function skipNext(id) { return apiRequest(`/queues/${id}/skip-next`, { method: 'POST' }); }
+
+  // ==================== UI HELPERS ====================
   function openModal(title, content) {
     document.getElementById('modalTitle').innerHTML = title;
     document.getElementById('modalBody').innerHTML = content;
     document.getElementById('queueModal').style.display = 'flex';
   }
+  window.closeModal = () => document.getElementById('queueModal').style.display = 'none';
 
-  function closeModal() {
-    document.getElementById('queueModal').style.display = 'none';
-  }
+  function queueLink(id) { return `${location.origin}/join-queue.html?join=${id}`; }
 
-  function generateQueueLink(queueId) {
-    return `${window.location.origin}/join-queue.html?join=${queueId}`;
-  }
+  // ==================== RENDER QUEUES ====================
+  async function renderQueues() {
+    const queues = await loadQueues();
+    const active = queues.filter(q => q.status === 'active' && new Date(q.expires_at) > new Date());
+    const totalWaiting = queues.reduce((s, q) => s + (q.waiting_count || 0), 0);
 
-  function formatTimeRemaining(seconds) {
-    if (seconds <= 0) return 'Expired';
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  }
-
-  async function renderDashboard() {
-    const queues = await loadUserQueues();
-    const activeQueues = queues.filter(q => new Date(q.expires_at) > new Date() && q.status === 'active');
-    const totalParticipants = queues.reduce((sum, q) => sum + (q.waiting_count || 0), 0);
-    
-    document.getElementById('myQueuesCount').innerText = queues.length;
-    document.getElementById('totalParticipantsCount').innerText = totalParticipants;
-    document.getElementById('activeQueuesCount').innerText = activeQueues.length;
+    document.getElementById('myQueuesCount').textContent = queues.length;
+    document.getElementById('totalWaitingCount').textContent = totalWaiting;
+    document.getElementById('activeQueuesCount').textContent = active.length;
     document.getElementById('userNameDisplay').innerHTML = `<i class="fas fa-user-circle"></i> ${currentUser.name}`;
-    
-    const myQueuesList = document.getElementById('myQueuesList');
-    if (queues.length === 0) {
-      myQueuesList.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i> No queues created yet.</div>';
-    } else {
-      const queueItems = await Promise.all(queues.map(async queue => {
-        const isActive = new Date(queue.expires_at) > new Date() && queue.status === 'active';
-        const queueLink = generateQueueLink(queue.queue_id);
-        
-        let enhancedStatus = null;
-        let stageHtml = '';
-        
-        if (isActive) {
-          try {
-            enhancedStatus = await getEnhancedQueueStatus(queue.queue_id);
-            if (enhancedStatus && enhancedStatus.success) {
-              const serving = enhancedStatus.serving;
-              const next = enhancedStatus.next;
-              const waiting = enhancedStatus.waiting || [];
-              
-              stageHtml = `
-                <div class="queue-stage-container">
-                  <div class="stage-row">
-                    <div class="stage-icon serving"><i class="fas fa-user-check"></i></div>
-                    <div class="stage-info">
-                      <div class="stage-label">NOW SERVING</div>
-                      <div class="stage-name ${!serving ? 'empty' : ''}">${serving ? escapeHtml(serving.name) : '—'}</div>
-                    </div>
-                  </div>
-                  <div class="stage-row">
-                    <div class="stage-icon next"><i class="fas fa-user-clock"></i></div>
-                    <div class="stage-info">
-                      <div class="stage-label">NEXT IN LINE</div>
-                      <div class="stage-name ${!next ? 'empty' : ''}">${next ? escapeHtml(next.name) : '—'}</div>
-                      ${next && next.timeRemaining > 0 ? `<div class="grace-timer"><i class="fas fa-hourglass-half"></i> Respond in ${formatTimeRemaining(next.timeRemaining)}</div>` : ''}
-                      ${next && next.timeRemaining <= 0 ? `<div class="grace-timer" style="color:#ef4444;"><i class="fas fa-exclamation-circle"></i> Grace period expired</div>` : ''}
-                    </div>
-                  </div>
-                  <div class="waiting-count">
-                    <i class="fas fa-users"></i> ${waiting.length} waiting in line
-                  </div>
-                </div>
-              `;
-            }
-          } catch(e) { console.log('Enhanced status not available for', queue.queue_id); }
-        }
-        
-        return `
-          <div class="queue-item">
-            <div class="queue-header">
-              <span class="queue-name">📌 ${escapeHtml(queue.name)}</span>
-              <span class="queue-stats">${isActive ? '🟢 Active' : '🔴 Expired'}</span>
-            </div>
-            ${queue.description ? `<div style="font-size:0.7rem; opacity:0.7; margin-bottom:0.5rem;">📝 ${escapeHtml(queue.description)}</div>` : ''}
-            ${stageHtml}
-            <div class="link-share">
-              <span style="font-size:0.65rem;">🔗 ${queueLink}</span>
-              <button class="copy-btn" data-link="${queueLink}">Copy</button>
-            </div>
-            <div class="flex-btns">
-              <button class="view-queue-btn btn-info" data-id="${queue.queue_id}" data-name="${escapeHtml(queue.name)}"><i class="fas fa-eye"></i> View All</button>
-              ${isActive ? `<button class="init-queue-btn btn-success" data-id="${queue.queue_id}" data-name="${escapeHtml(queue.name)}"><i class="fas fa-play"></i> Start Queue</button>` : ''}
-              ${isActive ? `<button class="serve-btn btn-primary" data-id="${queue.queue_id}"><i class="fas fa-step-forward"></i> Serve Next</button>` : ''}
-              ${isActive ? `<button class="skip-btn btn-warning" data-id="${queue.queue_id}"><i class="fas fa-forward"></i> Skip</button>` : ''}
-              <button class="delete-queue-btn btn-danger" data-id="${queue.queue_id}"><i class="fas fa-trash"></i></button>
-            </div>
-          </div>
-        `;
-      }));
-      
-      myQueuesList.innerHTML = queueItems.join('');
-      
-      document.querySelectorAll('.copy-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
-          navigator.clipboard.writeText(btn.dataset.link);
-          btn.innerText = 'Copied!';
-          setTimeout(() => btn.innerText = 'Copy', 1500);
-          showToast('📋 Link copied!');
-        });
-      });
-      
-      document.querySelectorAll('.view-queue-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const qid = btn.dataset.id;
-          const qname = btn.dataset.name;
-          const status = await getEnhancedQueueStatus(qid);
-          if (status && status.queue) {
-            const serving = status.serving;
-            const next = status.next;
-            const waiting = status.waiting || [];
-            
-            let html = `
-              <p><strong>Status:</strong> ${status.queue.isActive ? '🟢 Active' : '🔴 Expired'}</p>
-              <p><strong>Total Waiting:</strong> ${status.queue.totalWaiting}</p>
-              <hr>
-            `;
-            
-            if (serving) {
-              html += `<div class="participant serving"><span>🎯 SERVING</span><span><strong>${escapeHtml(serving.name)}</strong></span><span>#${serving.position}</span></div>`;
-            }
-            if (next) {
-              html += `<div class="participant next"><span>⏰ NEXT</span><span><strong>${escapeHtml(next.name)}</strong></span><span>#${next.position} ${next.timeRemaining > 0 ? '('+formatTimeRemaining(next.timeRemaining)+')' : ''}</span></div>`;
-            }
-            if (waiting.length > 0) {
-              html += '<h4 style="margin-top:1rem;">Waiting</h4>';
-              waiting.forEach(p => {
-                html += `<div class="participant"><span>#${p.position}</span><span>${escapeHtml(p.name)}</span><span>${new Date(p.joinedAt).toLocaleTimeString()}</span></div>`;
-              });
-            }
-            
-            openModal(`Queue: ${qname}`, html);
-          }
-        });
-      });
-      
-      document.querySelectorAll('.init-queue-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const qid = btn.dataset.id;
-          const qname = btn.dataset.name;
-          if (confirm(`Start queue "${qname}"? First person becomes SERVING, second becomes NEXT with 3-min notification.`)) {
-            try {
-              const result = await initializeQueue(qid);
-              showToast(`✅ Queue started! ${result.serving || ''} ${result.next ? '→ Next: ' + result.next : ''}`);
-              await renderDashboard();
-            } catch(e) { showToast(e.message, true); }
-          }
-        });
-      });
-      
-      document.querySelectorAll('.serve-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const qid = btn.dataset.id;
-          try {
-            const result = await serveNext(qid);
-            let msg = `✅ ${result.message}`;
-            if (result.newServing) msg += ` | Now serving: ${result.newServing.name}`;
-            if (result.newNext) msg += ` | Next: ${result.newNext.name}`;
-            showToast(msg);
-            await renderDashboard();
-            await updateMyQueueStatus();
-          } catch(e) { showToast(e.message, true); }
-        });
-      });
-      
-      document.querySelectorAll('.skip-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          const qid = btn.dataset.id;
-          if (confirm('Skip the NEXT person? They will be marked as skipped and the queue will advance.')) {
-            try {
-              const result = await skipNext(qid);
-              showToast(`⏭️ ${result.message}`);
-              await renderDashboard();
-            } catch(e) { showToast(e.message, true); }
-          }
-        });
-      });
-      
-      document.querySelectorAll('.delete-queue-btn').forEach(btn => {
-        btn.addEventListener('click', async () => {
-          if (confirm('Delete this queue permanently?')) {
-            try {
-              await deleteQueue(btn.dataset.id);
-              showToast('✅ Queue deleted');
-              await renderDashboard();
-            } catch(e) { showToast(e.message, true); }
-          }
-        });
-      });
-    }
-  }
 
-  // ✅ FIXED: Update my queue status with proper two-stage display
-  async function updateMyQueueStatus() {
-    const stored = localStorage.getItem('my_participant_session');
-    const container = document.getElementById('myQueueStatusContent');
-    
-    if (!stored) {
-      container.innerHTML = '<div class="empty-state"><i class="fas fa-info-circle"></i> You haven\'t joined any queue yet.</div>';
-      document.getElementById('myPositionCount').innerHTML = '—';
+    const list = document.getElementById('myQueuesList');
+    if (!queues.length) {
+      list.innerHTML = '<div class="empty-state"><i class="fas fa-inbox"></i> No queues created yet</div>';
       return;
     }
-    
+
+    const items = await Promise.all(queues.map(async q => {
+      const isActive = q.status === 'active' && new Date(q.expires_at) > new Date();
+      const link = queueLink(q.queue_id);
+      let stageHtml = '';
+
+      if (isActive) {
+        try {
+          const status = await getEnhancedStatus(q.queue_id);
+          if (status?.success) {
+            const s = status.serving, n = status.next, w = status.waiting || [];
+            stageHtml = `
+              <div class="stage-container">
+                <div class="stage-row"><div class="stage-icon serving"><i class="fas fa-user-check"></i></div><div class="stage-info"><div class="stage-label">SERVING</div><div class="stage-name ${!s?'empty':''}">${s?esc(s.name):'—'}</div></div></div>
+                <div class="stage-row"><div class="stage-icon next"><i class="fas fa-user-clock"></i></div><div class="stage-info"><div class="stage-label">NEXT</div><div class="stage-name ${!n?'empty':''}">${n?esc(n.name):'—'}</div>${n&&n.timeRemaining>0?`<div class="grace-timer"><i class="fas fa-hourglass-half"></i> ${formatTime(n.timeRemaining)}</div>`:''}</div></div>
+                <div class="waiting-count"><i class="fas fa-users"></i> ${w.length} waiting</div>
+              </div>`;
+          }
+        } catch {}
+      }
+
+      return `
+        <div class="queue-item">
+          <div class="queue-header"><span class="queue-name">📌 ${esc(q.name)}</span><span class="queue-stats">${isActive?'🟢':'🔴'}</span></div>
+          ${q.description?`<div style="font-size:0.7rem;opacity:0.7;margin-bottom:0.5rem;">${esc(q.description)}</div>`:''}
+          ${stageHtml}
+          <div class="link-share"><span>🔗 ${link.substring(0,40)}...</span><button class="copy-btn" data-link="${link}">Copy</button></div>
+          <div class="flex-btns">
+            <button class="btn btn-info view-btn" data-id="${q.queue_id}" data-name="${esc(q.name)}"><i class="fas fa-eye"></i> View</button>
+            ${isActive?`<button class="btn btn-success init-btn" data-id="${q.queue_id}"><i class="fas fa-play"></i> Start</button>`:''}
+            ${isActive?`<button class="btn btn-primary serve-btn" data-id="${q.queue_id}"><i class="fas fa-step-forward"></i> Serve</button>`:''}
+            ${isActive?`<button class="btn btn-warning skip-btn" data-id="${q.queue_id}"><i class="fas fa-forward"></i> Skip</button>`:''}
+            <button class="btn btn-danger delete-btn" data-id="${q.queue_id}"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>`;
+    }));
+
+    list.innerHTML = items.join('');
+
+    // Event listeners
+    list.querySelectorAll('.copy-btn').forEach(b => b.addEventListener('click', () => { navigator.clipboard.writeText(b.dataset.link); b.textContent='Copied!'; setTimeout(()=>b.textContent='Copy',1500); toast('📋 Copied!'); }));
+    list.querySelectorAll('.view-btn').forEach(b => b.addEventListener('click', async () => { const s = await getEnhancedStatus(b.dataset.id); if(s?.queue){ let h=`<p>${s.queue.isActive?'🟢':'🔴'} | ${s.queue.totalWaiting} waiting</p><hr>`; if(s.serving)h+=`<div class="participant-item serving"><span>🎯 SERVING</span><span><strong>${esc(s.serving.name)}</strong> #${s.serving.position}</span></div>`; if(s.next)h+=`<div class="participant-item next"><span>⏰ NEXT</span><span><strong>${esc(s.next.name)}</strong> #${s.next.position}</span></div>`; s.waiting?.forEach(p=>h+=`<div class="participant-item"><span>#${p.position}</span><span>${esc(p.name)}</span></div>`); openModal(b.dataset.name, h); } }));
+    list.querySelectorAll('.init-btn').forEach(b => b.addEventListener('click', async () => { if(confirm('Start queue? First → SERVING, second → NEXT (3min)')){ const r=await initQueue(b.dataset.id); toast(`✅ Started! ${r.serving||''} → Next: ${r.next||''}`); renderAll(); } }));
+    list.querySelectorAll('.serve-btn').forEach(b => b.addEventListener('click', async () => { const r=await serveNext(b.dataset.id); toast(`✅ ${r.message}${r.newServing?' | Now: '+r.newServing.name:''}${r.newNext?' | Next: '+r.newNext.name:''}`); renderAll(); }));
+    list.querySelectorAll('.skip-btn').forEach(b => b.addEventListener('click', async () => { if(confirm('Skip NEXT person?')){ const r=await skipNext(b.dataset.id); toast(`⏭️ ${r.message}`); renderAll(); } }));
+    list.querySelectorAll('.delete-btn').forEach(b => b.addEventListener('click', async () => { if(confirm('Delete permanently?')){ await deleteQueue(b.dataset.id); toast('✅ Deleted'); renderAll(); } }));
+  }
+
+  // ==================== RENDER MY STATUS ====================
+  async function renderMyStatus() {
+    const stored = localStorage.getItem('my_participant_session');
+    const container = document.getElementById('myQueueStatusContent');
+    const posEl = document.getElementById('myPositionCount');
+
+    if (!stored) {
+      container.innerHTML = '<div class="empty-state"><i class="fas fa-info-circle"></i> You haven\'t joined any queue yet.</div>';
+      posEl.textContent = '—';
+      return;
+    }
+
     try {
       const { participantId, queueId, queueName, participantName } = JSON.parse(stored);
-      
-      // Try to get enhanced status to see full queue state
-      let enhancedStatus = null;
-      try {
-        enhancedStatus = await getEnhancedQueueStatus(queueId);
-      } catch(e) { console.log('Enhanced status not available'); }
-      
-      // Get participant position
-      const positionData = await getParticipantPosition(participantId);
-      
-      if (positionData) {
-        const status = positionData.status || 'waiting';
-        const statusClass = status === 'serving' ? 'status-serving' : (status === 'next' ? 'status-next' : 'status-waiting');
-        const statusLabel = status === 'serving' ? '🎯 SERVING' : (status === 'next' ? '⏰ NEXT' : '⏳ WAITING');
-        
-        document.getElementById('myPositionCount').innerHTML = `#${positionData.position}`;
-        
-        const aheadCount = positionData.aheadCount || 0;
-        
-        // Check if user is NEXT and get grace period time
-        let graceInfo = '';
-        let waitText = '';
-        
-        if (status === 'serving') {
-          waitText = '🎯 You are being served!';
-        } else if (status === 'next') {
-          waitText = '🎉 You are next! Get ready!';
-          // Find grace period info from enhanced status
-          if (enhancedStatus && enhancedStatus.next && enhancedStatus.next.participantId === participantId) {
-            const timeRemaining = enhancedStatus.next.timeRemaining || 0;
-            if (timeRemaining > 0) {
-              graceInfo = `<div style="margin-top:0.5rem; color:#f59e0b;"><i class="fas fa-hourglass-half"></i> Respond within ${formatTimeRemaining(timeRemaining)}</div>`;
-            } else {
-              graceInfo = `<div style="margin-top:0.5rem; color:#ef4444;"><i class="fas fa-exclamation-circle"></i> Grace period expired - respond quickly!</div>`;
-            }
-          }
-        } else {
-          const waitMinutes = aheadCount * 2;
-          waitText = waitMinutes > 0 ? `~${waitMinutes} min wait` : '🎉 You are next!';
-        }
-        
-        container.innerHTML = `
-          <div class="position-card">
-            <div class="position-number-large">#${positionData.position}</div>
-            <div class="queue-info"><i class="fas fa-ticket-alt"></i> ${escapeHtml(queueName || 'Queue')}</div>
-            <div class="queue-info"><i class="fas fa-user"></i> ${escapeHtml(participantName || 'You')}</div>
-            <div style="margin-top: 0.5rem;">
-              <span class="status-badge ${statusClass}"><i class="fas fa-${status === 'serving' ? 'check' : (status === 'next' ? 'clock' : 'hourglass')}"></i> ${statusLabel}</span>
-            </div>
-            ${graceInfo}
-            <hr>
-            <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
-              <span><i class="fas fa-arrow-up"></i> Ahead: ${aheadCount}</span>
-              <span><i class="fas fa-hourglass-half"></i> ${waitText}</span>
-              <span><i class="fas fa-arrow-down"></i> Behind: ${positionData.behindCount || 0}</span>
-            </div>
-            ${status !== 'serving' ? `
-            <div class="progress-bar" style="background: rgba(255,255,255,0.1); border-radius: 1rem; height: 6px; margin: 0.8rem 0;">
-              <div style="width: ${Math.max(5, ((positionData.totalWaiting - positionData.position) / positionData.totalWaiting) * 100)}%; background: #22D3EE; border-radius: 1rem; height: 100%;"></div>
-            </div>
-            ` : ''}
-            <button class="btn-outline" id="viewFullQueueBtn" style="margin-top: 0.8rem; width: 100%;" data-id="${queueId}">
-              <i class="fas fa-users"></i> View Full Queue
-            </button>
-          </div>
-        `;
-        
-        document.getElementById('viewFullQueueBtn')?.addEventListener('click', async () => {
-          const status = enhancedStatus || await getEnhancedQueueStatus(queueId);
-          if (status && status.queue) {
-            const serving = status.serving;
-            const next = status.next;
-            const waiting = status.waiting || [];
-            
-            let html = `<p><strong>Queue:</strong> ${escapeHtml(status.queue.name)}</p>`;
-            html += `<p><strong>Status:</strong> ${status.queue.isActive ? '🟢 Active' : '🔴 Expired'}</p>`;
-            html += `<hr>`;
-            
-            if (serving) {
-              html += `<div class="participant serving"><span>🎯 SERVING</span><span><strong>${escapeHtml(serving.name)}</strong></span><span>#${serving.position}</span></div>`;
-            }
-            if (next) {
-              const isYou = next.participantId === participantId;
-              html += `<div class="participant next" style="${isYou ? 'background:rgba(34,211,238,0.2);' : ''}"><span>⏰ NEXT</span><span><strong>${escapeHtml(next.name)} ${isYou ? '(YOU)' : ''}</strong></span><span>#${next.position}</span></div>`;
-            }
-            if (waiting.length) {
-              html += '<h4 style="margin-top:1rem;">Waiting</h4>';
-              waiting.forEach(p => {
-                const isYou = p.participantId === participantId;
-                html += `<div class="participant" style="${isYou ? 'background:rgba(34,211,238,0.2);' : ''}"><span>#${p.position}</span><span>${escapeHtml(p.name)} ${isYou ? '(YOU)' : ''}</span><span>${new Date(p.joinedAt).toLocaleTimeString()}</span></div>`;
-              });
-            }
-            
-            openModal(`Queue Status: ${escapeHtml(status.queue.name)}`, html);
-          }
-        });
-      } else {
+      const [pos, enhanced] = await Promise.all([getPosition(participantId), getEnhancedStatus(queueId).catch(()=>null)]);
+
+      if (!pos) {
         container.innerHTML = '<div class="empty-state"><i class="fas fa-check-circle"></i> You\'ve been served!</div>';
-        document.getElementById('myPositionCount').innerHTML = '✓';
+        posEl.textContent = '✓';
         localStorage.removeItem('my_participant_session');
+        return;
       }
-    } catch(e) {
-      console.error('Error updating position:', e);
+
+      const status = pos.status || 'waiting';
+      const statusClass = status==='serving'?'status-serving':(status==='next'?'status-next':'status-waiting');
+      const statusLabel = status==='serving'?'🎯 SERVING':(status==='next'?'⏰ NEXT':'⏳ WAITING');
+      
+      posEl.textContent = `#${pos.position}`;
+
+      let graceInfo = '', waitText = '';
+      if (status === 'serving') waitText = '🎯 You are being served!';
+      else if (status === 'next') {
+        waitText = '🎉 You are next!';
+        if (enhanced?.next?.participantId === participantId && enhanced.next.timeRemaining > 0) {
+          graceInfo = `<div style="margin-top:0.5rem;color:#f59e0b;"><i class="fas fa-hourglass-half"></i> Respond in ${formatTime(enhanced.next.timeRemaining)}</div>`;
+        }
+      } else {
+        const mins = (pos.aheadCount||0) * 2;
+        waitText = mins ? `~${mins} min wait` : '🎉 You are next!';
+      }
+
+      container.innerHTML = `
+        <div class="position-card">
+          <div class="position-number">#${pos.position}</div>
+          <div style="text-align:center;opacity:0.7;"><i class="fas fa-ticket-alt"></i> ${esc(queueName||'Queue')}</div>
+          <div style="text-align:center;margin-bottom:0.5rem;"><i class="fas fa-user"></i> ${esc(participantName||'You')}</div>
+          <div style="text-align:center;"><span class="status-badge ${statusClass}">${statusLabel}</span></div>
+          ${graceInfo}
+          <hr>
+          <div style="display:flex;justify-content:space-between;">
+            <span><i class="fas fa-arrow-up"></i> Ahead: ${pos.aheadCount||0}</span>
+            <span><i class="fas fa-hourglass-half"></i> ${waitText}</span>
+            <span><i class="fas fa-arrow-down"></i> Behind: ${pos.behindCount||0}</span>
+          </div>
+          ${status!=='serving'?`<div style="background:rgba(255,255,255,0.1);border-radius:1rem;height:6px;margin:1rem 0;"><div style="width:${Math.max(5,((pos.totalWaiting-pos.position)/pos.totalWaiting)*100)}%;background:#22D3EE;border-radius:1rem;height:100%;"></div></div>`:''}
+          <button class="btn btn-outline view-full-btn" style="width:100%;" data-qid="${queueId}" data-pid="${participantId}"><i class="fas fa-users"></i> View Full Queue</button>
+        </div>`;
+
+      container.querySelector('.view-full-btn')?.addEventListener('click', async () => {
+        const s = enhanced || await getEnhancedStatus(queueId);
+        if (s?.queue) {
+          let h = `<p><strong>${esc(s.queue.name)}</strong> | ${s.queue.isActive?'🟢':'🔴'} | ${s.queue.totalWaiting} waiting</p><hr>`;
+          if (s.serving) h += `<div class="participant-item serving"><span>🎯 SERVING</span><span><strong>${esc(s.serving.name)}</strong> #${s.serving.position}</span></div>`;
+          if (s.next) h += `<div class="participant-item next"><span>⏰ NEXT</span><span><strong>${esc(s.next.name)} ${s.next.participantId===participantId?'(YOU)':''}</strong> #${s.next.position}</span></div>`;
+          s.waiting?.forEach(p => h += `<div class="participant-item" style="${p.participantId===participantId?'background:rgba(34,211,238,0.2);':''}"><span>#${p.position}</span><span>${esc(p.name)} ${p.participantId===participantId?'(YOU)':''}</span></div>`);
+          openModal(esc(s.queue.name), h);
+        }
+      });
+    } catch (e) {
       container.innerHTML = '<div class="empty-state"><i class="fas fa-exclamation-triangle"></i> Error loading status</div>';
     }
   }
 
-  function escapeHtml(str) {
-    if (!str) return '';
-    return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
-  }
-
-  async function refreshAll() {
-    await renderDashboard();
-    await updateMyQueueStatus();
-    showToast('🔄 Dashboard refreshed!');
+  // ==================== INIT ====================
+  async function renderAll() {
+    await renderQueues();
+    await renderMyStatus();
   }
 
   async function init() {
     currentUser = await checkSession();
     if (!currentUser) return;
-    
-    document.getElementById('userNameDisplay').innerHTML = `<i class="fas fa-user-circle"></i> ${currentUser.name}`;
-    await renderDashboard();
-    await updateMyQueueStatus();
-    
-    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    autoRefreshInterval = setInterval(updateMyQueueStatus, 10000);
-    
+    await renderAll();
+    if (refreshTimer) clearInterval(refreshTimer);
+    refreshTimer = setInterval(renderMyStatus, 10000);
+
+    // Create queue
     document.getElementById('createQueueBtn').addEventListener('click', async () => {
       const name = document.getElementById('queueName').value.trim();
-      const expiry = document.getElementById('expiryHours').value;
-      const description = document.getElementById('queueDescription').value;
-      
-      if (!name) { showToast('Please enter a queue name', true); return; }
-      
+      if (!name) return toast('Enter queue name', true);
       const btn = document.getElementById('createQueueBtn');
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Creating...';
-      
+      btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i>';
       try {
-        const result = await createQueue(name, expiry, description);
-        const queueLink = generateQueueLink(result.queue.queue_id);
-        document.getElementById('createFeedback').innerHTML = `<span style="color:#22D3EE;">✅ Created! Link copied.</span>`;
-        document.getElementById('queueName').value = '';
-        document.getElementById('queueDescription').value = '';
-        navigator.clipboard.writeText(queueLink);
-        showToast('🎉 Queue created! Link copied.');
-        await renderDashboard();
+        const r = await createQueue(name, document.getElementById('expiryHours').value, document.getElementById('queueDescription').value);
+        const link = queueLink(r.queue.queue_id);
+        navigator.clipboard.writeText(link);
+        document.getElementById('createFeedback').innerHTML = '<span style="color:#22D3EE;">✅ Created! Link copied.</span>';
+        document.getElementById('queueName').value = document.getElementById('queueDescription').value = '';
+        toast('🎉 Queue created!');
+        await renderQueues();
         setTimeout(() => document.getElementById('createFeedback').innerHTML = '', 5000);
-      } catch(e) { showToast(e.message, true); }
-      finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-link"></i> Create Queue & Get Link'; }
+      } catch(e) { toast(e.message, true); }
+      finally { btn.disabled = false; btn.innerHTML = '<i class="fas fa-link"></i> Create & Copy Link'; }
     });
-    
-    document.getElementById('refreshStatusBtn').addEventListener('click', updateMyQueueStatus);
-    document.getElementById('refreshAllBtn').addEventListener('click', refreshAll);
-    document.getElementById('myPositionStat').onclick = () => document.getElementById('myQueueStatusContent').scrollIntoView({ behavior: 'smooth' });
+
+    document.getElementById('refreshStatusBtn').addEventListener('click', () => { renderMyStatus(); toast('🔄 Refreshed!'); });
+    document.getElementById('refreshAllBtn').addEventListener('click', () => { renderAll(); toast('🔄 Refreshed!'); });
+    document.getElementById('myPositionStat').onclick = () => document.getElementById('myQueueStatusContent').scrollIntoView({behavior:'smooth'});
   }
-  
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    if (autoRefreshInterval) clearInterval(autoRefreshInterval);
-    localStorage.clear();
-    window.location.href = 'index.html';
-  });
-  
-  window.addEventListener('beforeunload', () => { if (autoRefreshInterval) clearInterval(autoRefreshInterval); });
-  
+
+  document.getElementById('logoutBtn').onclick = () => { clearInterval(refreshTimer); localStorage.clear(); location.href='index.html'; };
+  window.addEventListener('beforeunload', () => clearInterval(refreshTimer));
+
   init();
 </script>
 </body>
