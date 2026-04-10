@@ -22,17 +22,44 @@
     .queue-desc { opacity: 0.8; margin: 0.5rem 0; }
     .stats { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
     .stat { background: rgba(34,211,238,0.1); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
+    
+    /* Two-Stage Status Styles */
+    .stage-container { margin: 1rem 0; padding: 1rem; background: rgba(0,0,0,0.2); border-radius: 1rem; }
+    .stage-row { display: flex; align-items: center; gap: 1rem; padding: 0.5rem 0; }
+    .stage-icon { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+    .stage-icon.serving { background: rgba(34, 197, 94, 0.2); color: #22c55e; border: 2px solid #22c55e; }
+    .stage-icon.next { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 2px solid #f59e0b; }
+    .stage-icon.waiting { background: rgba(34, 211, 238, 0.2); color: #22D3EE; border: 2px solid #22D3EE; }
+    .stage-info { flex: 1; }
+    .stage-label { font-size: 0.75rem; opacity: 0.7; text-transform: uppercase; letter-spacing: 1px; }
+    .stage-name { font-weight: 600; font-size: 1rem; }
+    .stage-name.empty { opacity: 0.5; font-style: italic; }
+    .grace-timer { font-size: 0.8rem; margin-top: 0.2rem; }
+    .grace-timer.warning { color: #f59e0b; }
+    .grace-timer.expired { color: #ef4444; }
+    .grace-timer i { margin-right: 0.3rem; }
+    
     .position-card { text-align: center; padding: 2rem; margin-bottom: 1.5rem; }
     .position-number { font-size: 4rem; font-weight: 800; color: #22D3EE; }
     .position-label { opacity: 0.7; letter-spacing: 2px; }
     .wait-time { margin-top: 0.5rem; color: #a5f3fc; }
+    .status-badge { display: inline-block; padding: 0.3rem 1rem; border-radius: 2rem; font-size: 0.8rem; font-weight: 600; margin-top: 0.5rem; }
+    .status-badge.serving { background: rgba(34, 197, 94, 0.2); color: #22c55e; }
+    .status-badge.next { background: rgba(245, 158, 11, 0.2); color: #f59e0b; }
+    .status-badge.waiting { background: rgba(34, 211, 238, 0.2); color: #22D3EE; }
+    
     .section-title { display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1rem; font-size: 1.2rem; font-weight: 600; }
     .participant-list { max-height: 400px; overflow-y: auto; }
     .participant-item { background: rgba(0,0,0,0.3); padding: 0.8rem 1rem; border-radius: 1rem; margin-bottom: 0.5rem; display: flex; align-items: center; gap: 1rem; }
+    .participant-item.serving { background: rgba(34, 197, 94, 0.15); border-left: 4px solid #22c55e; }
+    .participant-item.next { background: rgba(245, 158, 11, 0.15); border-left: 4px solid #f59e0b; }
     .participant-item.current { background: linear-gradient(95deg, rgba(91,33,182,0.4), rgba(34,211,238,0.2)); border-left: 4px solid #22D3EE; }
     .participant-pos { font-weight: 700; min-width: 50px; }
     .participant-name { flex: 1; word-break: break-word; }
     .participant-time { font-size: 0.75rem; padding: 0.2rem 0.6rem; border-radius: 1rem; background: rgba(34,211,238,0.2); }
+    .participant-badge { font-size: 0.65rem; padding: 0.15rem 0.5rem; border-radius: 1rem; margin-left: 0.5rem; }
+    .participant-badge.serving { background: #22c55e; color: white; }
+    .participant-badge.next { background: #f59e0b; color: white; }
     .you-badge { background: #22D3EE; color: #0a0a1f; padding: 0.2rem 0.6rem; border-radius: 1rem; font-size: 0.7rem; font-weight: 600; }
     .btn { padding: 0.6rem 1.2rem; border-radius: 2rem; cursor: pointer; width: 100%; margin-top: 1rem; font-size: 1rem; transition: 0.2s; }
     .btn-outline { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; }
@@ -46,6 +73,8 @@
     .share-link { display: flex; gap: 0.5rem; }
     .share-link input { flex: 1; background: rgba(0,0,0,0.5); border: 1px solid rgba(34,211,238,0.4); padding: 0.5rem; border-radius: 0.5rem; color: white; }
     .copy-btn { background: #22D3EE; color: #0a0a1f; border: none; padding: 0.5rem 1rem; border-radius: 0.5rem; cursor: pointer; }
+    .notification-banner { background: linear-gradient(95deg, rgba(245,158,11,0.2), rgba(34,211,238,0.1)); border: 1px solid #f59e0b; border-radius: 1rem; padding: 1rem; margin-bottom: 1rem; text-align: center; }
+    .notification-banner i { color: #f59e0b; margin-right: 0.5rem; }
     @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .queue-name { font-size: 1.3rem; } .position-number { font-size: 2.5rem; } }
   </style>
 </head>
@@ -68,20 +97,18 @@
 
 <script>
   (function() {
-    // API Configuration
     const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
     console.log('🌐 API:', API_BASE);
 
     let queueId = null;
     let participantId = null;
     let participantName = null;
+    let participantStatus = null;
     let refreshTimer = null;
 
-    // Get queue ID from URL
     const params = new URLSearchParams(window.location.search);
     queueId = params.get('join') || params.get('q');
 
-    // Load session
     const session = localStorage.getItem('my_participant_session');
     if (session) {
       try {
@@ -93,7 +120,6 @@
       } catch(e) {}
     }
 
-    // Toast
     function toast(msg, err = false) {
       const t = document.createElement('div');
       t.className = 'toast' + (err ? ' error' : '');
@@ -102,13 +128,11 @@
       setTimeout(() => t.remove(), 3000);
     }
 
-    // Escape HTML
     function esc(str) {
       if (!str) return '';
       return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
     }
 
-    // Format time
     function timeAgo(d) {
       const mins = Math.floor((Date.now() - new Date(d)) / 60000);
       if (mins < 1) return 'just now';
@@ -116,12 +140,26 @@
       return `${Math.floor(mins/60)}h ${mins%60}m ago`;
     }
 
-    // Share link
+    function formatTimeRemaining(seconds) {
+      if (seconds <= 0) return 'Expired';
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
+
     function shareLink() {
       return `${window.location.origin}/join-queue.html?join=${queueId}`;
     }
 
-    // Fetch queue status
+    async function fetchEnhancedStatus() {
+      try {
+        const res = await fetch(`${API_BASE}/queues/${queueId}/enhanced-status`);
+        const data = await res.json();
+        if (res.ok && data.success) return data;
+      } catch(e) {}
+      return null;
+    }
+
     async function fetchStatus() {
       const res = await fetch(`${API_BASE}/queues/${queueId}/status`);
       const data = await res.json();
@@ -129,7 +167,6 @@
       return data;
     }
 
-    // Fetch participant position
     async function fetchPosition(pId) {
       const res = await fetch(`${API_BASE}/participants/${pId}/position`);
       const data = await res.json();
@@ -137,7 +174,6 @@
       return data;
     }
 
-    // Render
     async function render() {
       const app = document.getElementById('app');
 
@@ -146,9 +182,12 @@
         return;
       }
 
-      let status;
+      let status, enhancedStatus;
       try {
-        status = await fetchStatus();
+        [status, enhancedStatus] = await Promise.all([
+          fetchStatus(),
+          fetchEnhancedStatus()
+        ]);
       } catch(e) {
         app.innerHTML = `<div class="glass" style="text-align:center;padding:3rem;"><i class="fas fa-search"></i><h2>Queue Not Found</h2><p>${esc(e.message)}</p><a href="index.html" class="btn btn-outline" style="display:inline-block;margin-top:1rem;">Go Home</a></div>`;
         return;
@@ -163,28 +202,68 @@
         return;
       }
 
-      // Get position if participant
       let position = null;
       if (participantId) {
         const posData = await fetchPosition(participantId);
         if (posData) {
           position = posData.position;
+          participantStatus = posData.status || 'waiting';
         } else {
           participantId = null;
           localStorage.removeItem('my_participant_session');
         }
       }
 
-      // Served?
       if (participantId && !position) {
         app.innerHTML = `<div class="glass" style="text-align:center;padding:3rem;"><i class="fas fa-check-circle" style="color:#22D3EE;"></i><h2>You've Been Served!</h2><button class="btn btn-primary" onclick="localStorage.removeItem('my_participant_session');location.href='index.html'">Start Over</button></div>`;
         if (refreshTimer) clearInterval(refreshTimer);
         return;
       }
 
+      // Get enhanced status data
+      const serving = enhancedStatus?.serving;
+      const next = enhancedStatus?.next;
+      const waiting = enhancedStatus?.waiting || [];
+
+      // Check if current user is NEXT and needs notification
+      const isUserNext = participantId && next && next.participantId === participantId;
+      const isUserServing = participantId && serving && serving.participantId === participantId;
+      
+      let notificationBanner = '';
+      if (isUserNext) {
+        const timeRemaining = next.timeRemaining || 0;
+        if (timeRemaining > 0) {
+          notificationBanner = `
+            <div class="notification-banner">
+              <i class="fas fa-bell"></i> 
+              <strong>You are NEXT in line!</strong> Please prepare. 
+              <span style="color: #f59e0b; margin-left: 0.5rem;">
+                <i class="fas fa-hourglass-half"></i> Respond within ${formatTimeRemaining(timeRemaining)}
+              </span>
+            </div>
+          `;
+        } else {
+          notificationBanner = `
+            <div class="notification-banner" style="border-color: #ef4444; background: rgba(239,68,68,0.1);">
+              <i class="fas fa-exclamation-circle" style="color: #ef4444;"></i> 
+              <strong>Grace period expired!</strong> Please respond immediately or you may be skipped.
+            </div>
+          `;
+        }
+      } else if (isUserServing) {
+        notificationBanner = `
+          <div class="notification-banner" style="border-color: #22c55e; background: rgba(34,197,94,0.1);">
+            <i class="fas fa-check-circle" style="color: #22c55e;"></i> 
+            <strong>You are currently being served!</strong>
+          </div>
+        `;
+      }
+
       const ahead = position ? participants.filter(p => p.position < position) : [];
-      const waitMins = ahead.length * 2;
-      const waitText = waitMins ? `~${waitMins} min${waitMins>1?'s':''}` : '🎉 You are next!';
+      const waitMins = participantStatus === 'serving' ? 0 : (participantStatus === 'next' ? 0 : ahead.length * 2);
+      const waitText = participantStatus === 'serving' ? 'Being served now' : 
+                      (participantStatus === 'next' ? '🎉 You are next! Get ready!' : 
+                      (waitMins ? `~${waitMins} min${waitMins>1?'s':''}` : '🎉 You are next!'));
 
       // Build HTML
       let html = `
@@ -193,11 +272,35 @@
           <div class="queue-name">${esc(queue.name)}</div>
           ${queue.description ? `<div class="queue-desc">${esc(queue.description)}</div>` : ''}
           <div class="stats">
-            <span class="stat"><i class="fas fa-users"></i> ${participants.length} waiting</span>
+            <span class="stat"><i class="fas fa-users"></i> ${participants.length} total</span>
             <span class="stat"><i class="fas fa-clock"></i> Expires ${new Date(queue.expiresAt).toLocaleTimeString()}</span>
           </div>
+          
+          <!-- Two-Stage Status -->
+          <div class="stage-container">
+            <div class="stage-row">
+              <div class="stage-icon serving"><i class="fas fa-user-check"></i></div>
+              <div class="stage-info">
+                <div class="stage-label">NOW SERVING</div>
+                <div class="stage-name ${!serving ? 'empty' : ''}">${serving ? esc(serving.name) : '—'}</div>
+              </div>
+            </div>
+            <div class="stage-row">
+              <div class="stage-icon next"><i class="fas fa-user-clock"></i></div>
+              <div class="stage-info">
+                <div class="stage-label">NEXT IN LINE</div>
+                <div class="stage-name ${!next ? 'empty' : ''}">${next ? esc(next.name) : '—'}</div>
+                ${next && next.timeRemaining > 0 ? `<div class="grace-timer warning"><i class="fas fa-hourglass-half"></i> Respond in ${formatTimeRemaining(next.timeRemaining)}</div>` : ''}
+                ${next && next.timeRemaining <= 0 ? `<div class="grace-timer expired"><i class="fas fa-exclamation-circle"></i> Grace period expired</div>` : ''}
+              </div>
+            </div>
+            <div style="text-align: center; margin-top: 0.5rem; opacity: 0.7; font-size: 0.8rem;">
+              <i class="fas fa-users"></i> ${waiting.length} waiting in line
+            </div>
+          </div>
+          
           <div class="share-section">
-            <div style="margin-bottom:0.5rem;"><i class="fas fa-share-alt"></i> Share</div>
+            <div style="margin-bottom:0.5rem;"><i class="fas fa-share-alt"></i> Share this queue</div>
             <div class="share-link">
               <input type="text" value="${shareLink()}" readonly id="shareInput">
               <button class="copy-btn" onclick="navigator.clipboard.writeText('${shareLink()}');toast('📋 Copied!')"><i class="fas fa-copy"></i></button>
@@ -206,13 +309,22 @@
         </div>
       `;
 
+      // Notification banner for NEXT user
+      if (notificationBanner) {
+        html += notificationBanner;
+      }
+
       // Position card
       if (position) {
+        const statusClass = participantStatus === 'serving' ? 'serving' : (participantStatus === 'next' ? 'next' : 'waiting');
+        const statusLabel = participantStatus === 'serving' ? '🎯 SERVING' : (participantStatus === 'next' ? '⏰ NEXT' : '⏳ WAITING');
+        
         html += `
           <div class="glass position-card">
             <div class="position-label">YOUR POSITION</div>
             <div class="position-number">#${position}</div>
-            <div class="wait-time"><i class="fas fa-hourglass-half"></i> ${position === 1 ? '🎉 You are next!' : waitText}</div>
+            <div class="wait-time"><i class="fas fa-hourglass-half"></i> ${waitText}</div>
+            <span class="status-badge ${statusClass}">${statusLabel}</span>
             ${participantName ? `<div style="margin-top:0.5rem;opacity:0.7;">👤 ${esc(participantName)}</div>` : ''}
           </div>
         `;
@@ -227,48 +339,55 @@
       }
 
       // Participant list
-      html += `<div class="glass" style="padding:1.5rem;"><div class="section-title"><i class="fas fa-list"></i> Queue <span style="margin-left:auto;font-size:0.8rem;opacity:0.6;"><i class="fas fa-sync-alt"></i> Auto-refresh</span></div><div class="participant-list">`;
+      html += `<div class="glass" style="padding:1.5rem;"><div class="section-title"><i class="fas fa-list"></i> All Participants <span style="margin-left:auto;font-size:0.8rem;opacity:0.6;"><i class="fas fa-sync-alt"></i> Auto-refresh</span></div><div class="participant-list">`;
 
       if (participants.length === 0) {
         html += '<div class="empty-state"><i class="fas fa-user-friends"></i> No one in queue yet</div>';
-      } else if (position) {
-        const aheadList = participants.filter(p => p.position < position);
-        const behindList = participants.filter(p => p.position > position);
-        
-        if (aheadList.length) {
-          html += `<div style="margin-bottom:0.5rem;"><i class="fas fa-arrow-up" style="color:#ffaa44;"></i> Ahead (${aheadList.length})</div>`;
-          aheadList.slice(-5).forEach(p => {
-            html += `<div class="participant-item"><span class="participant-pos">#${p.position}</span><span class="participant-name">${esc(p.name)}</span><span class="participant-time">${timeAgo(p.joinedAt)}</span></div>`;
-          });
-          if (aheadList.length > 5) html += `<div style="text-align:center;opacity:0.6;">+${aheadList.length-5} more</div>`;
-        }
-
-        const me = participants.find(p => p.position === position);
-        html += `<div class="participant-item current"><span class="participant-pos">#${position}</span><span class="participant-name"><strong>${esc(me?.name||'You')}</strong> <span class="you-badge"><i class="fas fa-user"></i> You</span></span><span class="participant-time">${timeAgo(me?.joinedAt)}</span></div>`;
-
-        if (behindList.length) {
-          html += `<div style="margin-top:1rem;"><i class="fas fa-arrow-down" style="color:#44ffaa;"></i> Behind (${behindList.length})</div>`;
-          behindList.slice(0,5).forEach(p => {
-            html += `<div class="participant-item"><span class="participant-pos">#${p.position}</span><span class="participant-name">${esc(p.name)}</span><span class="participant-time">${timeAgo(p.joinedAt)}</span></div>`;
-          });
-          if (behindList.length > 5) html += `<div style="text-align:center;opacity:0.6;">+${behindList.length-5} more</div>`;
-        }
       } else {
-        participants.forEach(p => {
-          html += `<div class="participant-item"><span class="participant-pos">#${p.position}</span><span class="participant-name">${esc(p.name)}</span><span class="participant-time">${timeAgo(p.joinedAt)}</span></div>`;
+        // Show in order: SERVING, NEXT, then waiting by position
+        const sortedParticipants = [...participants].sort((a, b) => {
+          if (serving && a.participantId === serving.participantId) return -1;
+          if (serving && b.participantId === serving.participantId) return 1;
+          if (next && a.participantId === next.participantId) return -1;
+          if (next && b.participantId === next.participantId) return 1;
+          return a.position - b.position;
+        });
+
+        sortedParticipants.forEach(p => {
+          const isServing = serving && p.participantId === serving.participantId;
+          const isNext = next && p.participantId === next.participantId;
+          const isYou = participantId && p.participantId === participantId;
+          
+          let itemClass = 'participant-item';
+          if (isServing) itemClass += ' serving';
+          if (isNext) itemClass += ' next';
+          if (isYou) itemClass += ' current';
+          
+          let badge = '';
+          if (isServing) badge = '<span class="participant-badge serving">SERVING</span>';
+          if (isNext) badge = '<span class="participant-badge next">NEXT</span>';
+          
+          html += `
+            <div class="${itemClass}">
+              <span class="participant-pos">#${p.position}</span>
+              <span class="participant-name">
+                ${esc(p.name)} ${badge}
+                ${isYou ? '<span class="you-badge"><i class="fas fa-user"></i> YOU</span>' : ''}
+              </span>
+              <span class="participant-time">${timeAgo(p.joinedAt)}</span>
+            </div>
+          `;
         });
       }
 
-      html += `</div><button class="btn btn-outline" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh</button><div style="text-align:center;font-size:0.7rem;opacity:0.5;margin-top:0.5rem;">Updates every 10s</div></div>`;
+      html += `</div><button class="btn btn-outline" id="refreshBtn"><i class="fas fa-sync-alt"></i> Refresh Now</button><div style="text-align:center;font-size:0.7rem;opacity:0.5;margin-top:0.5rem;">Updates every 10s</div></div>`;
 
       app.innerHTML = html;
       document.getElementById('refreshBtn').onclick = () => { render(); toast('🔄 Refreshed!'); };
     }
 
-    // Make toast available globally for copy button
     window.toast = toast;
 
-    // Init
     render().then(() => {
       if (refreshTimer) clearInterval(refreshTimer);
       refreshTimer = setInterval(render, 10000);
