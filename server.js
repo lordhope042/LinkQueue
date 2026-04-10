@@ -117,6 +117,7 @@ async function initializeTables() {
         `);
         console.log('  ✓ Queues table ready');
         
+        // ✅ Enhanced participants table with new status values
         await client.query(`
             CREATE TABLE IF NOT EXISTS participants (
                 id SERIAL PRIMARY KEY,
@@ -129,15 +130,27 @@ async function initializeTables() {
                 is_guest BOOLEAN DEFAULT TRUE,
                 position INTEGER,
                 status VARCHAR(20) DEFAULT 'waiting',
+                notification_sent BOOLEAN DEFAULT FALSE,
+                notification_sent_at TIMESTAMP,
+                grace_expires_at TIMESTAMP,
                 joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 served_at TIMESTAMP
             )
         `);
-        console.log('  ✓ Participants table ready');
+        
+        // ✅ Update status constraint to include new states
+        await client.query(`
+            ALTER TABLE participants DROP CONSTRAINT IF EXISTS participants_status_check;
+            ALTER TABLE participants ADD CONSTRAINT participants_status_check 
+                CHECK (status IN ('waiting', 'serving', 'next', 'served', 'skipped', 'cancelled'));
+        `).catch(() => console.log('  ⚠️ Status constraint already exists or modified'));
+        
+        console.log('  ✓ Participants table ready (enhanced)');
         
         await client.query(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
         await client.query(`CREATE INDEX IF NOT EXISTS idx_queues_queue_id ON queues(queue_id)`);
         await client.query(`CREATE INDEX IF NOT EXISTS idx_participants_queue_id ON participants(queue_id)`);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_participants_status ON participants(status)`);
         console.log('  ✓ Indexes created');
         
         const adminCheck = await client.query(`SELECT * FROM users WHERE email = $1`, ['admin@linkqueue.com']);
@@ -179,6 +192,69 @@ function verifyToken(token) {
         return jwt.verify(token, process.env.JWT_SECRET || 'linkqueue_secret_key_2024');
     } catch (error) {
         return null;
+    }
+}
+
+// ✅ Promote next waiting participant to 'next' status
+async function promoteNextParticipant(queueId, creatorEmail) {
+    try {
+        const waitingResult = await pool.query(
+            `SELECT * FROM participants 
+             WHERE queue_id = $1 AND status = 'waiting' 
+             ORDER BY position ASC LIMIT 1`,
+            [queueId]
+        );
+        
+        if (waitingResult.rows.length > 0) {
+            const nextWaiting = waitingResult.rows[0];
+            const graceExpiresAt = new Date(Date.now() + 3 * 60 * 1000);
+            
+            await pool.query(
+                `UPDATE participants 
+                 SET status = 'next', 
+                     notification_sent = TRUE, 
+                     notification_sent_at = NOW(), 
+                     grace_expires_at = $1 
+                 WHERE id = $2`,
+                [graceExpiresAt, nextWaiting.id]
+            );
+            
+            console.log(`📋 Promoted ${nextWaiting.name} to NEXT (grace expires: ${graceExpiresAt.toISOString()})`);
+            return nextWaiting;
+        }
+        return null;
+    } catch (error) {
+        console.error('Promote error:', error);
+        return null;
+    }
+}
+
+// ✅ Handle expired grace periods (auto-skip)
+async function handleExpiredGracePeriods() {
+    try {
+        const expiredResult = await pool.query(
+            `SELECT p.*, q.queue_id, q.creator_email, q.name as queue_name
+             FROM participants p
+             JOIN queues q ON p.queue_id = q.id
+             WHERE p.status = 'next' 
+               AND p.grace_expires_at IS NOT NULL 
+               AND p.grace_expires_at < NOW()`
+        );
+        
+        for (const participant of expiredResult.rows) {
+            console.log(`⏰ Grace period expired for ${participant.name} in queue ${participant.queue_name}`);
+            
+            await pool.query(
+                `UPDATE participants SET status = 'skipped', served_at = NOW() WHERE id = $1`,
+                [participant.id]
+            );
+            
+            console.log(`⏭️ Skipped ${participant.name} - no response within 3 minutes`);
+            
+            await promoteNextParticipant(participant.queue_id, participant.creator_email);
+        }
+    } catch (error) {
+        console.error('Grace period handler error:', error);
     }
 }
 
@@ -274,7 +350,10 @@ app.post('/api/logout', (req, res) => {
 app.get('/api/my-queues', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
-            `SELECT q.*, (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status = 'waiting') as waiting_count
+            `SELECT q.*, 
+             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status IN ('waiting', 'next', 'serving')) as waiting_count,
+             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status = 'serving') as serving_count,
+             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status = 'next') as next_count
              FROM queues q WHERE q.creator_email = $1 ORDER BY q.created_at DESC`,
             [req.user.email]
         );
@@ -309,7 +388,7 @@ app.get('/api/queues/:queueId', async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT q.*, COUNT(p.id) as participant_count 
-             FROM queues q LEFT JOIN participants p ON q.id = p.queue_id AND p.status = 'waiting'
+             FROM queues q LEFT JOIN participants p ON q.id = p.queue_id AND p.status IN ('waiting', 'next', 'serving')
              WHERE q.queue_id = $1 GROUP BY q.id`,
             [req.params.queueId]
         );
@@ -334,13 +413,14 @@ app.get('/api/queues/:queueId', async (req, res) => {
     }
 });
 
-// ✅ NEW: Get queue status with participants
+// ✅ ENHANCED: Get queue status with serving/next/waiting
 app.get('/api/queues/:queueId/status', async (req, res) => {
     try {
         const { queueId } = req.params;
         
         const queueResult = await pool.query(
-            `SELECT q.*, (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status = 'waiting') as total_participants
+            `SELECT q.*, 
+             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status IN ('waiting', 'next', 'serving')) as total_participants
              FROM queues q WHERE q.queue_id = $1`,
             [queueId]
         );
@@ -352,9 +432,18 @@ app.get('/api/queues/:queueId/status', async (req, res) => {
         const queue = queueResult.rows[0];
         const isActive = new Date(queue.expires_at) > new Date() && queue.status === 'active';
         
+        // Get all active participants
         const participantsResult = await pool.query(
             `SELECT participant_id, name, position, joined_at, status, is_guest 
-             FROM participants WHERE queue_id = $1 AND status = 'waiting' ORDER BY position ASC`,
+             FROM participants 
+             WHERE queue_id = $1 AND status IN ('waiting', 'serving', 'next') 
+             ORDER BY 
+                CASE status 
+                    WHEN 'serving' THEN 1
+                    WHEN 'next' THEN 2
+                    WHEN 'waiting' THEN 3
+                END,
+                position ASC`,
             [queue.id]
         );
         
@@ -384,6 +473,84 @@ app.get('/api/queues/:queueId/status', async (req, res) => {
     }
 });
 
+// ✅ NEW: Enhanced status with serving/next breakdown
+app.get('/api/queues/:queueId/enhanced-status', async (req, res) => {
+    try {
+        const { queueId } = req.params;
+        
+        const queueResult = await pool.query(
+            `SELECT q.* FROM queues q WHERE q.queue_id = $1`,
+            [queueId]
+        );
+        
+        if (queueResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'Queue not found' });
+        }
+        
+        const queue = queueResult.rows[0];
+        const isActive = new Date(queue.expires_at) > new Date() && queue.status === 'active';
+        
+        const participantsResult = await pool.query(
+            `SELECT participant_id, name, position, joined_at, status, is_guest,
+                    notification_sent, notification_sent_at, grace_expires_at
+             FROM participants 
+             WHERE queue_id = $1 AND status IN ('waiting', 'serving', 'next', 'skipped')
+             ORDER BY 
+                CASE status 
+                    WHEN 'serving' THEN 1
+                    WHEN 'next' THEN 2
+                    WHEN 'waiting' THEN 3
+                    WHEN 'skipped' THEN 4
+                END,
+                position ASC`,
+            [queue.id]
+        );
+        
+        const serving = participantsResult.rows.find(p => p.status === 'serving');
+        const next = participantsResult.rows.find(p => p.status === 'next');
+        const waiting = participantsResult.rows.filter(p => p.status === 'waiting');
+        
+        res.json({
+            success: true,
+            queue: {
+                queueId: queue.queue_id,
+                name: queue.name,
+                description: queue.description,
+                isActive,
+                expiresAt: queue.expires_at,
+                totalWaiting: waiting.length,
+                hasServing: !!serving,
+                hasNext: !!next
+            },
+            serving: serving ? {
+                participantId: serving.participant_id,
+                name: serving.name,
+                position: serving.position,
+                joinedAt: serving.joined_at
+            } : null,
+            next: next ? {
+                participantId: next.participant_id,
+                name: next.name,
+                position: next.position,
+                notificationSent: next.notification_sent,
+                graceExpiresAt: next.grace_expires_at,
+                timeRemaining: next.grace_expires_at ? 
+                    Math.max(0, Math.floor((new Date(next.grace_expires_at) - new Date()) / 1000)) : 0
+            } : null,
+            waiting: waiting.map(p => ({
+                participantId: p.participant_id,
+                name: p.name,
+                position: p.position,
+                joinedAt: p.joined_at
+            }))
+        });
+        
+    } catch (error) {
+        console.error('Enhanced status error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
 // Join queue
 app.post('/api/queues/:queueId/join', async (req, res) => {
     try {
@@ -400,15 +567,15 @@ app.post('/api/queues/:queueId/join', async (req, res) => {
         
         if (email) {
             const existingResult = await pool.query(
-                `SELECT id FROM participants WHERE queue_id = $1 AND email = $2 AND status = 'waiting'`,
+                `SELECT id FROM participants WHERE queue_id = $1 AND email = $2 AND status IN ('waiting', 'next', 'serving')`,
                 [queue.id, email.toLowerCase()]
             );
             if (existingResult.rows.length > 0) return res.status(400).json({ error: 'You are already in this queue' });
         }
         
         const positionResult = await pool.query(
-            'SELECT COUNT(*) as count FROM participants WHERE queue_id = $1 AND status = $2',
-            [queue.id, 'waiting']
+            'SELECT COUNT(*) as count FROM participants WHERE queue_id = $1 AND status IN ($2, $3, $4)',
+            [queue.id, 'waiting', 'next', 'serving']
         );
         const position = parseInt(positionResult.rows[0].count) + 1;
         const participantId = generateId('p');
@@ -430,7 +597,188 @@ app.post('/api/queues/:queueId/join', async (req, res) => {
     }
 });
 
-// ✅ NEW: Get participant position
+// ✅ NEW: Initialize queue (set first as serving, second as next)
+app.post('/api/queues/:queueId/initialize', authenticateToken, async (req, res) => {
+    try {
+        const { queueId } = req.params;
+        
+        const queueResult = await pool.query(
+            'SELECT * FROM queues WHERE queue_id = $1 AND creator_email = $2',
+            [queueId, req.user.email]
+        );
+        
+        if (queueResult.rows.length === 0) {
+            return res.status(403).json({ success: false, message: 'Unauthorized' });
+        }
+        
+        const queue = queueResult.rows[0];
+        
+        const participants = await pool.query(
+            `SELECT * FROM participants WHERE queue_id = $1 AND status = 'waiting' ORDER BY position ASC LIMIT 2`,
+            [queue.id]
+        );
+        
+        let serving = null, next = null;
+        
+        if (participants.rows.length > 0) {
+            await pool.query(
+                `UPDATE participants SET status = 'serving' WHERE id = $1`,
+                [participants.rows[0].id]
+            );
+            serving = participants.rows[0];
+            
+            if (participants.rows.length > 1) {
+                const graceExpiresAt = new Date(Date.now() + 3 * 60 * 1000);
+                await pool.query(
+                    `UPDATE participants SET status = 'next', notification_sent = TRUE, notification_sent_at = NOW(), grace_expires_at = $1 WHERE id = $2`,
+                    [graceExpiresAt, participants.rows[1].id]
+                );
+                next = participants.rows[1];
+                console.log(`📧 Notification sent to ${next.name} (grace expires: ${graceExpiresAt.toISOString()})`);
+            }
+        }
+        
+        res.json({ 
+            success: true, 
+            message: 'Queue initialized',
+            serving: serving?.name,
+            next: next?.name
+        });
+        
+    } catch (error) {
+        console.error('Initialize error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// ✅ ENHANCED: Serve next with auto-promotion
+app.post('/api/queues/:queueId/serve', authenticateToken, async (req, res) => {
+    try {
+        const { queueId } = req.params;
+        
+        const queueResult = await pool.query(
+            'SELECT * FROM queues WHERE queue_id = $1 AND creator_email = $2',
+            [queueId, req.user.email]
+        );
+        
+        if (queueResult.rows.length === 0) {
+            return res.status(403).json({ success: false, message: 'Unauthorized' });
+        }
+        
+        const queue = queueResult.rows[0];
+        
+        // Find current serving
+        const servingResult = await pool.query(
+            `SELECT * FROM participants WHERE queue_id = $1 AND status = 'serving'`,
+            [queue.id]
+        );
+        
+        let servedParticipant = null;
+        
+        if (servingResult.rows.length > 0) {
+            servedParticipant = servingResult.rows[0];
+            await pool.query(
+                `UPDATE participants SET status = 'served', served_at = NOW() WHERE id = $1`,
+                [servedParticipant.id]
+            );
+        }
+        
+        // Find current next
+        const nextResult = await pool.query(
+            `SELECT * FROM participants WHERE queue_id = $1 AND status = 'next'`,
+            [queue.id]
+        );
+        
+        let newServing = null, newNext = null;
+        
+        if (nextResult.rows.length > 0) {
+            newServing = nextResult.rows[0];
+            await pool.query(
+                `UPDATE participants SET status = 'serving', notification_sent = FALSE WHERE id = $1`,
+                [newServing.id]
+            );
+        } else {
+            // No next - find first waiting
+            const firstWaiting = await pool.query(
+                `SELECT * FROM participants WHERE queue_id = $1 AND status = 'waiting' ORDER BY position ASC LIMIT 1`,
+                [queue.id]
+            );
+            if (firstWaiting.rows.length > 0) {
+                newServing = firstWaiting.rows[0];
+                await pool.query(
+                    `UPDATE participants SET status = 'serving' WHERE id = $1`,
+                    [newServing.id]
+                );
+            }
+        }
+        
+        // Promote next waiting to next
+        if (newServing) {
+            const promoted = await promoteNextParticipant(queue.id, req.user.email);
+            if (promoted) newNext = promoted;
+        }
+        
+        res.json({
+            success: true,
+            message: servedParticipant ? `Served: ${servedParticipant.name}` : 'Queue advanced',
+            served: servedParticipant ? { name: servedParticipant.name } : null,
+            newServing: newServing ? { name: newServing.name } : null,
+            newNext: newNext ? { name: newNext.name } : null
+        });
+        
+    } catch (error) {
+        console.error('Enhanced serve error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// ✅ NEW: Skip next (no response)
+app.post('/api/queues/:queueId/skip-next', authenticateToken, async (req, res) => {
+    try {
+        const { queueId } = req.params;
+        
+        const queueResult = await pool.query(
+            'SELECT * FROM queues WHERE queue_id = $1 AND creator_email = $2',
+            [queueId, req.user.email]
+        );
+        
+        if (queueResult.rows.length === 0) {
+            return res.status(403).json({ success: false, message: 'Unauthorized' });
+        }
+        
+        const queue = queueResult.rows[0];
+        
+        const nextResult = await pool.query(
+            `SELECT * FROM participants WHERE queue_id = $1 AND status = 'next'`,
+            [queue.id]
+        );
+        
+        if (nextResult.rows.length === 0) {
+            return res.status(404).json({ success: false, message: 'No next participant' });
+        }
+        
+        const skipped = nextResult.rows[0];
+        
+        await pool.query(
+            `UPDATE participants SET status = 'skipped', served_at = NOW() WHERE id = $1`,
+            [skipped.id]
+        );
+        
+        const newNext = await promoteNextParticipant(queue.id, req.user.email);
+        
+        res.json({
+            success: true,
+            message: `${skipped.name} skipped`,
+            newNext: newNext ? { name: newNext.name } : null
+        });
+        
+    } catch (error) {
+        console.error('Skip error:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// Get participant position
 app.get('/api/participants/:participantId/position', async (req, res) => {
     try {
         const { participantId } = req.params;
@@ -438,7 +786,7 @@ app.get('/api/participants/:participantId/position', async (req, res) => {
         const participantResult = await pool.query(
             `SELECT p.*, q.name as queue_name, q.queue_id 
              FROM participants p JOIN queues q ON p.queue_id = q.id 
-             WHERE p.participant_id = $1 AND p.status = 'waiting'`,
+             WHERE p.participant_id = $1 AND p.status IN ('waiting', 'next', 'serving')`,
             [participantId]
         );
         
@@ -450,19 +798,20 @@ app.get('/api/participants/:participantId/position', async (req, res) => {
         
         const aheadResult = await pool.query(
             `SELECT COUNT(*) as count FROM participants 
-             WHERE queue_id = $1 AND position < $2 AND status = 'waiting'`,
+             WHERE queue_id = $1 AND position < $2 AND status IN ('waiting', 'next', 'serving')`,
             [participant.queue_id, participant.position]
         );
         
         const behindResult = await pool.query(
             `SELECT COUNT(*) as count FROM participants 
-             WHERE queue_id = $1 AND position > $2 AND status = 'waiting'`,
+             WHERE queue_id = $1 AND position > $2 AND status IN ('waiting', 'next', 'serving')`,
             [participant.queue_id, participant.position]
         );
         
         res.json({
             success: true,
             position: participant.position,
+            status: participant.status,
             queueName: participant.queue_name,
             queueId: participant.queue_id,
             aheadCount: parseInt(aheadResult.rows[0].count),
@@ -475,50 +824,7 @@ app.get('/api/participants/:participantId/position', async (req, res) => {
     }
 });
 
-// ✅ NEW: Serve next participant (for queue owner)
-app.post('/api/queues/:queueId/serve', authenticateToken, async (req, res) => {
-    try {
-        const { queueId } = req.params;
-        
-        const queueResult = await pool.query(
-            'SELECT * FROM queues WHERE queue_id = $1 AND creator_email = $2',
-            [queueId, req.user.email]
-        );
-        
-        if (queueResult.rows.length === 0) {
-            return res.status(404).json({ success: false, message: 'Queue not found or unauthorized' });
-        }
-        
-        const queue = queueResult.rows[0];
-        
-        const nextResult = await pool.query(
-            `SELECT * FROM participants WHERE queue_id = $1 AND status = 'waiting' ORDER BY position ASC LIMIT 1`,
-            [queue.id]
-        );
-        
-        if (nextResult.rows.length === 0) {
-            return res.status(404).json({ success: false, message: 'No participants waiting' });
-        }
-        
-        const nextParticipant = nextResult.rows[0];
-        
-        await pool.query(
-            `UPDATE participants SET status = 'served', served_at = NOW() WHERE id = $1`,
-            [nextParticipant.id]
-        );
-        
-        res.json({
-            success: true,
-            message: `Served: ${nextParticipant.name}`,
-            served: { name: nextParticipant.name, position: nextParticipant.position }
-        });
-    } catch (error) {
-        console.error('Serve error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
-    }
-});
-
-// ✅ NEW: Delete queue
+// Delete queue
 app.delete('/api/queues/:queueId', authenticateToken, async (req, res) => {
     try {
         const result = await pool.query(
@@ -536,8 +842,8 @@ app.delete('/api/queues/:queueId', authenticateToken, async (req, res) => {
         res.status(500).json({ success: false, message: 'Server error' });
     }
 });
+
 // ==================== ADMIN ROUTES ====================
-// Admin middleware
 function requireAdmin(req, res, next) {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -551,12 +857,10 @@ function requireAdmin(req, res, next) {
     next();
 }
 
-// Get all users (admin only)
 app.get('/api/admin/users', requireAdmin, async (req, res) => {
     try {
         const result = await pool.query(
-            `SELECT u.*, 
-             (SELECT COUNT(*) FROM queues WHERE creator_email = u.email) as queue_count
+            `SELECT u.*, (SELECT COUNT(*) FROM queues WHERE creator_email = u.email) as queue_count
              FROM users u ORDER BY u.created_at DESC`
         );
         res.json({ success: true, users: result.rows });
@@ -565,12 +869,11 @@ app.get('/api/admin/users', requireAdmin, async (req, res) => {
     }
 });
 
-// Get all queues (admin only)
 app.get('/api/admin/queues', requireAdmin, async (req, res) => {
     try {
         const result = await pool.query(
             `SELECT q.*, 
-             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status = 'waiting') as waiting_count
+             (SELECT COUNT(*) FROM participants WHERE queue_id = q.id AND status IN ('waiting', 'next', 'serving')) as waiting_count
              FROM queues q ORDER BY q.created_at DESC`
         );
         res.json({ success: true, queues: result.rows });
@@ -579,7 +882,6 @@ app.get('/api/admin/queues', requireAdmin, async (req, res) => {
     }
 });
 
-// Get all participants (admin only)
 app.get('/api/admin/participants', requireAdmin, async (req, res) => {
     try {
         const result = await pool.query(
@@ -594,10 +896,8 @@ app.get('/api/admin/participants', requireAdmin, async (req, res) => {
     }
 });
 
-// Delete user (admin only)
 app.delete('/api/admin/users/:userId', requireAdmin, async (req, res) => {
     try {
-        // Don't allow deleting the last admin
         const adminCheck = await pool.query('SELECT COUNT(*) FROM users WHERE role = $1', ['admin']);
         const userToDelete = await pool.query('SELECT role FROM users WHERE user_id = $1', [req.params.userId]);
         
@@ -612,12 +912,9 @@ app.delete('/api/admin/users/:userId', requireAdmin, async (req, res) => {
     }
 });
 
-// Update user role (admin only)
 app.put('/api/admin/users/:userId/role', requireAdmin, async (req, res) => {
     const { role } = req.body;
-    if (!['admin', 'user'].includes(role)) {
-        return res.status(400).json({ error: 'Invalid role' });
-    }
+    if (!['admin', 'user'].includes(role)) return res.status(400).json({ error: 'Invalid role' });
     try {
         await pool.query('UPDATE users SET role = $1 WHERE user_id = $2', [role, req.params.userId]);
         res.json({ success: true, message: 'Role updated' });
@@ -626,7 +923,6 @@ app.put('/api/admin/users/:userId/role', requireAdmin, async (req, res) => {
     }
 });
 
-// Delete queue (admin only)
 app.delete('/api/admin/queues/:queueId', requireAdmin, async (req, res) => {
     try {
         await pool.query('DELETE FROM queues WHERE queue_id = $1', [req.params.queueId]);
@@ -636,7 +932,6 @@ app.delete('/api/admin/queues/:queueId', requireAdmin, async (req, res) => {
     }
 });
 
-// Delete participant (admin only)
 app.delete('/api/admin/participants/:participantId', requireAdmin, async (req, res) => {
     try {
         await pool.query('DELETE FROM participants WHERE participant_id = $1', [req.params.participantId]);
@@ -671,6 +966,10 @@ async function startServer() {
     const connected = await initDatabaseConnection();
     if (connected) await initializeTables();
     
+    // ✅ Start background task for grace period checking (every 30 seconds)
+    setInterval(handleExpiredGracePeriods, 30000);
+    console.log('⏰ Auto-skip checker started (runs every 30s)');
+    
     app.listen(PORT, '0.0.0.0', () => {
         console.log('╔══════════════════════════════════════════════════════════╗');
         console.log('║     🎉 LINKQUEUE SERVER IS RUNNING SUCCESSFULLY!        ║');
@@ -682,6 +981,7 @@ async function startServer() {
         console.log('║  👤 Demo:  demo@linkqueue.com / demo123                  ║');
         console.log('╠══════════════════════════════════════════════════════════╣');
         console.log(`║  💾 Database: ${connected ? '✅ Connected' : '❌ Disconnected'}                               ║`);
+        console.log('║  ⏱️  Two-Stage Queue: ENABLED                             ║');
         console.log('╚══════════════════════════════════════════════════════════╝\n');
     });
 }
