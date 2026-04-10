@@ -7,7 +7,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
-    /* All your existing CSS remains exactly the same */
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
     .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 2rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
@@ -25,6 +24,14 @@
     .queue-description { opacity: 0.8; font-size: 0.9rem; margin-top: 0.5rem; word-break: break-word; }
     .queue-detail { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
     .detail-badge { background: rgba(34, 211, 238, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
+    
+    /* Two-Stage Info */
+    .workflow-info { background: rgba(34, 211, 238, 0.05); border-radius: 1rem; padding: 1rem; margin: 1rem 0; border: 1px dashed rgba(34, 211, 238, 0.3); }
+    .workflow-info h4 { color: #22D3EE; margin-bottom: 0.5rem; font-size: 0.9rem; }
+    .workflow-info p { font-size: 0.8rem; opacity: 0.8; line-height: 1.5; }
+    .workflow-info .highlight { color: #f59e0b; font-weight: 600; }
+    .workflow-info .highlight-green { color: #22c55e; font-weight: 600; }
+    
     .options-card { padding: 2rem; }
     .option-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(34, 211, 238, 0.2); padding-bottom: 0.5rem; }
     .tab-btn { background: transparent; border: none; padding: 0.8rem 1rem; border-radius: 2rem; color: #eef5ff; cursor: pointer; font-weight: 500; transition: 0.2s; flex: 1; font-size: 0.9rem; }
@@ -78,6 +85,19 @@
       <div class="queue-detail" id="queueDetails">
         <span class="detail-badge"><i class="fas fa-users"></i> <span id="participantCount">0</span> waiting</span>
         <span class="detail-badge"><i class="fas fa-clock"></i> <span id="expiryInfo">Loading...</span></span>
+      </div>
+      
+      <!-- Two-Stage Queue Info -->
+      <div class="workflow-info">
+        <h4><i class="fas fa-info-circle"></i> How This Queue Works</h4>
+        <p>
+          <span class="highlight-green">SERVING</span> → Currently being attended to<br>
+          <span class="highlight">NEXT</span> → You'll get a 3-min notification to prepare<br>
+          <span style="color: #22D3EE;">WAITING</span> → In line, position updates automatically
+        </p>
+        <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+          <i class="fas fa-bell" style="color: #f59e0b;"></i> When you become NEXT, you'll receive a notification with a 3-minute grace period to respond.
+        </p>
       </div>
     </div>
 
@@ -140,7 +160,7 @@
           </div>
           <div class="input-group">
             <i class="fas fa-envelope"></i>
-            <input type="email" id="guestEmail" placeholder="Email Address (optional)">
+            <input type="email" id="guestEmail" placeholder="Email Address (optional - for notifications)">
           </div>
           <div class="input-group">
             <i class="fas fa-phone"></i>
@@ -154,7 +174,7 @@
       </div>
 
       <div class="link-hint">
-        <i class="fas fa-info-circle"></i> After joining, you'll see your real-time position
+        <i class="fas fa-info-circle"></i> After joining, you'll see your real-time position and status
       </div>
     </div>
   </div>
@@ -215,8 +235,6 @@
       const response = await fetch(url);
       const data = await response.json();
       
-      console.log('Queue API full response:', data);
-      
       if (!response.ok || !data.success) {
         throw new Error(data.error || data.message || 'Queue not found');
       }
@@ -237,7 +255,6 @@
       
       const url = `${API_BASE}/queues/${currentQueueId}/join`;
       console.log('📡 Joining queue:', url);
-      console.log('Join payload:', { name, email, phone, isGuest });
       
       const response = await fetch(url, {
         method: 'POST',
@@ -246,7 +263,6 @@
       });
       
       const data = await response.json();
-      console.log('Join API full response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Failed to join queue');
@@ -268,7 +284,6 @@
       });
       
       const data = await response.json();
-      console.log('Login response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Login failed');
@@ -289,7 +304,6 @@
       });
       
       const data = await response.json();
-      console.log('Register response:', data);
       
       if (!response.ok) {
         throw new Error(data.error || data.message || 'Registration failed');
@@ -329,7 +343,6 @@
   }
 
   function redirectAfterJoin(participantId, queueName, participantName) {
-    // Store participant session
     localStorage.setItem('my_participant_session', JSON.stringify({
       queueId: currentQueueId,
       participantId: participantId,
@@ -361,8 +374,6 @@
   async function init() {
     const urlParams = new URLSearchParams(window.location.search);
     let queueId = urlParams.get('join') || urlParams.get('q');
-    
-    console.log('Queue ID from URL:', queueId);
     
     if (!queueId) {
       document.getElementById('queueNameDisplay').innerText = 'Invalid Queue Link';
