@@ -8,24 +8,22 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
-    .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 2rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+    body { font-family: 'Inter', sans-serif; background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a); min-height: 100vh; color: #eef5ff; }
+    .glass { background: rgba(15, 25, 35, 0.6); backdrop-filter: blur(14px); border: 1px solid rgba(34, 211, 238, 0.25); border-radius: 2rem; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4); }
     .container { max-width: 1200px; margin: 0 auto; padding: 2rem; }
-    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(5, 10, 25, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34, 211, 238, 0.2); position: sticky; top: 0; z-index: 100; }
+    nav { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; background: rgba(5, 10, 25, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(34, 211, 238, 0.2); }
     .logo { font-size: 1.8rem; font-weight: 800; background: linear-gradient(135deg, #fff, #22D3EE); -webkit-background-clip: text; background-clip: text; color: transparent; text-decoration: none; display: flex; align-items: center; gap: 0.5rem; }
-    .logo i { color: #22D3EE; }
     .nav-links { display: flex; gap: 1.5rem; }
-    .nav-links a { color: #eef5ff; text-decoration: none; transition: color 0.2s; font-weight: 500; }
+    .nav-links a { color: #eef5ff; text-decoration: none; font-weight: 500; }
     .nav-links a:hover { color: #22D3EE; }
     .join-container { max-width: 580px; margin: 2rem auto; }
-    .queue-info-card { text-align: center; margin-bottom: 2rem; padding: 2rem; word-wrap: break-word; overflow-wrap: break-word; }
+    .queue-info-card { text-align: center; margin-bottom: 2rem; padding: 2rem; }
     .queue-icon { font-size: 3rem; color: #22D3EE; margin-bottom: 0.5rem; }
-    .queue-name-large { font-size: 1.8rem; font-weight: 700; margin: 0.5rem 0; color: #22D3EE; word-break: break-word; }
-    .queue-description { opacity: 0.8; font-size: 0.9rem; margin-top: 0.5rem; word-break: break-word; }
-    .queue-detail { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
-    .detail-badge { background: rgba(34, 211, 238, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
+    .queue-name { font-size: 1.8rem; font-weight: 700; color: #22D3EE; word-break: break-word; }
+    .queue-desc { opacity: 0.8; font-size: 0.9rem; margin: 0.5rem 0; }
+    .queue-stats { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 1rem; }
+    .stat { background: rgba(34, 211, 238, 0.1); padding: 0.4rem 1rem; border-radius: 2rem; font-size: 0.85rem; }
     
-    /* Two-Stage Info */
     .workflow-info { background: rgba(34, 211, 238, 0.05); border-radius: 1rem; padding: 1rem; margin: 1rem 0; border: 1px dashed rgba(34, 211, 238, 0.3); }
     .workflow-info h4 { color: #22D3EE; margin-bottom: 0.5rem; font-size: 0.9rem; }
     .workflow-info p { font-size: 0.8rem; opacity: 0.8; line-height: 1.5; }
@@ -33,40 +31,39 @@
     .workflow-info .highlight-green { color: #22c55e; font-weight: 600; }
     
     .options-card { padding: 2rem; }
-    .option-tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(34, 211, 238, 0.2); padding-bottom: 0.5rem; }
-    .tab-btn { background: transparent; border: none; padding: 0.8rem 1rem; border-radius: 2rem; color: #eef5ff; cursor: pointer; font-weight: 500; transition: 0.2s; flex: 1; font-size: 0.9rem; }
-    .tab-btn.active { background: linear-gradient(95deg, #5B21B6, #7c3aed); color: white; }
-    .tab-btn:not(.active):hover { background: rgba(34, 211, 238, 0.1); }
-    .tab-content { display: none; animation: fadeIn 0.3s ease; }
-    .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px);} to { opacity: 1; transform: translateY(0);} }
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(34, 211, 238, 0.2); padding-bottom: 0.5rem; }
+    .tab { background: transparent; border: none; padding: 0.8rem 1rem; border-radius: 2rem; color: #eef5ff; cursor: pointer; font-weight: 500; transition: 0.2s; flex: 1; font-size: 0.9rem; }
+    .tab.active { background: linear-gradient(95deg, #5B21B6, #7c3aed); color: white; }
+    .tab:not(.active):hover { background: rgba(34, 211, 238, 0.1); }
+    .tab-pane { display: none; animation: fadeIn 0.3s; }
+    .tab-pane.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    
     .input-group { margin: 0.8rem 0; position: relative; }
     .input-group i { position: absolute; left: 15px; top: 50%; transform: translateY(-50%); color: #22D3EE; opacity: 0.7; z-index: 1; }
-    input { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.9rem 1rem 0.9rem 2.8rem; border-radius: 1rem; color: white; font-size: 0.95rem; outline: none; width: 100%; transition: all 0.2s; }
+    input { background: rgba(0, 0, 0, 0.5); border: 1px solid rgba(34, 211, 238, 0.4); padding: 0.9rem 1rem 0.9rem 2.8rem; border-radius: 1rem; color: white; font-size: 0.95rem; outline: none; width: 100%; }
     input:focus { border-color: #22D3EE; box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2); }
     .password-wrapper { position: relative; }
     .password-wrapper input { padding-right: 3rem; }
-    .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: transparent; border: none; color: #22D3EE; cursor: pointer; z-index: 10; padding: 0.5rem; }
-    .btn-primary { background: linear-gradient(95deg, #5B21B6, #7c3aed); border: none; padding: 0.9rem 2rem; border-radius: 2rem; color: white; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; transition: transform 0.2s ease, box-shadow 0.2s ease; margin-top: 1rem; }
+    .toggle-password { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #22D3EE; cursor: pointer; }
+    .btn { padding: 0.9rem 2rem; border-radius: 2rem; font-weight: 600; cursor: pointer; width: 100%; font-size: 1rem; transition: all 0.2s; margin-top: 1rem; }
+    .btn-primary { background: linear-gradient(95deg, #5B21B6, #7c3aed); border: none; color: white; }
     .btn-primary:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(91, 33, 182, 0.4); }
     .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-    .btn-outline { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; padding: 0.8rem 2rem; border-radius: 2rem; cursor: pointer; text-decoration: none; display: inline-block; text-align: center; width: 100%; }
-    .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s ease; }
+    .btn-outline { background: transparent; border: 1px solid #22D3EE; color: #22D3EE; }
+    .toast { position: fixed; bottom: 20px; right: 20px; background: #22D3EE; color: #0a0a1f; padding: 0.8rem 1.5rem; border-radius: 2rem; font-weight: bold; z-index: 1100; animation: fadeInUp 0.3s; }
     .toast.error { background: #ff4757; color: white; }
-    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px);} to { opacity: 1; transform: translateY(0);} }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
     .error-msg { color: #ff6b6b; font-size: 0.8rem; margin-top: 0.5rem; text-align: center; }
-    .link-hint { text-align: center; font-size: 0.75rem; opacity: 0.6; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(34, 211, 238, 0.2); }
+    .hint { text-align: center; font-size: 0.75rem; opacity: 0.6; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid rgba(34, 211, 238, 0.2); }
     .expired-message { text-align: center; padding: 2rem; }
     .expired-message i { font-size: 3rem; color: #ff6b6b; margin-bottom: 1rem; }
-    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .nav-links { flex-wrap: wrap; justify-content: center; } .queue-name-large { font-size: 1.3rem; } .tab-btn { font-size: 0.75rem; padding: 0.6rem 0.5rem; } }
+    @media (max-width: 768px) { .container { padding: 1rem; } nav { flex-direction: column; gap: 0.8rem; } .queue-name { font-size: 1.3rem; } .tab { font-size: 0.75rem; padding: 0.6rem 0.5rem; } }
   </style>
 </head>
 <body>
-
 <nav>
-  <a href="index.html" class="logo">
-    <i class="fas fa-link"></i> LinkQueue
-  </a>
+  <a href="index.html" class="logo"><i class="fas fa-link"></i> LinkQueue</a>
   <div class="nav-links">
     <a href="index.html">Home</a>
     <a href="login.html">Login</a>
@@ -77,494 +74,319 @@
 <div class="container">
   <div class="join-container">
     <div class="glass queue-info-card" id="queueInfoCard">
-      <div class="queue-icon">
-        <i class="fas fa-ticket-alt"></i>
-      </div>
-      <div class="queue-name-large" id="queueNameDisplay">Loading queue...</div>
-      <div class="queue-description" id="queueDescriptionDisplay"></div>
-      <div class="queue-detail" id="queueDetails">
-        <span class="detail-badge"><i class="fas fa-users"></i> <span id="participantCount">0</span> waiting</span>
-        <span class="detail-badge"><i class="fas fa-clock"></i> <span id="expiryInfo">Loading...</span></span>
+      <div class="queue-icon"><i class="fas fa-ticket-alt"></i></div>
+      <div class="queue-name" id="queueNameDisplay">Loading queue...</div>
+      <div class="queue-desc" id="queueDescriptionDisplay"></div>
+      <div class="queue-stats">
+        <span class="stat"><i class="fas fa-users"></i> <span id="participantCount">0</span> waiting</span>
+        <span class="stat"><i class="fas fa-clock"></i> <span id="expiryInfo">Loading...</span></span>
       </div>
       
-      <!-- Two-Stage Queue Info -->
       <div class="workflow-info">
         <h4><i class="fas fa-info-circle"></i> How This Queue Works</h4>
-        <p>
-          <span class="highlight-green">SERVING</span> → Currently being attended to<br>
-          <span class="highlight">NEXT</span> → You'll get a 3-min notification to prepare<br>
-          <span style="color: #22D3EE;">WAITING</span> → In line, position updates automatically
-        </p>
-        <p style="margin-top: 0.5rem; font-size: 0.75rem;">
-          <i class="fas fa-bell" style="color: #f59e0b;"></i> When you become NEXT, you'll receive a notification with a 3-minute grace period to respond.
-        </p>
+        <p><span class="highlight-green">SERVING</span> → Currently attended<br><span class="highlight">NEXT</span> → 3-min notification to prepare<br><span style="color:#22D3EE;">WAITING</span> → Position updates live</p>
+        <p style="margin-top:0.5rem;font-size:0.75rem;"><i class="fas fa-bell" style="color:#f59e0b;"></i> As NEXT, you get 3 minutes to respond before auto-skip.</p>
       </div>
     </div>
 
     <div class="glass options-card" id="optionsCard">
-      <div class="option-tabs">
-        <button class="tab-btn active" data-tab="login"><i class="fas fa-sign-in-alt"></i> Login</button>
-        <button class="tab-btn" data-tab="register"><i class="fas fa-user-plus"></i> Register</button>
-        <button class="tab-btn" data-tab="guest"><i class="fas fa-user-friends"></i> Guest</button>
+      <div class="tabs">
+        <button class="tab active" data-tab="login"><i class="fas fa-sign-in-alt"></i> Login</button>
+        <button class="tab" data-tab="register"><i class="fas fa-user-plus"></i> Register</button>
+        <button class="tab" data-tab="guest"><i class="fas fa-user-friends"></i> Guest</button>
       </div>
 
-      <div id="loginTab" class="tab-content active">
+      <div id="loginPane" class="tab-pane active">
         <form id="loginForm">
-          <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="loginEmail" placeholder="Email Address" required>
-          </div>
-          <div class="input-group password-wrapper">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="loginPassword" placeholder="Password" required>
-            <button type="button" class="toggle-password" data-target="loginPassword">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <button type="submit" class="btn-primary" id="loginBtn">
-            <i class="fas fa-arrow-right-to-bracket"></i> Login & Join Queue
-          </button>
+          <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="loginEmail" placeholder="Email Address" required></div>
+          <div class="input-group password-wrapper"><i class="fas fa-lock"></i><input type="password" id="loginPassword" placeholder="Password" required><button type="button" class="toggle-password" data-target="loginPassword"><i class="fas fa-eye"></i></button></div>
+          <button type="submit" class="btn btn-primary" id="loginBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login & Join</button>
         </form>
         <div id="loginError" class="error-msg"></div>
       </div>
 
-      <div id="registerTab" class="tab-content">
+      <div id="registerPane" class="tab-pane">
         <form id="registerForm">
-          <div class="input-group">
-            <i class="fas fa-user"></i>
-            <input type="text" id="regName" placeholder="Full Name" required>
-          </div>
-          <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="regEmail" placeholder="Email Address" required>
-          </div>
-          <div class="input-group password-wrapper">
-            <i class="fas fa-lock"></i>
-            <input type="password" id="regPassword" placeholder="Password (min 8 characters)" required>
-            <button type="button" class="toggle-password" data-target="regPassword">
-              <i class="fas fa-eye"></i>
-            </button>
-          </div>
-          <button type="submit" class="btn-primary" id="registerBtn">
-            <i class="fas fa-user-plus"></i> Register & Join Queue
-          </button>
+          <div class="input-group"><i class="fas fa-user"></i><input type="text" id="regName" placeholder="Full Name" required></div>
+          <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="regEmail" placeholder="Email Address" required></div>
+          <div class="input-group password-wrapper"><i class="fas fa-lock"></i><input type="password" id="regPassword" placeholder="Password (min 8 chars)" required><button type="button" class="toggle-password" data-target="regPassword"><i class="fas fa-eye"></i></button></div>
+          <button type="submit" class="btn btn-primary" id="registerBtn"><i class="fas fa-user-plus"></i> Register & Join</button>
         </form>
         <div id="registerError" class="error-msg"></div>
       </div>
 
-      <div id="guestTab" class="tab-content">
+      <div id="guestPane" class="tab-pane">
         <form id="guestForm">
-          <div class="input-group">
-            <i class="fas fa-user"></i>
-            <input type="text" id="guestName" placeholder="Your Full Name *" required>
-          </div>
-          <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" id="guestEmail" placeholder="Email Address (optional - for notifications)">
-          </div>
-          <div class="input-group">
-            <i class="fas fa-phone"></i>
-            <input type="tel" id="guestPhone" placeholder="Phone Number (optional)">
-          </div>
-          <button type="submit" class="btn-primary" id="guestBtn">
-            <i class="fas fa-user-check"></i> Continue as Guest
-          </button>
+          <div class="input-group"><i class="fas fa-user"></i><input type="text" id="guestName" placeholder="Your Full Name *" required></div>
+          <div class="input-group"><i class="fas fa-envelope"></i><input type="email" id="guestEmail" placeholder="Email (for notifications)"></div>
+          <div class="input-group"><i class="fas fa-phone"></i><input type="tel" id="guestPhone" placeholder="Phone (optional)"></div>
+          <button type="submit" class="btn btn-primary" id="guestBtn"><i class="fas fa-user-check"></i> Join as Guest</button>
         </form>
         <div id="guestError" class="error-msg"></div>
       </div>
 
-      <div class="link-hint">
-        <i class="fas fa-info-circle"></i> After joining, you'll see your real-time position and status
-      </div>
+      <div class="hint"><i class="fas fa-info-circle"></i> After joining, view your live position and status</div>
     </div>
   </div>
 </div>
 
 <script>
-  const API_BASE = (() => {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:3000/api';
+  (function() {
+    // ==================== CONFIG ====================
+    const API_BASE = window.location.hostname === 'localhost' ? 'http://localhost:3000/api' : '/api';
+    console.log('🌐 API:', API_BASE);
+
+    let queueId = null;
+    const params = new URLSearchParams(window.location.search);
+    queueId = params.get('join') || params.get('q');
+
+    // ==================== UTILS ====================
+    function toast(msg, err = false) {
+      const t = document.createElement('div');
+      t.className = 'toast' + (err ? ' error' : '');
+      t.innerHTML = `<i class="fas fa-${err ? 'exclamation-triangle' : 'check-circle'}"></i> ${msg}`;
+      document.body.appendChild(t);
+      setTimeout(() => t.remove(), 3500);
     }
-    return '/api';
-  })();
-  
-  console.log('🌐 API Base URL:', API_BASE);
-  
-  let currentQueueId = null;
 
-  function showToast(message, isError = false) {
-    let existingToast = document.querySelector('.toast');
-    if (existingToast) existingToast.remove();
-    let toast = document.createElement('div');
-    toast.className = 'toast' + (isError ? ' error' : '');
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
-  }
-
-  function setButtonLoading(btn, isLoading, originalText) {
-    if (!btn) return;
-    if (isLoading) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing...';
-    } else {
-      btn.disabled = false;
-      btn.innerHTML = originalText;
+    function setLoading(btn, loading) {
+      if (!btn) return;
+      btn.disabled = loading;
+      btn.innerHTML = loading ? '<i class="fas fa-spinner fa-pulse"></i> Processing...' : btn.dataset.original || btn.innerHTML;
+      if (!loading) btn.dataset.original = null;
     }
-  }
 
-  document.querySelectorAll('.toggle-password').forEach(btn => {
-    btn.addEventListener('click', function() {
-      const targetId = this.getAttribute('data-target');
-      const input = document.getElementById(targetId);
-      if (input) {
-        const type = input.type === 'password' ? 'text' : 'password';
-        input.type = type;
-        const icon = this.querySelector('i');
-        icon.classList.toggle('fa-eye');
-        icon.classList.toggle('fa-eye-slash');
-      }
-    });
-  });
+    function esc(str) {
+      if (!str) return '';
+      return str.replace(/[&<>]/g, m => m === '&' ? '&amp;' : m === '<' ? '&lt;' : '&gt;');
+    }
 
-  async function fetchQueueInfo(queueId) {
-    try {
-      const url = `${API_BASE}/queues/${queueId}`;
-      console.log('📡 Fetching queue:', url);
-      const response = await fetch(url);
-      const data = await response.json();
-      
-      if (!response.ok || !data.success) {
-        throw new Error(data.error || data.message || 'Queue not found');
-      }
-      
+    // ==================== API CALLS ====================
+    async function fetchQueue(id) {
+      const res = await fetch(`${API_BASE}/queues/${id}`);
+      const data = await res.json();
+      if (!res.ok || !data.success) throw new Error(data.error || data.message || 'Queue not found');
       return data.queue;
-    } catch (error) {
-      console.error('Error fetching queue:', error);
-      return null;
     }
-  }
 
-  async function joinQueueAPI(name, email, phone, isGuest = true, token = null) {
-    try {
+    async function joinQueue(name, email, phone, isGuest = true, token = null) {
       const headers = { 'Content-Type': 'application/json' };
-      if (token) {
-        headers['Authorization'] = `Bearer ${token}`;
-      }
+      if (token) headers['Authorization'] = `Bearer ${token}`;
       
-      const url = `${API_BASE}/queues/${currentQueueId}/join`;
-      console.log('📡 Joining queue:', url);
-      
-      const response = await fetch(url, {
+      const res = await fetch(`${API_BASE}/queues/${queueId}/join`, {
         method: 'POST',
-        headers: headers,
+        headers,
         body: JSON.stringify({ name, email, phone, isGuest })
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Failed to join queue');
-      }
-      
-      return { success: true, data: data };
-    } catch (error) {
-      console.error('Join error:', error);
-      return { success: false, error: error.message };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.message || 'Failed to join');
+      return data;
     }
-  }
 
-  async function loginAPI(email, password) {
-    try {
-      const response = await fetch(`${API_BASE}/login`, {
+    async function login(email, password) {
+      const res = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password })
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Login failed');
-      }
-      
-      return { success: true, data: data };
-    } catch (error) {
-      return { success: false, error: error.message };
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.message || 'Login failed');
+      return data;
     }
-  }
 
-  async function registerAPI(name, email, password) {
-    try {
-      const response = await fetch(`${API_BASE}/register`, {
+    async function register(name, email, password) {
+      const res = await fetch(`${API_BASE}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password, role: 'user' })
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || data.message || 'Registration failed');
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || data.message || 'Registration failed');
+      return data;
+    }
+
+    // ==================== UI UPDATE ====================
+    function updateQueueUI(queue) {
+      if (!queue) return false;
+      document.getElementById('queueNameDisplay').textContent = queue.name;
+      if (queue.description) document.getElementById('queueDescriptionDisplay').textContent = queue.description;
+      document.getElementById('participantCount').textContent = queue.participantCount || 0;
+
+      if (queue.isActive) {
+        document.getElementById('expiryInfo').innerHTML = `<i class="fas fa-hourglass-half"></i> Expires: ${new Date(queue.expiresAt).toLocaleString()}`;
+        return true;
+      } else {
+        document.getElementById('expiryInfo').innerHTML = '<i class="fas fa-ban"></i> Queue Expired';
+        document.getElementById('optionsCard').innerHTML = `<div class="expired-message"><i class="fas fa-clock"></i><h3>Queue Expired</h3><p>No longer accepting participants.</p><a href="index.html" class="btn btn-outline" style="margin-top:1rem;">Go Home</a></div>`;
+        return false;
       }
-      
-      return { success: true, data: data };
-    } catch (error) {
-      return { success: false, error: error.message };
     }
-  }
 
-  function updateQueueInfoUI(queue) {
-    if (!queue) return false;
-    
-    document.getElementById('queueNameDisplay').innerText = queue.name;
-    if (queue.description) {
-      document.getElementById('queueDescriptionDisplay').innerText = queue.description;
-    }
-    document.getElementById('participantCount').innerText = queue.participantCount || 0;
-    
-    if (queue.isActive) {
-      const expiryDate = new Date(queue.expiresAt);
-      document.getElementById('expiryInfo').innerHTML = `<i class="fas fa-hourglass-half"></i> Expires: ${expiryDate.toLocaleString()}`;
-      return true;
-    } else {
-      document.getElementById('expiryInfo').innerHTML = '<i class="fas fa-ban"></i> Queue Expired';
-      document.getElementById('optionsCard').innerHTML = `
-        <div class="expired-message">
-          <i class="fas fa-clock"></i>
-          <h3>Queue Expired</h3>
-          <p>This queue is no longer accepting participants.</p>
-          <a href="index.html" class="btn-outline" style="margin-top: 1rem;">Go Home</a>
-        </div>
-      `;
-      return false;
-    }
-  }
-
-  function redirectAfterJoin(participantId, queueName, participantName) {
-    localStorage.setItem('my_participant_session', JSON.stringify({
-      queueId: currentQueueId,
-      participantId: participantId,
-      queueName: queueName,
-      participantName: participantName,
-      joinedAt: Date.now()
-    }));
-    
-    const token = localStorage.getItem('auth_token');
-    if (token) {
-      window.location.href = 'user-dashboard.html';
-    } else {
-      window.location.href = `queue-status.html?join=${currentQueueId}`;
-    }
-  }
-
-  function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(tab => {
-      tab.classList.remove('active');
-    });
-    document.getElementById(tabId + 'Tab').classList.add('active');
-    
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.classList.remove('active');
-    });
-    document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
-  }
-
-  async function init() {
-    const urlParams = new URLSearchParams(window.location.search);
-    let queueId = urlParams.get('join') || urlParams.get('q');
-    
-    if (!queueId) {
-      document.getElementById('queueNameDisplay').innerText = 'Invalid Queue Link';
-      document.getElementById('optionsCard').style.display = 'none';
-      showToast('Invalid queue link. Please check the URL and try again.', true);
-      return;
-    }
-    
-    currentQueueId = queueId;
-    document.getElementById('queueNameDisplay').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading queue...';
-    
-    const queue = await fetchQueueInfo(currentQueueId);
-    if (!queue) {
-      document.getElementById('queueNameDisplay').innerText = 'Queue Not Found';
-      document.getElementById('optionsCard').style.display = 'none';
-      showToast('This queue does not exist or has been deleted.', true);
-      return;
-    }
-    
-    if (!updateQueueInfoUI(queue)) return;
-    
-    const existingParticipant = localStorage.getItem('my_participant_session');
-    if (existingParticipant) {
-      try {
-        const part = JSON.parse(existingParticipant);
-        if (part.queueId === currentQueueId) {
-          showToast(`You are already in "${queue.name}"! Redirecting...`);
-          setTimeout(() => {
-            window.location.href = `queue-status.html?join=${currentQueueId}`;
-          }, 1500);
-          return;
-        }
-      } catch(e) {}
-    }
-    
-    const token = localStorage.getItem('auth_token');
-    const session = localStorage.getItem('linkqueue_session');
-    if (token && session) {
-      try {
-        const user = JSON.parse(session);
-        if (user.loggedInAt && (Date.now() - user.loggedInAt) < 24 * 60 * 60 * 1000) {
-          document.getElementById('loginEmail').value = user.email;
-          showToast(`Welcome back ${user.name}! Enter your password to join.`);
-        }
-      } catch(e) {}
-    }
-  }
-
-  function setupEventListeners() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () => switchTab(btn.getAttribute('data-tab')));
-    });
-
-    document.getElementById('loginForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-      const password = document.getElementById('loginPassword').value;
-      const btn = document.getElementById('loginBtn');
-      const originalText = btn.innerHTML;
-      
-      if (!email || !password) {
-        showToast('Please enter email and password', true);
-        return;
-      }
-      
-      setButtonLoading(btn, true, originalText);
-      document.getElementById('loginError').innerText = '';
-      
-      const loginResult = await loginAPI(email, password);
-      if (!loginResult.success) {
-        document.getElementById('loginError').innerText = loginResult.error;
-        showToast(loginResult.error, true);
-        setButtonLoading(btn, false, originalText);
-        return;
-      }
-      
-      localStorage.setItem('auth_token', loginResult.data.token);
-      localStorage.setItem('linkqueue_session', JSON.stringify({
-        userId: loginResult.data.user.userId,
-        email: loginResult.data.user.email,
-        name: loginResult.data.user.name,
-        role: loginResult.data.user.role,
-        loggedInAt: Date.now()
+    function redirect(participantId, queueName, participantName) {
+      localStorage.setItem('my_participant_session', JSON.stringify({
+        queueId, participantId, queueName, participantName, joinedAt: Date.now()
       }));
-      
-      const joinResult = await joinQueueAPI(loginResult.data.user.name, email, null, false, loginResult.data.token);
-      
-      if (joinResult.success) {
-        showToast(`✅ ${joinResult.data.message}`);
-        redirectAfterJoin(
-          joinResult.data.participant.participantId,
-          joinResult.data.participant.queueName,
-          loginResult.data.user.name
-        );
-      } else {
-        document.getElementById('loginError').innerText = joinResult.error;
-        showToast(joinResult.error, true);
-        setButtonLoading(btn, false, originalText);
-      }
-    });
+      location.href = localStorage.getItem('auth_token') ? 'user-dashboard.html' : `queue-status.html?join=${queueId}`;
+    }
 
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('regName').value.trim();
-      const email = document.getElementById('regEmail').value.trim().toLowerCase();
-      const password = document.getElementById('regPassword').value;
-      const btn = document.getElementById('registerBtn');
-      const originalText = btn.innerHTML;
-      
-      if (!name || !email || !password) {
-        showToast('Please fill all fields', true);
-        return;
-      }
-      
-      if (password.length < 8) {
-        showToast('Password must be at least 8 characters', true);
-        return;
-      }
-      
-      setButtonLoading(btn, true, originalText);
-      document.getElementById('registerError').innerText = '';
-      
-      const registerResult = await registerAPI(name, email, password);
-      if (!registerResult.success) {
-        document.getElementById('registerError').innerText = registerResult.error;
-        showToast(registerResult.error, true);
-        setButtonLoading(btn, false, originalText);
-        return;
-      }
-      
-      localStorage.setItem('auth_token', registerResult.data.token);
-      localStorage.setItem('linkqueue_session', JSON.stringify({
-        userId: registerResult.data.user.userId,
-        email: registerResult.data.user.email,
-        name: registerResult.data.user.name,
-        role: registerResult.data.user.role,
-        loggedInAt: Date.now()
-      }));
-      
-      const joinResult = await joinQueueAPI(name, email, null, false, registerResult.data.token);
-      
-      if (joinResult.success) {
-        showToast(`🎉 Account created! ${joinResult.data.message}`);
-        redirectAfterJoin(
-          joinResult.data.participant.participantId,
-          joinResult.data.participant.queueName,
-          name
-        );
-      } else {
-        document.getElementById('registerError').innerText = joinResult.error;
-        showToast(joinResult.error, true);
-        setButtonLoading(btn, false, originalText);
-      }
-    });
+    // ==================== TABS ====================
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.getElementById(tabId + 'Pane').classList.add('active');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelector(`[data-tab="${tabId}"]`).classList.add('active');
+    }
 
-    document.getElementById('guestForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('guestName').value.trim();
-      const email = document.getElementById('guestEmail').value.trim();
-      const phone = document.getElementById('guestPhone').value.trim();
-      const btn = document.getElementById('guestBtn');
-      const originalText = btn.innerHTML;
-      
-      if (!name) {
-        document.getElementById('guestError').innerText = 'Please enter your name';
-        showToast('Please enter your name', true);
-        return;
+    // ==================== INIT ====================
+    async function init() {
+      if (!queueId) {
+        document.getElementById('queueNameDisplay').textContent = 'Invalid Link';
+        document.getElementById('optionsCard').style.display = 'none';
+        return toast('Invalid queue link', true);
       }
-      
-      setButtonLoading(btn, true, originalText);
-      document.getElementById('guestError').innerText = '';
-      
-      const joinResult = await joinQueueAPI(name, email || null, phone || null, true);
-      
-      if (joinResult.success) {
-        showToast(`✅ ${joinResult.data.message}`);
-        redirectAfterJoin(
-          joinResult.data.participant.participantId,
-          joinResult.data.participant.queueName,
-          name
-        );
-      } else {
-        document.getElementById('guestError').innerText = joinResult.error;
-        showToast(joinResult.error, true);
-        setButtonLoading(btn, false, originalText);
-      }
-    });
-  }
 
-  setupEventListeners();
-  init();
+      document.getElementById('queueNameDisplay').innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Loading...';
+
+      try {
+        const queue = await fetchQueue(queueId);
+        if (!updateQueueUI(queue)) return;
+
+        // Check existing participant
+        const existing = localStorage.getItem('my_participant_session');
+        if (existing) {
+          try {
+            const p = JSON.parse(existing);
+            if (p.queueId === queueId) {
+              toast(`Already in "${queue.name}"! Redirecting...`);
+              setTimeout(() => location.href = `queue-status.html?join=${queueId}`, 1500);
+              return;
+            }
+          } catch {}
+        }
+
+        // Check logged in user
+        const token = localStorage.getItem('auth_token');
+        const session = localStorage.getItem('linkqueue_session');
+        if (token && session) {
+          try {
+            const user = JSON.parse(session);
+            if (user.loggedInAt && (Date.now() - user.loggedInAt < 24*60*60*1000)) {
+              document.getElementById('loginEmail').value = user.email;
+              toast(`Welcome back ${user.name}! Enter password to join.`);
+            }
+          } catch {}
+        }
+      } catch (e) {
+        document.getElementById('queueNameDisplay').textContent = 'Queue Not Found';
+        document.getElementById('optionsCard').style.display = 'none';
+        toast(e.message, true);
+      }
+    }
+
+    // ==================== EVENT LISTENERS ====================
+    function setupEvents() {
+      // Tabs
+      document.querySelectorAll('.tab').forEach(t => t.addEventListener('click', () => switchTab(t.dataset.tab)));
+
+      // Password toggle
+      document.querySelectorAll('.toggle-password').forEach(b => {
+        b.addEventListener('click', function() {
+          const i = document.getElementById(this.dataset.target);
+          if (i) { i.type = i.type === 'password' ? 'text' : 'password'; this.querySelector('i').classList.toggle('fa-eye'); this.querySelector('i').classList.toggle('fa-eye-slash'); }
+        });
+      });
+
+      // Login
+      document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+        const pwd = document.getElementById('loginPassword').value;
+        const btn = document.getElementById('loginBtn');
+        
+        if (!email || !pwd) return toast('Enter email and password', true);
+        
+        btn.dataset.original = btn.innerHTML;
+        setLoading(btn, true);
+        document.getElementById('loginError').textContent = '';
+
+        try {
+          const loginRes = await login(email, pwd);
+          localStorage.setItem('auth_token', loginRes.token);
+          localStorage.setItem('linkqueue_session', JSON.stringify({
+            userId: loginRes.user.userId, email: loginRes.user.email, name: loginRes.user.name, role: loginRes.user.role, loggedInAt: Date.now()
+          }));
+
+          const joinRes = await joinQueue(loginRes.user.name, email, null, false, loginRes.token);
+          toast(`✅ ${joinRes.message}`);
+          redirect(joinRes.participant.participantId, joinRes.participant.queueName, loginRes.user.name);
+        } catch (err) {
+          document.getElementById('loginError').textContent = err.message;
+          toast(err.message, true);
+          setLoading(btn, false);
+        }
+      });
+
+      // Register
+      document.getElementById('registerForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('regName').value.trim();
+        const email = document.getElementById('regEmail').value.trim().toLowerCase();
+        const pwd = document.getElementById('regPassword').value;
+        const btn = document.getElementById('registerBtn');
+
+        if (!name || !email || !pwd) return toast('All fields required', true);
+        if (pwd.length < 8) return toast('Password must be at least 8 characters', true);
+
+        btn.dataset.original = btn.innerHTML;
+        setLoading(btn, true);
+        document.getElementById('registerError').textContent = '';
+
+        try {
+          const regRes = await register(name, email, pwd);
+          localStorage.setItem('auth_token', regRes.token);
+          localStorage.setItem('linkqueue_session', JSON.stringify({
+            userId: regRes.user.userId, email: regRes.user.email, name: regRes.user.name, role: regRes.user.role, loggedInAt: Date.now()
+          }));
+
+          const joinRes = await joinQueue(name, email, null, false, regRes.token);
+          toast(`🎉 Account created! ${joinRes.message}`);
+          redirect(joinRes.participant.participantId, joinRes.participant.queueName, name);
+        } catch (err) {
+          document.getElementById('registerError').textContent = err.message;
+          toast(err.message, true);
+          setLoading(btn, false);
+        }
+      });
+
+      // Guest
+      document.getElementById('guestForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('guestName').value.trim();
+        const email = document.getElementById('guestEmail').value.trim();
+        const phone = document.getElementById('guestPhone').value.trim();
+        const btn = document.getElementById('guestBtn');
+
+        if (!name) return toast('Please enter your name', true);
+
+        btn.dataset.original = btn.innerHTML;
+        setLoading(btn, true);
+        document.getElementById('guestError').textContent = '';
+
+        try {
+          const joinRes = await joinQueue(name, email || null, phone || null, true);
+          toast(`✅ ${joinRes.message}`);
+          redirect(joinRes.participant.participantId, joinRes.participant.queueName, name);
+        } catch (err) {
+          document.getElementById('guestError').textContent = err.message;
+          toast(err.message, true);
+          setLoading(btn, false);
+        }
+      });
+    }
+
+    setupEvents();
+    init();
+  })();
 </script>
 </body>
 </html>
