@@ -1,14 +1,14 @@
-// db.js - PostgreSQL version for Render
+// db.js - PostgreSQL version for Supabase
 const { Pool } = require('pg');
 require('dotenv').config();
 
+// Use DATABASE_URL from environment (Supabase provides this)
 const pool = new Pool({
-    host: process.env.DB_HOST,
-    user: process.env.DB_USER,
-    password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME,
-    port: 5432,
-    ssl: { rejectUnauthorized: false } // Required for Render PostgreSQL
+    connectionString: process.env.DATABASE_URL,
+    ssl: { rejectUnauthorized: false }, // Required for Supabase
+    connectionTimeoutMillis: 10000,
+    idleTimeoutMillis: 30000,
+    max: 10
 });
 
 // Test connection
@@ -33,11 +33,12 @@ async function initializeDatabase() {
                 name VARCHAR(100) NOT NULL,
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password_hash VARCHAR(255) NOT NULL,
-                role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('admin', 'user')),
+                role VARCHAR(20) DEFAULT 'user',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        
+        console.log('✓ Users table ready');
+
         // Create queues table
         await client.query(`
             CREATE TABLE IF NOT EXISTS queues (
@@ -49,11 +50,12 @@ async function initializeDatabase() {
                 description TEXT,
                 expiry_hours INTEGER DEFAULT 2,
                 expires_at TIMESTAMP NOT NULL,
-                status VARCHAR(20) DEFAULT 'active' CHECK (status IN ('active', 'expired', 'closed')),
+                status VARCHAR(20) DEFAULT 'active',
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
-        
+        console.log('✓ Queues table ready');
+
         // Create participants table
         await client.query(`
             CREATE TABLE IF NOT EXISTS participants (
@@ -66,33 +68,33 @@ async function initializeDatabase() {
                 phone VARCHAR(50),
                 is_guest BOOLEAN DEFAULT TRUE,
                 position INTEGER NOT NULL,
-                status VARCHAR(20) DEFAULT 'waiting' CHECK (status IN ('waiting', 'served', 'cancelled')),
+                status VARCHAR(20) DEFAULT 'waiting',
                 joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 served_at TIMESTAMP
             )
         `);
-        
+        console.log('✓ Participants table ready');
+
         // Create indexes for better performance
-        await client.query(`
-            CREATE INDEX IF NOT EXISTS idx_participants_queue_id ON participants(queue_id);
-            CREATE INDEX IF NOT EXISTS idx_participants_status ON participants(status);
-            CREATE INDEX IF NOT EXISTS idx_queues_queue_id ON queues(queue_id);
-            CREATE INDEX IF NOT EXISTS idx_queues_creator_id ON queues(creator_id);
-            CREATE INDEX IF NOT EXISTS idx_queues_status ON queues(status);
-            CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
-        `);
-        
-        console.log('✅ Database tables ready');
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_participants_queue_id ON participants(queue_id)`);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_participants_status ON participants(status)`);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_queues_queue_id ON queues(queue_id)`);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_queues_creator_id ON queues(creator_id)`);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
+        console.log('✓ Indexes created');
+
+        console.log('✅ All database tables ready');
+        return true;
     } catch (error) {
-        console.error('Database init error:', error);
+        console.error('❌ Database init error:', error.message);
+        throw error;
     } finally {
         client.release();
     }
 }
 
-// Helper function to convert MySQL query to PostgreSQL
+// Helper function for parameterized queries
 function formatQuery(sql, params = []) {
-    // Replace MySQL's ? with PostgreSQL's $1, $2, etc.
     let counter = 1;
     return sql.replace(/\?/g, () => `$${counter++}`);
 }
