@@ -116,7 +116,7 @@
       z-index: 1;
     }
 
-    input, select {
+    input {
       background: rgba(0, 0, 0, 0.5);
       border: 1px solid rgba(34, 211, 238, 0.4);
       padding: 0.9rem 1rem 0.9rem 2.8rem;
@@ -128,26 +128,13 @@
       transition: all 0.2s;
     }
 
-    input:focus, select:focus {
+    input:focus {
       border-color: #22D3EE;
       box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
     }
 
-    .password-wrapper {
-      position: relative;
-    }
-
-    .toggle-password {
-      position: absolute;
-      right: 12px;
-      top: 50%;
-      transform: translateY(-50%);
-      background: transparent;
-      border: none;
-      color: #22D3EE;
-      cursor: pointer;
-      z-index: 10;
-      font-size: 1rem;
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
     }
 
     .btn-primary {
@@ -193,19 +180,6 @@
       background: rgba(34, 211, 238, 0.1);
     }
 
-    .error {
-      color: #ff6b6b;
-      font-size: 0.8rem;
-      margin-top: 0.3rem;
-      text-align: center;
-    }
-
-    .success {
-      color: #22D3EE;
-      text-align: center;
-      margin-top: 1rem;
-    }
-
     .toast {
       position: fixed;
       bottom: 20px;
@@ -219,11 +193,17 @@
       animation: fadeInUp 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
       max-width: 400px;
+      word-wrap: break-word;
     }
 
     .toast.error {
       background: #ff4757;
       color: white;
+    }
+
+    .toast.warning {
+      background: #f59e0b;
+      color: #0a0a1f;
     }
 
     @keyframes fadeInUp {
@@ -237,20 +217,100 @@
       }
     }
 
-    .role-select {
-      margin: 0.6rem 0;
-    }
-
-    .role-select label {
-      display: block;
-      margin-bottom: 0.3rem;
-      font-size: 0.85rem;
-      opacity: 0.8;
-    }
-
     hr {
       border-color: rgba(34, 211, 238, 0.2);
       margin: 1.5rem 0;
+    }
+
+    .password-wrapper {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      color: #22D3EE;
+      background: transparent;
+      border: none;
+      font-size: 1rem;
+      z-index: 10;
+      padding: 0.5rem;
+    }
+
+    .security-notice {
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .security-notice i {
+      color: #22D3EE;
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    .security-notice p {
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    .privacy-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      opacity: 0.6;
+      line-height: 1.8;
+    }
+
+    .privacy-footer a {
+      color: #22D3EE;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .privacy-footer a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      padding: 0;
+      margin-top: 0.2rem;
+      accent-color: #22D3EE;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      opacity: 0.8;
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    .checkbox-group a {
+      color: #22D3EE;
+      text-decoration: none;
+    }
+
+    .checkbox-group a:hover {
+      text-decoration: underline;
     }
 
     .social-divider {
@@ -275,6 +335,40 @@
       justify-content: center;
       margin: 1rem 0;
       min-height: 44px;
+    }
+
+    .role-select {
+      margin: 0.6rem 0;
+    }
+
+    .role-select label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.85rem;
+      opacity: 0.8;
+    }
+
+    select {
+      background: rgba(0, 0, 0, 0.5);
+      border: 1px solid rgba(34, 211, 238, 0.4);
+      padding: 0.9rem 1rem;
+      border-radius: 1rem;
+      color: white;
+      font-size: 0.95rem;
+      outline: none;
+      width: 100%;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+
+    select:focus {
+      border-color: #22D3EE;
+      box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
+    }
+
+    select option {
+      background: #0a0a1f;
+      color: white;
     }
 
     @media (max-width: 768px) {
@@ -314,26 +408,31 @@
   <div class="card glass">
     <h2><i class="fas fa-user-plus"></i> Create Account</h2>
     <div class="card-subtitle">Join LinkQueue to create queues or manage participants</div>
-    
+
+    <div class="security-notice" role="alert">
+      <i class="fas fa-shield-alt"></i>
+      <p>Your information is secure. We encrypt all data and never store your password in plain text.</p>
+    </div>
+
     <form id="registerForm">
       <div class="input-group">
         <i class="fas fa-user"></i>
         <input type="text" id="regName" placeholder="Full Name" required autocomplete="name">
       </div>
-      
+
       <div class="input-group">
         <i class="fas fa-envelope"></i>
         <input type="email" id="regEmail" placeholder="Email Address" required autocomplete="email">
       </div>
-      
+
       <div class="input-group password-wrapper">
         <i class="fas fa-lock"></i>
-        <input type="password" id="regPassword" placeholder="Password (min 4 characters)" required autocomplete="new-password">
-        <button type="button" class="toggle-password" data-target="regPassword" aria-label="Toggle password visibility">
+        <input type="password" id="regPassword" placeholder="Password (min 4 characters)" required autocomplete="new-password" minlength="4">
+        <button type="button" class="toggle-password" data-target="regPassword">
           <i class="fas fa-eye"></i>
         </button>
       </div>
-      
+
       <div class="role-select">
         <label><i class="fas fa-tag"></i> Account Type</label>
         <select id="regRole">
@@ -341,7 +440,15 @@
           <option value="admin">🛡️ System Admin (Full Access)</option>
         </select>
       </div>
-      
+
+      <div class="checkbox-group">
+        <input type="checkbox" id="privacyConsent" required>
+        <label for="privacyConsent">
+          I agree to the <a href="#" id="privacyLink">Privacy Policy</a> and 
+          <a href="#" id="termsLink">Terms of Service</a>
+        </label>
+      </div>
+
       <button type="submit" class="btn-primary" id="registerBtn">
         <i class="fas fa-check-circle"></i> Register
       </button>
@@ -349,28 +456,55 @@
 
     <div class="social-divider">or sign up with</div>
 
-    <!-- Google Sign-In Button Container -->
     <div class="google-btn-container" id="googleSignInDiv"></div>
-    
+
     <hr>
-    
+
     <div style="text-align: center;">
       <p style="opacity: 0.7; margin-bottom: 1rem;">Already have an account?</p>
       <a href="login.html" class="btn-outline">
         <i class="fas fa-sign-in-alt"></i> Sign In
       </a>
     </div>
-    
+
+    <div class="privacy-footer">
+      <p>
+        <i class="fas fa-lock"></i> Protected by industry-standard encryption<br>
+        <a href="#" class="privacy-policy-link">Privacy Policy</a> · 
+        <a href="#" class="terms-link">Terms of Service</a>
+      </p>
+      <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+        © 2026 LinkQueue. All rights reserved.
+      </p>
+    </div>
+
     <div id="registerMessage"></div>
   </div>
 </div>
 
-<!-- Google Identity Services Library -->
+<!-- Privacy Policy Modal (simplified) -->
+<div id="privacyModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:2000; justify-content:center; align-items:center;">
+  <div style="background:rgba(15,25,35,0.95); border:1px solid #22D3EE; border-radius:1.5rem; max-width:500px; padding:2rem; margin:2rem;">
+    <h3 style="color:#22D3EE;">Privacy Policy</h3>
+    <p style="margin:1rem 0;">We collect and protect your data. By using LinkQueue, you agree to our policies.</p>
+    <button onclick="document.getElementById('privacyModal').style.display='none'" class="btn-primary" style="margin-top:1rem;">Close</button>
+  </div>
+</div>
+
+<div id="termsModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); z-index:2000; justify-content:center; align-items:center;">
+  <div style="background:rgba(15,25,35,0.95); border:1px solid #22D3EE; border-radius:1.5rem; max-width:500px; padding:2rem; margin:2rem;">
+    <h3 style="color:#22D3EE;">Terms of Service</h3>
+    <p style="margin:1rem 0;">By using LinkQueue, you agree to our terms and conditions.</p>
+    <button onclick="document.getElementById('termsModal').style.display='none'" class="btn-primary" style="margin-top:1rem;">Close</button>
+  </div>
+</div>
+
+<!-- Google Identity Services -->
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
 // ================= CONFIGURATION =================
-// Single API_BASE declaration - FIXED
+// Dynamic API base URL
 const API_BASE = (() => {
   const hostname = window.location.hostname;
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
@@ -383,36 +517,36 @@ const GOOGLE_CLIENT_ID = '654664096853-ueh05m9pbte2uffo2a0c77sak4atjbu5.apps.goo
 
 console.log('🌐 API Base URL:', API_BASE);
 
-// ================= TOAST NOTIFICATION =================
-function showToast(message, isError = false) {
+// ================= TOAST =================
+function showToast(message, isError = false, isWarning = false) {
   const existing = document.querySelector('.toast');
   if (existing) existing.remove();
 
   const toast = document.createElement('div');
-  toast.className = 'toast' + (isError ? ' error' : '');
+  if (isError) toast.className = 'toast error';
+  else if (isWarning) toast.className = 'toast warning';
+  else toast.className = 'toast';
+  
+  toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : isWarning ? 'fa-exclamation-circle' : 'fa-check-circle'}"></i> ${message}`;
   toast.setAttribute('role', 'alert');
-  toast.innerHTML = `
-    <i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i>
-    ${message}
-  `;
-
+  
   document.body.appendChild(toast);
-  setTimeout(() => toast.remove(), 3500);
+  setTimeout(() => toast.remove(), 4000);
 }
 
-// ================= BUTTON LOADER =================
-function setLoading(btn, loading, originalText = null) {
+// ================= BUTTON LOADING =================
+function setButtonLoading(btn, isLoading, originalText = null) {
   if (!btn) return;
-
-  btn.disabled = loading;
-  if (loading) {
+  if (isLoading) {
+    btn.disabled = true;
     btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Processing...';
   } else {
+    btn.disabled = false;
     btn.innerHTML = originalText || '<i class="fas fa-check-circle"></i> Register';
   }
 }
 
-// ================= API HELPER =================
+// ================= API REQUEST =================
 async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
   const headers = {
     'Content-Type': 'application/json',
@@ -423,36 +557,32 @@ async function apiRequest(endpoint, method = 'GET', body = null, token = null) {
     headers['Authorization'] = `Bearer ${token}`;
   }
 
-  // Log the request for debugging
   console.log(`📡 ${method} ${API_BASE}${endpoint}`);
 
-  const res = await fetch(`${API_BASE}${endpoint}`, {
+  const response = await fetch(`${API_BASE}${endpoint}`, {
     method,
     headers,
     body: body ? JSON.stringify(body) : null
   });
 
-  // Get response as text first to handle non-JSON responses
-  const rawText = await res.text();
-  console.log('Raw server response:', rawText);
-
-  let data;
-  try {
-    data = JSON.parse(rawText);
-  } catch (e) {
-    // If response is HTML or invalid JSON
-    console.error('Invalid JSON response:', rawText.substring(0, 200));
-    throw new Error('Server returned an invalid response. Please check if the server is running.');
+  // Check if response is JSON
+  const contentType = response.headers.get('content-type');
+  if (!contentType || !contentType.includes('application/json')) {
+    const text = await response.text();
+    console.error('Non-JSON response:', text.substring(0, 200));
+    throw new Error(`Server error: ${response.status} ${response.statusText}`);
   }
 
-  if (!res.ok) {
-    throw new Error(data.message || data.error || `HTTP ${res.status}: ${res.statusText}`);
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.message || data.error || `Request failed with status ${response.status}`);
   }
 
   return data;
 }
 
-// ================= REGISTER FUNCTION =================
+// ================= REGISTER =================
 async function registerUser(name, email, password, role) {
   return await apiRequest('/register', 'POST', {
     name: name.trim(),
@@ -462,7 +592,7 @@ async function registerUser(name, email, password, role) {
   });
 }
 
-// ================= SESSION STORAGE =================
+// ================= SESSION MANAGEMENT =================
 function saveSession(data) {
   if (data.token) {
     localStorage.setItem('auth_token', data.token);
@@ -478,18 +608,12 @@ function saveSession(data) {
   }
 }
 
-// ================= REDIRECT =================
 function redirectUser(role) {
   setTimeout(() => {
-    if (role === 'admin') {
-      window.location.href = 'admin-dashboard.html';
-    } else {
-      window.location.href = 'user-dashboard.html';
-    }
+    window.location.href = role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
   }, 1200);
 }
 
-// ================= SESSION CHECK =================
 async function checkExistingSession() {
   const token = localStorage.getItem('auth_token');
   const session = localStorage.getItem('linkqueue_session');
@@ -498,25 +622,20 @@ async function checkExistingSession() {
 
   try {
     const sessionData = JSON.parse(session);
-
     if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) {
       throw new Error('Session expired');
     }
 
-    // Verify token with server
-    const data = await apiRequest('/my-queues', 'GET', null, token);
-    
-    if (data && (data.user || data.queues !== undefined)) {
-      showToast(`Welcome back, ${sessionData.name}! Redirecting...`);
-      redirectUser(sessionData.role);
-      return true;
-    }
+    await apiRequest('/my-queues', 'GET', null, token);
+    showToast(`Welcome back, ${sessionData.name}! Redirecting...`);
+    redirectUser(sessionData.role);
+    return true;
   } catch (err) {
     console.log('Session check failed:', err.message);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('linkqueue_session');
+    return false;
   }
-  return false;
 }
 
 // ================= PASSWORD TOGGLE =================
@@ -544,6 +663,7 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
   const email = document.getElementById('regEmail').value;
   const password = document.getElementById('regPassword').value;
   const role = document.getElementById('regRole').value;
+  const privacyConsent = document.getElementById('privacyConsent').checked;
 
   const btn = document.getElementById('registerBtn');
   const originalText = btn.innerHTML;
@@ -561,28 +681,20 @@ document.getElementById('registerForm').addEventListener('submit', async (e) => 
     return showToast('Please enter a valid email address', true);
   }
 
-  if (name.length < 2) {
-    return showToast('Please enter your full name', true);
+  if (!privacyConsent) {
+    return showToast('Please agree to the Privacy Policy and Terms of Service', true);
   }
 
   try {
-    setLoading(btn, true, originalText);
-
+    setButtonLoading(btn, true, originalText);
     const data = await registerUser(name, email, password, role);
-    
-    console.log('Registration response:', data);
-
     saveSession(data);
-
-    const successMessage = data.message || 'Registration successful!';
-    showToast(successMessage);
-
+    showToast(data.message || 'Registration successful!');
     redirectUser(data.user?.role || role);
-
   } catch (err) {
     console.error('Registration error:', err);
     showToast(err.message || 'Registration failed. Please try again.', true);
-    setLoading(btn, false, originalText);
+    setButtonLoading(btn, false, originalText);
   }
 });
 
@@ -627,7 +739,7 @@ function initializeGoogleSignIn() {
     console.error('❌ Failed to initialize Google Sign-In:', error);
     const container = document.getElementById('googleSignInDiv');
     if (container) {
-      container.innerHTML = '<p style="font-size:0.8rem; opacity:0.6; text-align:center; color:#ff4757;"><i class="fas fa-exclamation-circle"></i> Google Sign-In temporarily unavailable</p>';
+      container.innerHTML = '<p style="font-size:0.8rem; opacity:0.6; text-align:center; color:#ff4757;"><i class="fas fa-exclamation-circle"></i> Google Sign-In currently unavailable</p>';
     }
   }
 }
@@ -651,21 +763,43 @@ async function handleGoogleCredentialResponse(response) {
   const idToken = response.credential;
   
   if (!idToken) {
-    showToast('Google authentication failed', true);
+    showToast('Google authentication failed: No credential received', true);
     return;
   }
 
   const btn = document.getElementById('registerBtn');
   const originalText = btn.innerHTML;
-  setLoading(btn, true, originalText);
+  setButtonLoading(btn, true, originalText);
 
   try {
-    const data = await apiRequest('/auth/google', 'POST', {
-      credential: idToken,
-      clientId: GOOGLE_CLIENT_ID
+    const url = `${API_BASE}/auth/google`;
+    console.log(`📡 POST ${url}`);
+
+    const fetchResponse = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({
+        credential: idToken,
+        clientId: GOOGLE_CLIENT_ID
+      })
     });
 
-    console.log('Google auth response:', data);
+    // Check if response is JSON
+    const contentType = fetchResponse.headers.get('content-type');
+    if (!contentType || !contentType.includes('application/json')) {
+      const text = await fetchResponse.text();
+      console.error('Non-JSON response from Google auth endpoint:', text.substring(0, 200));
+      throw new Error('Google authentication endpoint not found on server. Please use email registration instead.');
+    }
+
+    const data = await fetchResponse.json();
+
+    if (!fetchResponse.ok) {
+      throw new Error(data.message || data.error || 'Google authentication failed');
+    }
 
     if (data.token) {
       saveSession(data);
@@ -677,35 +811,57 @@ async function handleGoogleCredentialResponse(response) {
 
   } catch (err) {
     console.error('Google auth error:', err);
-    showToast(err.message || 'Google authentication failed. Please try again.', true);
-    setLoading(btn, false, originalText);
+    showToast(err.message || 'Google authentication is not configured on the server. Please register with email instead.', true);
+    setButtonLoading(btn, false, originalText);
   }
 }
 
+// ================= MODALS =================
+function openModal(modalId) {
+  const modal = document.getElementById(modalId);
+  if (modal) modal.style.display = 'flex';
+}
+
+document.getElementById('privacyLink')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal('privacyModal');
+});
+
+document.getElementById('termsLink')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal('termsModal');
+});
+
+document.querySelector('.privacy-policy-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal('privacyModal');
+});
+
+document.querySelector('.terms-link')?.addEventListener('click', (e) => {
+  e.preventDefault();
+  openModal('termsModal');
+});
+
+// Close modals on escape
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    document.getElementById('privacyModal').style.display = 'none';
+    document.getElementById('termsModal').style.display = 'none';
+  }
+});
+
 // ================= INITIALIZATION =================
-// Wait for DOM to load before initializing Google Sign-In
 document.addEventListener('DOMContentLoaded', () => {
   console.log('📄 DOM loaded');
   initializeGoogleSignIn();
   checkExistingSession();
 });
 
-// Also try to initialize if DOM already loaded
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', initializeGoogleSignIn);
 } else {
   initializeGoogleSignIn();
 }
-
-// Prevent form submission on enter in Google button area
-document.getElementById('googleSignInDiv')?.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') e.preventDefault();
-});
-
-// Clean up on page unload
-window.addEventListener('beforeunload', () => {
-  // Optional: cleanup if needed
-});
 </script>
 </body>
 </html>
