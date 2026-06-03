@@ -543,6 +543,17 @@
       opacity: 0.7;
     }
 
+    .google-disabled-warning {
+      background: rgba(255, 71, 87, 0.15);
+      border: 1px solid rgba(255, 71, 87, 0.3);
+      border-radius: 0.75rem;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      font-size: 0.8rem;
+      text-align: center;
+      color: #ff98a3;
+    }
+
     @media (max-width: 768px) {
       .container {
         padding: 1rem;
@@ -687,6 +698,9 @@
 
     <div class="social-divider">or sign up with</div>
     <div class="google-btn-container" id="googleSignInDiv"></div>
+    <div class="google-disabled-warning" id="googleDisabledWarning" style="display: none;">
+      <i class="fas fa-exclamation-triangle"></i> Google Sign-In is currently unavailable. Please use email registration.
+    </div>
 
     <hr>
     <div style="text-align: center;">
@@ -730,6 +744,7 @@
 
   const GOOGLE_CLIENT_ID = '654664096853-ueh05m9pbte2uffo2a0c77sak4atjbu5.apps.googleusercontent.com';
   let googleInitialized = false;
+  let googleEndpointAvailable = true;
 
   // Toast notification
   function showToast(message, isError = false) {
@@ -749,7 +764,7 @@
     btn.innerHTML = isLoading ? '<i class="fas fa-spinner fa-pulse"></i> Processing...' : (originalText || '<i class="fas fa-check-circle"></i> Register');
   }
 
-  // Password validation
+  // Password validation - FIXED: simplified and robust
   function validatePassword(password) {
     return {
       length: password.length >= 8,
@@ -762,56 +777,153 @@
 
   function updatePasswordStrength(password) {
     const req = validatePassword(password);
-    const metCount = Object.values(req).filter(v => v).length;
-    const elements = ['reqLength', 'reqUppercase', 'reqLowercase', 'reqNumber', 'reqSpecial'];
-    elements.forEach(id => document.getElementById(id).classList.toggle('met', req[id.replace('req', '').toLowerCase()] || req[id === 'reqLength' ? 'length' : id === 'reqUppercase' ? 'uppercase' : id === 'reqLowercase' ? 'lowercase' : id === 'reqNumber' ? 'number' : 'special']));
-    elements.forEach(id => { const icon = document.getElementById(id)?.querySelector('i'); if(icon) icon.className = (req[id === 'reqLength' ? 'length' : id === 'reqUppercase' ? 'uppercase' : id === 'reqLowercase' ? 'lowercase' : id === 'reqNumber' ? 'number' : 'special']) ? 'fas fa-check-circle' : 'fas fa-times-circle'; });
+    const metCount = Object.values(req).filter(v => v === true).length;
+    
+    // Update each requirement UI
+    const reqLength = document.getElementById('reqLength');
+    const reqUppercase = document.getElementById('reqUppercase');
+    const reqLowercase = document.getElementById('reqLowercase');
+    const reqNumber = document.getElementById('reqNumber');
+    const reqSpecial = document.getElementById('reqSpecial');
+    
+    if (reqLength) {
+      reqLength.classList.toggle('met', req.length);
+      const icon = reqLength.querySelector('i');
+      if (icon) icon.className = req.length ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    }
+    if (reqUppercase) {
+      reqUppercase.classList.toggle('met', req.uppercase);
+      const icon = reqUppercase.querySelector('i');
+      if (icon) icon.className = req.uppercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    }
+    if (reqLowercase) {
+      reqLowercase.classList.toggle('met', req.lowercase);
+      const icon = reqLowercase.querySelector('i');
+      if (icon) icon.className = req.lowercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    }
+    if (reqNumber) {
+      reqNumber.classList.toggle('met', req.number);
+      const icon = reqNumber.querySelector('i');
+      if (icon) icon.className = req.number ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    }
+    if (reqSpecial) {
+      reqSpecial.classList.toggle('met', req.special);
+      const icon = reqSpecial.querySelector('i');
+      if (icon) icon.className = req.special ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    }
+    
     const fill = document.getElementById('strengthFill');
     const text = document.getElementById('strengthText');
-    fill.className = 'password-strength-fill';
-    if (!password.length) { fill.style.width = '0%'; text.textContent = 'Enter a password'; }
-    else if (metCount <= 2) { fill.classList.add('strength-weak'); text.textContent = 'Weak password'; }
-    else if (metCount === 3) { fill.classList.add('strength-fair'); text.textContent = 'Fair password'; }
-    else if (metCount === 4) { fill.classList.add('strength-good'); text.textContent = 'Good password'; }
-    else { fill.classList.add('strength-strong'); text.textContent = 'Strong password!'; }
+    if (fill) fill.className = 'password-strength-fill';
+    
+    if (!password.length) {
+      if (fill) fill.style.width = '0%';
+      if (text) text.textContent = 'Enter a password';
+    } else if (metCount <= 2) {
+      if (fill) fill.classList.add('strength-weak');
+      if (text) text.textContent = 'Weak password';
+    } else if (metCount === 3) {
+      if (fill) fill.classList.add('strength-fair');
+      if (text) text.textContent = 'Fair password';
+    } else if (metCount === 4) {
+      if (fill) fill.classList.add('strength-good');
+      if (text) text.textContent = 'Good password';
+    } else {
+      if (fill) fill.classList.add('strength-strong');
+      if (text) text.textContent = 'Strong password!';
+    }
   }
 
   function checkPasswordMatch() {
-    const pwd = document.getElementById('regPassword').value;
-    const confirm = document.getElementById('regConfirmPassword').value;
+    const pwd = document.getElementById('regPassword');
+    const confirm = document.getElementById('regConfirmPassword');
     const indicator = document.getElementById('passwordMatchIndicator');
-    if (!confirm.length) { indicator.style.display = 'none'; return true; }
+    
+    if (!pwd || !confirm || !indicator) return true;
+    
+    const pwdVal = pwd.value;
+    const confirmVal = confirm.value;
+    
+    if (!confirmVal.length) {
+      indicator.style.display = 'none';
+      return true;
+    }
+    
     indicator.style.display = 'flex';
-    const match = pwd === confirm;
+    const match = pwdVal === confirmVal;
     indicator.className = `password-match-indicator ${match ? 'match-success' : 'match-error'}`;
-    indicator.querySelector('i').className = match ? 'fas fa-check-circle' : 'fas fa-times-circle';
-    indicator.querySelector('span').textContent = match ? 'Passwords match' : 'Passwords do not match';
+    const icon = indicator.querySelector('i');
+    const span = indicator.querySelector('span');
+    if (icon) icon.className = match ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    if (span) span.textContent = match ? 'Passwords match' : 'Passwords do not match';
     return match;
   }
 
-  // Google Sign-In initialization
+  // Test if Google auth endpoint exists
+  async function testGoogleEndpoint() {
+    try {
+      const response = await fetch(`${API_BASE}/auth/google`, { method: 'OPTIONS' });
+      if (response.status === 404) {
+        googleEndpointAvailable = false;
+        const warningDiv = document.getElementById('googleDisabledWarning');
+        if (warningDiv) warningDiv.style.display = 'block';
+        return false;
+      }
+      return true;
+    } catch (e) {
+      googleEndpointAvailable = false;
+      const warningDiv = document.getElementById('googleDisabledWarning');
+      if (warningDiv) warningDiv.style.display = 'block';
+      return false;
+    }
+  }
+
+  // Google Sign-In initialization - with endpoint check
   function initGoogleSignIn() {
     if (googleInitialized) return;
+    
+    if (!googleEndpointAvailable) {
+      console.log('⚠️ Google endpoint not available, skipping Google Sign-In');
+      return;
+    }
+    
     if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
       setTimeout(initGoogleSignIn, 300);
       return;
     }
+    
     try {
       google.accounts.id.initialize({
         client_id: GOOGLE_CLIENT_ID,
         callback: async (response) => {
           console.log('🔐 Google credential received');
+          
+          if (!googleEndpointAvailable) {
+            showToast('Google Sign-In is currently unavailable. Please use email registration.', true);
+            return;
+          }
+          
           const btn = document.getElementById('registerBtn');
-          const originalText = btn.innerHTML;
-          setButtonLoading(btn, true, originalText);
+          const originalText = btn ? btn.innerHTML : '';
+          if (btn) setButtonLoading(btn, true, originalText);
+          
           try {
             const res = await fetch(`${API_BASE}/auth/google`, {
               method: 'POST',
               headers: { 'Content-Type': 'application/json' },
               body: JSON.stringify({ credential: response.credential, clientId: GOOGLE_CLIENT_ID })
             });
+            
+            if (res.status === 404) {
+              googleEndpointAvailable = false;
+              const warningDiv = document.getElementById('googleDisabledWarning');
+              if (warningDiv) warningDiv.style.display = 'block';
+              throw new Error('Google authentication is not available. Please use email registration.');
+            }
+            
             const data = await res.json();
             if (!res.ok) throw new Error(data.error || data.message || 'Google auth failed');
+            
             if (data.token) {
               localStorage.setItem('auth_token', data.token);
               localStorage.setItem('linkqueue_session', JSON.stringify({
@@ -819,23 +931,35 @@
                 role: data.user.role, loggedInAt: Date.now(), authProvider: 'google'
               }));
             }
+            
             showToast(data.message || `Welcome, ${data.user.name}!`);
-            setTimeout(() => window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html', 1200);
+            setTimeout(() => {
+              window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+            }, 1200);
           } catch (err) {
             console.error('Google auth error:', err);
             showToast(err.message || 'Google authentication failed', true);
-            setButtonLoading(btn, false, originalText);
-            document.getElementById('googleUserInfo').classList.remove('visible');
+            if (btn) setButtonLoading(btn, false, originalText);
+            document.getElementById('googleUserInfo')?.classList.remove('visible');
           }
         },
         auto_select: false, cancel_on_tap_outside: true, context: 'signup', ux_mode: 'popup'
       });
-      google.accounts.id.renderButton(document.getElementById('googleSignInDiv'), {
-        type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill', text: 'signup_with', width: 320
-      });
+      
+      const container = document.getElementById('googleSignInDiv');
+      if (container) {
+        google.accounts.id.renderButton(container, {
+          type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill', text: 'signup_with', width: 320
+        });
+      }
+      
       googleInitialized = true;
       console.log('✅ Google Sign-In ready');
-    } catch (err) { console.error('Google init error:', err); }
+    } catch (err) { 
+      console.error('Google init error:', err);
+      const warningDiv = document.getElementById('googleDisabledWarning');
+      if (warningDiv) warningDiv.style.display = 'block';
+    }
   }
 
   // Regular registration
@@ -850,76 +974,140 @@
   }
 
   // DOM Elements & Event Listeners
-  document.addEventListener('DOMContentLoaded', () => {
+  document.addEventListener('DOMContentLoaded', async () => {
+    // Test Google endpoint first
+    await testGoogleEndpoint();
     initGoogleSignIn();
 
     // Password toggles
-    document.getElementById('togglePasswordBtn').addEventListener('click', function() {
-      const inp = document.getElementById('regPassword');
-      const icon = this.querySelector('i');
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-      icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
-    });
-    document.getElementById('toggleConfirmBtn').addEventListener('click', function() {
-      const inp = document.getElementById('regConfirmPassword');
-      const icon = this.querySelector('i');
-      inp.type = inp.type === 'password' ? 'text' : 'password';
-      icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
-    });
+    const togglePwd = document.getElementById('togglePasswordBtn');
+    const toggleConfirm = document.getElementById('toggleConfirmBtn');
+    
+    if (togglePwd) {
+      togglePwd.addEventListener('click', function() {
+        const inp = document.getElementById('regPassword');
+        const icon = this.querySelector('i');
+        if (inp && icon) {
+          inp.type = inp.type === 'password' ? 'text' : 'password';
+          icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+        }
+      });
+    }
+    
+    if (toggleConfirm) {
+      toggleConfirm.addEventListener('click', function() {
+        const inp = document.getElementById('regConfirmPassword');
+        const icon = this.querySelector('i');
+        if (inp && icon) {
+          inp.type = inp.type === 'password' ? 'text' : 'password';
+          icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+        }
+      });
+    }
 
     const pwdInput = document.getElementById('regPassword');
     const confirmInput = document.getElementById('regConfirmPassword');
     const reqDiv = document.getElementById('passwordRequirements');
 
-    pwdInput.addEventListener('focus', () => reqDiv.style.display = 'block');
-    pwdInput.addEventListener('input', () => { updatePasswordStrength(pwdInput.value); if (confirmInput.value) checkPasswordMatch(); });
-    confirmInput.addEventListener('input', checkPasswordMatch);
+    if (pwdInput) {
+      pwdInput.addEventListener('focus', () => { if (reqDiv) reqDiv.style.display = 'block'; });
+      pwdInput.addEventListener('input', () => { 
+        updatePasswordStrength(pwdInput.value); 
+        if (confirmInput && confirmInput.value) checkPasswordMatch(); 
+      });
+    }
+    if (confirmInput) {
+      confirmInput.addEventListener('input', checkPasswordMatch);
+    }
 
     // Modal handlers
-    function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
-    function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = ''; }
-    document.getElementById('privacyLink').addEventListener('click', e => { e.preventDefault(); openModal('privacyModal'); });
-    document.querySelector('.privacy-policy-link').addEventListener('click', e => { e.preventDefault(); openModal('privacyModal'); });
-    document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyModal'));
-    document.getElementById('acceptPrivacy').addEventListener('click', () => closeModal('privacyModal'));
-    document.getElementById('termsLink').addEventListener('click', e => { e.preventDefault(); openModal('termsModal'); });
-    document.querySelector('.terms-link').addEventListener('click', e => { e.preventDefault(); openModal('termsModal'); });
-    document.getElementById('closeTerms').addEventListener('click', () => closeModal('termsModal'));
-    document.getElementById('acceptTerms').addEventListener('click', () => closeModal('termsModal'));
-    window.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal('privacyModal'); closeModal('termsModal'); } });
-    document.getElementById('privacyModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('privacyModal'); });
-    document.getElementById('termsModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('termsModal'); });
+    function openModal(id) { 
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.add('active'); 
+        document.body.style.overflow = 'hidden'; 
+      }
+    }
+    function closeModal(id) { 
+      const modal = document.getElementById(id);
+      if (modal) {
+        modal.classList.remove('active'); 
+        document.body.style.overflow = ''; 
+      }
+    }
+    
+    const privacyLink = document.getElementById('privacyLink');
+    const privacyPolicyLink = document.querySelector('.privacy-policy-link');
+    const closePrivacy = document.getElementById('closePrivacy');
+    const acceptPrivacy = document.getElementById('acceptPrivacy');
+    const termsLink = document.getElementById('termsLink');
+    const termsLinkFooter = document.querySelector('.terms-link');
+    const closeTerms = document.getElementById('closeTerms');
+    const acceptTerms = document.getElementById('acceptTerms');
+    
+    if (privacyLink) privacyLink.addEventListener('click', e => { e.preventDefault(); openModal('privacyModal'); });
+    if (privacyPolicyLink) privacyPolicyLink.addEventListener('click', e => { e.preventDefault(); openModal('privacyModal'); });
+    if (closePrivacy) closePrivacy.addEventListener('click', () => closeModal('privacyModal'));
+    if (acceptPrivacy) acceptPrivacy.addEventListener('click', () => closeModal('privacyModal'));
+    if (termsLink) termsLink.addEventListener('click', e => { e.preventDefault(); openModal('termsModal'); });
+    if (termsLinkFooter) termsLinkFooter.addEventListener('click', e => { e.preventDefault(); openModal('termsModal'); });
+    if (closeTerms) closeTerms.addEventListener('click', () => closeModal('termsModal'));
+    if (acceptTerms) acceptTerms.addEventListener('click', () => closeModal('termsModal'));
+    
+    window.addEventListener('keydown', e => { 
+      if (e.key === 'Escape') { 
+        closeModal('privacyModal'); 
+        closeModal('termsModal'); 
+      } 
+    });
+    
+    const privacyModal = document.getElementById('privacyModal');
+    const termsModal = document.getElementById('termsModal');
+    if (privacyModal) privacyModal.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('privacyModal'); });
+    if (termsModal) termsModal.addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('termsModal'); });
 
     // Form submit
-    document.getElementById('registerForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = document.getElementById('regName').value;
-      const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPassword').value;
-      const confirm = document.getElementById('regConfirmPassword').value;
-      const consent = document.getElementById('privacyConsent').checked;
-      const btn = document.getElementById('registerBtn');
-      const originalText = btn.innerHTML;
+    const registerForm = document.getElementById('registerForm');
+    if (registerForm) {
+      registerForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const name = document.getElementById('regName')?.value || '';
+        const email = document.getElementById('regEmail')?.value || '';
+        const password = document.getElementById('regPassword')?.value || '';
+        const confirm = document.getElementById('regConfirmPassword')?.value || '';
+        const consent = document.getElementById('privacyConsent')?.checked || false;
+        const btn = document.getElementById('registerBtn');
+        const originalText = btn ? btn.innerHTML : '';
 
-      if (!name || !email || !password || !confirm) return showToast('All fields are required', true);
-      if (!email.includes('@')) return showToast('Invalid email address', true);
-      const req = validatePassword(password);
-      if (!Object.values(req).every(v => v)) { reqDiv.style.display = 'block'; return showToast('Password does not meet requirements', true); }
-      if (password !== confirm) return showToast('Passwords do not match', true);
-      if (!consent) return showToast('Please agree to Privacy Policy and Terms', true);
+        if (!name || !email || !password || !confirm) return showToast('All fields are required', true);
+        if (!email.includes('@')) return showToast('Invalid email address', true);
+        
+        const req = validatePassword(password);
+        if (!Object.values(req).every(v => v === true)) { 
+          if (reqDiv) reqDiv.style.display = 'block'; 
+          return showToast('Password does not meet requirements', true); 
+        }
+        if (password !== confirm) return showToast('Passwords do not match', true);
+        if (!consent) return showToast('Please agree to Privacy Policy and Terms', true);
 
-      try {
-        setButtonLoading(btn, true, originalText);
-        const data = await registerUser(name, email, password);
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('linkqueue_session', JSON.stringify({
-          userId: data.user.userId, email: data.user.email, name: data.user.name,
-          role: data.user.role, loggedInAt: Date.now()
-        }));
-        showToast('Registration successful! Redirecting...');
-        setTimeout(() => window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html', 1200);
-      } catch (err) { showToast(err.message, true); setButtonLoading(btn, false, originalText); }
-    });
+        try {
+          if (btn) setButtonLoading(btn, true, originalText);
+          const data = await registerUser(name, email, password);
+          localStorage.setItem('auth_token', data.token);
+          localStorage.setItem('linkqueue_session', JSON.stringify({
+            userId: data.user.userId, email: data.user.email, name: data.user.name,
+            role: data.user.role, loggedInAt: Date.now()
+          }));
+          showToast('Registration successful! Redirecting...');
+          setTimeout(() => {
+            window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+          }, 1200);
+        } catch (err) { 
+          showToast(err.message, true); 
+          if (btn) setButtonLoading(btn, false, originalText); 
+        }
+      });
+    }
 
     // Session check
     (async () => {
@@ -930,9 +1118,16 @@
           const sess = JSON.parse(session);
           if (Date.now() - sess.loggedInAt > 24 * 3600000) throw new Error('Expired');
           const res = await fetch(`${API_BASE}/my-queues`, { headers: { 'Authorization': `Bearer ${token}` } });
-          if (res.ok) { showToast(`Welcome back, ${sess.name}!`); setTimeout(() => window.location.href = sess.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html', 1500); }
-          else throw new Error('Invalid');
-        } catch(e) { localStorage.removeItem('auth_token'); localStorage.removeItem('linkqueue_session'); }
+          if (res.ok) { 
+            showToast(`Welcome back, ${sess.name}!`); 
+            setTimeout(() => {
+              window.location.href = sess.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+            }, 1500);
+          } else throw new Error('Invalid');
+        } catch(e) { 
+          localStorage.removeItem('auth_token'); 
+          localStorage.removeItem('linkqueue_session'); 
+        }
       }
     })();
   });
