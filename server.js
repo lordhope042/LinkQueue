@@ -4,10 +4,14 @@ const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const path = require('path');
 const { pool, initializeDatabase, formatQuery } = require('./db');
+const { OAuth2Client } = require('google-auth-library');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+// Initialize Google OAuth Client
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID || '654664096853-ueh05m9pbte2uffo2a0c77sak4atjbu5.apps.googleusercontent.com');
 
 // Middleware
 app.use(cors());
@@ -19,7 +23,85 @@ function generateId(prefix) {
     return `${prefix}_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`;
 }
 
-// ============= API ROUTES =============
+// ============= GOOGLE AUTH ROUTE =============
+
+// Google Authentication
+app.post('/api/auth/google', async (req, res) => {
+    console.log('🔐 Google auth request received');
+    
+    try {
+        const { credential, clientId } = req.body;
+        
+        if (!credential) {
+            return res.status(400).json({ error: 'Missing credential' });
+        }
+        
+        // Verify the Google token
+        const ticket = await googleClient.verifyIdToken({
+            idToken: credential,
+            audience: clientId || process.env.GOOGLE_CLIENT_ID || '654664096853-ueh05m9pbte2uffo2a0c77sak4atjbu5.apps.googleusercontent.com'
+        });
+        
+        const payload = ticket.getPayload();
+        const { email, name, picture, sub: googleId } = payload;
+        
+        console.log('📧 Google user email:', email);
+        
+        // Check if user exists in database
+        let result = await pool.query(
+            'SELECT * FROM users WHERE email = $1',
+            [email]
+        );
+        
+        let user;
+        let isNewUser = false;
+        
+        if (result.rows.length === 0) {
+            // Create new user
+            isNewUser = true;
+            const userId = generateId('user');
+            const role = 'user'; // Default role for Google sign-ups
+            
+            await pool.query(
+                `INSERT INTO users (user_id, name, email, password_hash, role, google_id, avatar_url) 
+                 VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+                [userId, name, email, '', role, googleId, picture || null]
+            );
+            
+            user = { user_id: userId, name, email, role };
+            console.log('✅ New user created via Google:', email);
+        } else {
+            user = result.rows[0];
+            console.log('✅ Existing user logged in via Google:', email);
+        }
+        
+        // Generate JWT token
+        const token = jwt.sign(
+            { userId: user.user_id, email: user.email, name: user.name, role: user.role },
+            process.env.JWT_SECRET || 'linkqueue_secret_key_2024',
+            { expiresIn: '24h' }
+        );
+        
+        res.json({
+            success: true,
+            message: isNewUser ? 'Account created successfully!' : `Welcome back, ${user.name}!`,
+            token,
+            user: {
+                userId: user.user_id,
+                name: user.name,
+                email: user.email,
+                role: user.role,
+                avatar: picture || null
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Google auth error:', error);
+        res.status(500).json({ error: 'Google authentication failed: ' + error.message });
+    }
+});
+
+// ============= REGULAR AUTH ROUTES =============
 
 // Register User
 app.post('/api/register', async (req, res) => {
@@ -93,6 +175,15 @@ app.post('/api/login', async (req, res) => {
         }
         
         const user = result.rows[0];
+        
+        // Check if it's a Google-only account (no password)
+        if (!user.password_hash || user.password_hash === '') {
+            return res.status(401).json({ 
+                success: false, 
+                message: 'This account uses Google Sign-In. Please use "Sign in with Google" instead.' 
+            });
+        }
+        
         const validPassword = await bcrypt.compare(password, user.password_hash);
         
         if (!validPassword) {
@@ -508,6 +599,7 @@ async function startServer() {
             console.log(`║     Admin: admin@linkqueue.com / admin123        ║`);
             console.log(`║     User:  demo@linkqueue.com / demo123          ║`);
             console.log(`╠══════════════════════════════════════════════════╣`);
+            console.log(`║  🔐 Google Auth: /api/auth/google                ║`);
             console.log(`║  💾 Database: PostgreSQL                         ║`);
             console.log(`╚══════════════════════════════════════════════════╝\n`);
         });
