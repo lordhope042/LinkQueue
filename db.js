@@ -25,7 +25,7 @@ pool.connect((err, client, release) => {
 async function initializeDatabase() {
     const client = await pool.connect();
     try {
-        // Create users table
+        // Create users table with Google OAuth columns
         await client.query(`
             CREATE TABLE IF NOT EXISTS users (
                 id SERIAL PRIMARY KEY,
@@ -34,10 +34,26 @@ async function initializeDatabase() {
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password_hash VARCHAR(255) NOT NULL,
                 role VARCHAR(20) DEFAULT 'user',
-                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                google_id VARCHAR(255) UNIQUE,
+                avatar_url TEXT,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
         `);
         console.log('✓ Users table ready');
+
+        // Add Google columns if they don't exist (for existing tables)
+        try {
+            await client.query(`
+                ALTER TABLE users 
+                ADD COLUMN IF NOT EXISTS google_id VARCHAR(255) UNIQUE,
+                ADD COLUMN IF NOT EXISTS avatar_url TEXT,
+                ADD COLUMN IF NOT EXISTS updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            `);
+            console.log('✓ Google OAuth columns added to users table');
+        } catch (err) {
+            console.log('Note: Google columns may already exist:', err.message);
+        }
 
         // Create queues table
         await client.query(`
@@ -81,7 +97,29 @@ async function initializeDatabase() {
         await client.query(`CREATE INDEX IF NOT EXISTS idx_queues_queue_id ON queues(queue_id)`);
         await client.query(`CREATE INDEX IF NOT EXISTS idx_queues_creator_id ON queues(creator_id)`);
         await client.query(`CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)`);
+        await client.query(`CREATE INDEX IF NOT EXISTS idx_users_google_id ON users(google_id)`);
         console.log('✓ Indexes created');
+
+        // Create function to auto-update updated_at timestamp
+        await client.query(`
+            CREATE OR REPLACE FUNCTION update_updated_at_column()
+            RETURNS TRIGGER AS $$
+            BEGIN
+                NEW.updated_at = CURRENT_TIMESTAMP;
+                RETURN NEW;
+            END;
+            $$ language 'plpgsql'
+        `);
+
+        // Create trigger for users table
+        await client.query(`
+            DROP TRIGGER IF EXISTS update_users_updated_at ON users;
+            CREATE TRIGGER update_users_updated_at
+                BEFORE UPDATE ON users
+                FOR EACH ROW
+                EXECUTE FUNCTION update_updated_at_column()
+        `);
+        console.log('✓ Updated_at trigger created');
 
         console.log('✅ All database tables ready');
         return true;
