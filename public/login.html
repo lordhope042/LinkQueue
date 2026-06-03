@@ -3,9 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <meta name="description" content="LinkQueue - Secure login for queue management system">
+  <meta name="theme-color" content="#0a0a1f">
   <title>LinkQueue - Login</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700;14..32,800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
   <style>
     * {
       margin: 0;
@@ -18,6 +21,7 @@
       background: radial-gradient(circle at 10% 20%, #0a0a1f, #02020a);
       min-height: 100vh;
       color: #eef5ff;
+      line-height: 1.6;
     }
 
     .glass {
@@ -129,6 +133,10 @@
       box-shadow: 0 0 0 2px rgba(34, 211, 238, 0.2);
     }
 
+    input::placeholder {
+      color: rgba(255, 255, 255, 0.4);
+    }
+
     .btn-primary {
       background: linear-gradient(95deg, #5B21B6, #7c3aed);
       border: none;
@@ -165,6 +173,7 @@
       text-align: center;
       width: 100%;
       margin-top: 1rem;
+      transition: all 0.2s ease;
     }
 
     .btn-outline:hover {
@@ -183,11 +192,18 @@
       z-index: 1100;
       animation: fadeInUp 0.3s ease;
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+      max-width: 400px;
+      word-wrap: break-word;
     }
 
     .toast.error {
       background: #ff4757;
       color: white;
+    }
+
+    .toast.warning {
+      background: #f59e0b;
+      color: #0a0a1f;
     }
 
     @keyframes fadeInUp {
@@ -199,18 +215,6 @@
         opacity: 1;
         transform: translateY(0);
       }
-    }
-
-    .demo-credentials {
-      background: rgba(34, 211, 238, 0.1);
-      border-radius: 1rem;
-      padding: 1rem;
-      margin-top: 1.5rem;
-      font-size: 0.8rem;
-    }
-
-    .demo-credentials p {
-      margin: 0.3rem 0;
     }
 
     hr {
@@ -233,6 +237,328 @@
       border: none;
       font-size: 1rem;
       z-index: 10;
+      padding: 0.5rem;
+    }
+
+    .forgot-password {
+      text-align: right;
+      margin-top: 0.3rem;
+    }
+
+    .forgot-password a {
+      color: #22D3EE;
+      text-decoration: none;
+      font-size: 0.8rem;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+
+    .forgot-password a:hover {
+      opacity: 1;
+    }
+
+    /* Privacy & Security Improvements */
+    .security-notice {
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+    }
+
+    .security-notice i {
+      color: #22D3EE;
+      margin-top: 0.2rem;
+      flex-shrink: 0;
+    }
+
+    .security-notice p {
+      opacity: 0.8;
+      line-height: 1.5;
+    }
+
+    .privacy-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      opacity: 0.6;
+      line-height: 1.8;
+    }
+
+    .privacy-footer a {
+      color: #22D3EE;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .privacy-footer a:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+
+    .checkbox-group {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+      width: auto;
+      padding: 0;
+      margin-top: 0.2rem;
+      accent-color: #22D3EE;
+      cursor: pointer;
+    }
+
+    .checkbox-group label {
+      opacity: 0.8;
+      cursor: pointer;
+      line-height: 1.5;
+    }
+
+    .checkbox-group a {
+      color: #22D3EE;
+      text-decoration: none;
+    }
+
+    .checkbox-group a:hover {
+      text-decoration: underline;
+    }
+
+    /* Privacy Policy Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      padding: 2rem;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background: rgba(15, 25, 35, 0.95);
+      border: 1px solid rgba(34, 211, 238, 0.3);
+      border-radius: 1.5rem;
+      max-width: 700px;
+      max-height: 80vh;
+      width: 100%;
+      overflow-y: auto;
+      padding: 2rem;
+      position: relative;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid rgba(34, 211, 238, 0.2);
+    }
+
+    .modal-header h3 {
+      font-size: 1.5rem;
+      color: #22D3EE;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: #22D3EE;
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.5rem;
+      transition: transform 0.2s;
+    }
+
+    .modal-close:hover {
+      transform: scale(1.1);
+    }
+
+    .modal-body h4 {
+      color: #22D3EE;
+      margin: 1.5rem 0 0.5rem 0;
+      font-size: 1.1rem;
+    }
+
+    .modal-body p, .modal-body ul {
+      opacity: 0.85;
+      margin-bottom: 1rem;
+      line-height: 1.7;
+    }
+
+    .modal-body ul {
+      padding-left: 1.5rem;
+    }
+
+    .modal-body li {
+      margin-bottom: 0.5rem;
+    }
+
+    .modal-footer {
+      margin-top: 2rem;
+      padding-top: 1rem;
+      border-top: 1px solid rgba(34, 211, 238, 0.2);
+      text-align: center;
+    }
+
+    .modal-footer .btn-primary {
+      margin-top: 0;
+      width: auto;
+      padding: 0.7rem 2rem;
+    }
+
+    /* Password strength indicator */
+    .password-strength {
+      height: 4px;
+      border-radius: 2px;
+      margin-top: 0.5rem;
+      transition: all 0.3s ease;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .password-strength.weak {
+      background: #ff4757;
+      width: 33%;
+    }
+
+    .password-strength.medium {
+      background: #f59e0b;
+      width: 66%;
+    }
+
+    .password-strength.strong {
+      background: #22c55e;
+      width: 100%;
+    }
+
+    .password-strength-text {
+      font-size: 0.75rem;
+      margin-top: 0.3rem;
+      text-align: right;
+    }
+
+    .password-strength-text.weak { color: #ff4757; }
+    .password-strength-text.medium { color: #f59e0b; }
+    .password-strength-text.strong { color: #22c55e; }
+
+    /* Remember me option */
+    .remember-forgot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 0.5rem 0 1rem 0;
+      font-size: 0.85rem;
+    }
+
+    .remember-me {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+    }
+
+    .remember-me input {
+      width: auto;
+      padding: 0;
+      accent-color: #22D3EE;
+    }
+
+    /* Social login options */
+    .social-divider {
+      display: flex;
+      align-items: center;
+      margin: 1.5rem 0;
+      opacity: 0.5;
+      font-size: 0.85rem;
+    }
+
+    .social-divider::before,
+    .social-divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: rgba(34, 211, 238, 0.3);
+      margin: 0 1rem;
+    }
+
+    /* Google Sign-In Button Container */
+    .google-btn-container {
+      display: flex;
+      justify-content: center;
+      margin: 1rem 0;
+      min-height: 44px;
+    }
+
+    /* Rate limiting warning */
+    .rate-limit-warning {
+      background: rgba(245, 158, 11, 0.1);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 1rem;
+      padding: 0.8rem 1rem;
+      margin: 1rem 0;
+      font-size: 0.85rem;
+      display: none;
+      align-items: center;
+      gap: 0.5rem;
+      color: #f59e0b;
+    }
+
+    .rate-limit-warning.visible {
+      display: flex;
+    }
+
+    /* Google user info display */
+    .google-user-info {
+      background: rgba(34, 211, 238, 0.08);
+      border: 1px solid rgba(34, 211, 238, 0.2);
+      border-radius: 1rem;
+      padding: 1rem;
+      margin: 1rem 0;
+      display: none;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .google-user-info.visible {
+      display: flex;
+    }
+
+    .google-user-info img {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      border: 2px solid #22D3EE;
+    }
+
+    .google-user-info .user-details {
+      flex: 1;
+    }
+
+    .google-user-info .user-name {
+      font-weight: 600;
+      color: #22D3EE;
+    }
+
+    .google-user-info .user-email {
+      font-size: 0.85rem;
+      opacity: 0.7;
     }
 
     @media (max-width: 768px) {
@@ -252,156 +578,478 @@
         margin-left: 1rem;
         margin-right: 1rem;
       }
+      .modal-content {
+        padding: 1.5rem;
+        max-height: 85vh;
+      }
+    }
+
+    /* Accessibility improvements */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+
+    /* Focus visible for keyboard navigation */
+    *:focus-visible {
+      outline: 2px solid #22D3EE;
+      outline-offset: 2px;
+    }
+
+    /* Skip to main content link */
+    .skip-link {
+      position: absolute;
+      top: -40px;
+      left: 0;
+      background: #22D3EE;
+      color: #0a0a1f;
+      padding: 8px;
+      text-decoration: none;
+      z-index: 1000;
+      transition: top 0.3s;
+    }
+
+    .skip-link:focus {
+      top: 0;
     }
   </style>
+<base target="_blank">
 </head>
 <body>
 
-<nav>
-  <a href="index.html" class="logo">
-    <i class="fas fa-link"></i> LinkQueue
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav role="navigation" aria-label="Main navigation">
+  <a href="index.html" class="logo" aria-label="LinkQueue Home">
+    <i class="fas fa-link" aria-hidden="true"></i> LinkQueue
   </a>
   <div class="nav-links">
     <a href="index.html">Home</a>
-    <a href="login.html" style="color:#22D3EE;">Login</a>
+    <a href="login.html" style="color:#22D3EE;" aria-current="page">Login</a>
     <a href="register.html">Register</a>
   </div>
 </nav>
 
-<div class="container">
+<main id="main-content" class="container">
   <div class="card glass">
-    <h2><i class="fas fa-sign-in-alt"></i> Welcome Back</h2>
+    <h2><i class="fas fa-sign-in-alt" aria-hidden="true"></i> Welcome Back</h2>
     <div class="card-subtitle">Login to manage queues or track your position</div>
-    
-    <form id="loginForm">
+
+    <!-- Security Notice -->
+    <div class="security-notice" role="alert">
+      <i class="fas fa-shield-alt" aria-hidden="true"></i>
+      <p>Your connection is secure. We encrypt all data and never store your password in plain text.</p>
+    </div>
+
+    <!-- Rate Limit Warning -->
+    <div class="rate-limit-warning" id="rateLimitWarning" role="alert">
+      <i class="fas fa-clock" aria-hidden="true"></i>
+      <span>Too many attempts. Please wait <span id="waitTime">30</span> seconds before trying again.</span>
+    </div>
+
+    <!-- Google User Info (shown after Google sign-in) -->
+    <div class="google-user-info" id="googleUserInfo">
+      <img id="googleUserPic" src="" alt="Profile picture">
+      <div class="user-details">
+        <div class="user-name" id="googleUserName"></div>
+        <div class="user-email" id="googleUserEmail"></div>
+      </div>
+    </div>
+
+    <form id="loginForm" novalidate>
       <div class="input-group">
-        <i class="fas fa-envelope"></i>
-        <input type="email" id="loginEmail" placeholder="Email Address" required autocomplete="email">
+        <i class="fas fa-envelope" aria-hidden="true"></i>
+        <input 
+          type="email" 
+          id="loginEmail" 
+          placeholder="Email Address" 
+          required 
+          autocomplete="email"
+          aria-label="Email Address"
+          aria-describedby="emailHelp"
+        >
+        <span id="emailHelp" class="sr-only">Enter your registered email address</span>
       </div>
-      
+
       <div class="input-group password-wrapper">
-        <i class="fas fa-lock"></i>
-        <input type="password" id="loginPassword" placeholder="Password" required autocomplete="current-password">
-        <button type="button" class="toggle-password" id="togglePasswordBtn">
-          <i class="fas fa-eye"></i>
+        <i class="fas fa-lock" aria-hidden="true"></i>
+        <input 
+          type="password" 
+          id="loginPassword" 
+          placeholder="Password" 
+          required 
+          autocomplete="current-password"
+          aria-label="Password"
+          aria-describedby="passwordHelp"
+          minlength="6"
+        >
+        <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Toggle password visibility">
+          <i class="fas fa-eye" aria-hidden="true"></i>
         </button>
+        <span id="passwordHelp" class="sr-only">Enter your password (minimum 6 characters)</span>
       </div>
-      
+
+      <!-- Password Strength Indicator -->
+      <div id="passwordStrengthContainer" style="display: none;">
+        <div class="password-strength" id="passwordStrength" role="progressbar" aria-label="Password strength"></div>
+        <div class="password-strength-text" id="passwordStrengthText"></div>
+      </div>
+
+      <div class="remember-forgot">
+        <label class="remember-me">
+          <input type="checkbox" id="rememberMe" name="remember">
+          <span>Remember me for 30 days</span>
+        </label>
+        <div class="forgot-password">
+          <a href="forgot-password.html"><i class="fas fa-question-circle" aria-hidden="true"></i> Forgot password?</a>
+        </div>
+      </div>
+
       <button type="submit" class="btn-primary" id="loginBtn">
-        <i class="fas fa-arrow-right-to-bracket"></i> Login
+        <i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i> Login
       </button>
     </form>
-    
-    <div class="demo-credentials">
-      <p><i class="fas fa-info-circle"></i> <strong>Demo Credentials</strong></p>
-      <p>📧 Admin: <span style="color:#22D3EE;">admin@linkqueue.com</span> / <span style="color:#22D3EE;">admin123</span></p>
-      <p>👤 User: <span style="color:#22D3EE;">demo@linkqueue.com</span> / <span style="color:#22D3EE;">demo123</span></p>
-      <p style="font-size:0.7rem; opacity:0.7;">Or <a href="register.html" style="color:#22D3EE;">create your own account</a></p>
+
+    <!-- Privacy Consent -->
+    <div class="checkbox-group">
+      <input type="checkbox" id="privacyConsent" required>
+      <label for="privacyConsent">
+        I agree to the <a href="#" id="privacyLink">Privacy Policy</a> and 
+        <a href="#" id="termsLink">Terms of Service</a>
+      </label>
     </div>
-    
+
+    <div class="social-divider">or continue with</div>
+
+    <!-- Google Sign-In Button Container -->
+    <div class="google-btn-container" id="googleSignInDiv">
+      <!-- Google button renders here -->
+    </div>
+
     <hr>
-    
+
     <div style="text-align: center;">
       <p style="opacity: 0.7; margin-bottom: 1rem;">Don't have an account?</p>
       <a href="register.html" class="btn-outline">
-        <i class="fas fa-user-plus"></i> Create Account
+        <i class="fas fa-user-plus" aria-hidden="true"></i> Create Account
       </a>
     </div>
-    
+
+    <!-- Privacy Footer -->
+    <div class="privacy-footer">
+      <p>
+        <i class="fas fa-lock" aria-hidden="true"></i> Protected by industry-standard encryption<br>
+        <a href="#" class="privacy-policy-link">Privacy Policy</a> · 
+        <a href="#" class="terms-link">Terms of Service</a> · 
+        <a href="#" class="security-link">Security</a>
+      </p>
+      <p style="margin-top: 0.5rem; font-size: 0.75rem;">
+        © 2026 LinkQueue. All rights reserved.
+      </p>
+    </div>
+
     <div id="loginMessage"></div>
+  </div>
+</main>
+
+<!-- Privacy Policy Modal -->
+<div class="modal-overlay" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="privacyTitle"><i class="fas fa-shield-alt" aria-hidden="true"></i> Privacy Policy</h3>
+      <button class="modal-close" id="closePrivacy" aria-label="Close privacy policy">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Last updated:</strong> June 2, 2026</p>
+
+      <h4>1. Information We Collect</h4>
+      <p>We collect the following information when you use LinkQueue:</p>
+      <ul>
+        <li><strong>Account Information:</strong> Email address, name, and password (encrypted)</li>
+        <li><strong>Usage Data:</strong> Queue positions, session times, and feature usage</li>
+        <li><strong>Technical Data:</strong> IP address, browser type, and device information for security</li>
+        <li><strong>Google Profile Data:</strong> When using Google Sign-In, we receive your name, email, and profile picture (only with your consent)</li>
+      </ul>
+
+      <h4>2. How We Use Your Information</h4>
+      <ul>
+        <li>To provide and maintain our queue management services</li>
+        <li>To authenticate your identity and secure your account</li>
+        <li>To send important notifications about your queues</li>
+        <li>To improve our services and user experience</li>
+      </ul>
+
+      <h4>3. Data Security</h4>
+      <p>We implement industry-standard security measures:</p>
+      <ul>
+        <li>All passwords are hashed using bcrypt with salt</li>
+        <li>HTTPS/TLS encryption for all data transmission</li>
+        <li>JWT tokens with automatic expiration</li>
+        <li>Rate limiting to prevent brute force attacks</li>
+        <li>Regular security audits and updates</li>
+      </ul>
+
+      <h4>4. Google Sign-In Data</h4>
+      <p>When you use Google Sign-In:</p>
+      <ul>
+        <li>We only request access to your basic profile (name, email, picture)</li>
+        <li>We do not access your Google emails, contacts, or other data</li>
+        <li>Your Google credentials are never stored on our servers</li>
+        <li>We use Google's secure OAuth 2.0 flow with ID tokens</li>
+      </ul>
+
+      <h4>5. Data Retention</h4>
+      <p>We retain your data for as long as your account is active. You can request deletion of your account and associated data at any time by contacting support.</p>
+
+      <h4>6. Your Rights</h4>
+      <ul>
+        <li>Right to access your personal data</li>
+        <li>Right to correct inaccurate information</li>
+        <li>Right to delete your account and data</li>
+        <li>Right to export your data</li>
+      </ul>
+
+      <h4>7. Cookies & Local Storage</h4>
+      <p>We use local storage to maintain your session (with your consent via "Remember me"). We do not use third-party tracking cookies.</p>
+
+      <h4>8. Third-Party Services</h4>
+      <p>We use Google Identity Services for authentication. These services have their own privacy policies.</p>
+
+      <h4>9. Contact Us</h4>
+      <p>For privacy concerns, contact us at: <a href="mailto:privacy@linkqueue.com">privacy@linkqueue.com</a></p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" id="acceptPrivacy">I Understand</button>
+    </div>
   </div>
 </div>
 
+<!-- Terms of Service Modal -->
+<div class="modal-overlay" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="termsTitle"><i class="fas fa-file-contract" aria-hidden="true"></i> Terms of Service</h3>
+      <button class="modal-close" id="closeTerms" aria-label="Close terms of service">&times;</button>
+    </div>
+    <div class="modal-body">
+      <p><strong>Last updated:</strong> June 2, 2026</p>
+
+      <h4>1. Acceptance of Terms</h4>
+      <p>By accessing or using LinkQueue, you agree to be bound by these Terms of Service.</p>
+
+      <h4>2. Use of Service</h4>
+      <ul>
+        <li>You must provide accurate and complete information</li>
+        <li>You are responsible for maintaining your account security</li>
+        <li>You agree not to misuse or attempt to disrupt the service</li>
+        <li>You must be at least 13 years old to use this service</li>
+      </ul>
+
+      <h4>3. Account Security</h4>
+      <p>You are responsible for keeping your password secure. Notify us immediately of any unauthorized access.</p>
+
+      <h4>4. Service Availability</h4>
+      <p>We strive for 99.9% uptime but do not guarantee uninterrupted service. We reserve the right to perform maintenance.</p>
+
+      <h4>5. Limitation of Liability</h4>
+      <p>LinkQueue is provided "as is" without warranties. We are not liable for indirect or consequential damages.</p>
+
+      <h4>6. Changes to Terms</h4>
+      <p>We may update these terms. Continued use after changes constitutes acceptance.</p>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-primary" id="acceptTerms">I Agree</button>
+    </div>
+  </div>
+</div>
+
+<!-- Google Identity Services Library -->
+<script src="https://accounts.google.com/gsi/client" async defer onload="onGoogleScriptLoad()"></script>
+
 <script>
-  const API_BASE = 'http://localhost:3000/api';
-  
-  function showToast(message, isError = false) {
-    let existingToast = document.querySelector('.toast');
-    if(existingToast) existingToast.remove();
-    let toast = document.createElement('div');
-    toast.className = 'toast' + (isError ? ' error' : '');
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
-  }
-  
-  function setButtonLoading(btn, isLoading, originalText = null) {
-    if (!btn) return;
-    
-    if (isLoading) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-pulse"></i> Logging in...';
-    } else {
-      btn.disabled = false;
-      btn.innerHTML = originalText || '<i class="fas fa-arrow-right-to-bracket"></i> Login';
+  // ✅ FIXED: Dynamic API configuration that works in both development and production
+  const API_BASE = (() => {
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:3000/api';
     }
+    return '/api';
+  })();
+
+  console.log('🌐 API Base URL:', API_BASE);
+
+  // ================================
+  // GOOGLE IDENTITY SERVICES CONFIG
+  // ================================
+  // ✅ UPDATED with actual Google Client ID
+  const GOOGLE_CLIENT_ID = '654664096853-ueh05m9pbte2uffo2a0c77sak4atjbu5.apps.googleusercontent.com';
+
+  // Track if Google is initialized
+  let googleInitialized = false;
+
+  // Called when the Google script finishes loading
+  function onGoogleScriptLoad() {
+    console.log('📦 Google Identity Services script loaded');
+    initializeGoogleSignIn();
   }
-  
-  // Password visibility toggle
-  document.getElementById('togglePasswordBtn').addEventListener('click', function() {
-    const passwordInput = document.getElementById('loginPassword');
-    const icon = this.querySelector('i');
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      icon.classList.remove('fa-eye');
-      icon.classList.add('fa-eye-slash');
-    } else {
-      passwordInput.type = 'password';
-      icon.classList.remove('fa-eye-slash');
-      icon.classList.add('fa-eye');
+
+  // Also try on DOMContentLoaded in case script is cached and loads faster
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('📄 DOM loaded, checking Google...');
+    if (typeof google !== 'undefined' && google.accounts && google.accounts.id && !googleInitialized) {
+      initializeGoogleSignIn();
     }
   });
-  
-  // Form submission
-  document.getElementById('loginForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
-    const password = document.getElementById('loginPassword').value;
-    
-    if (!email || !password) {
-      showToast('Please enter both email and password', true);
+
+  function initializeGoogleSignIn() {
+    if (googleInitialized) return;
+
+    // Check if Google Identity Services is loaded
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+      console.log('⏳ Google Identity Services not yet available, will retry...');
+      setTimeout(initializeGoogleSignIn, 500);
       return;
     }
-    
-    if (!email.includes('@')) {
-      showToast('Please enter a valid email address', true);
-      return;
+
+    try {
+      // Initialize Google Identity Services
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: handleGoogleCredentialResponse,
+        auto_select: false,
+        cancel_on_tap_outside: true,
+        context: 'signin',
+        ux_mode: 'popup'
+      });
+
+      // Render the Google Sign-In button
+      google.accounts.id.renderButton(
+        document.getElementById('googleSignInDiv'),
+        {
+          type: 'standard',
+          theme: 'filled_black',
+          size: 'large',
+          shape: 'pill',
+          text: 'signin_with',
+          logo_alignment: 'center',
+          width: 320
+        }
+      );
+
+      googleInitialized = true;
+      console.log('✅ Google Sign-In initialized successfully');
+
+    } catch (error) {
+      console.error('❌ Failed to initialize Google Sign-In:', error);
+      const container = document.getElementById('googleSignInDiv');
+      container.innerHTML = '<p style="font-size:0.8rem; opacity:0.6; text-align:center; color:#ff4757;"><i class="fas fa-exclamation-circle"></i> Google Sign-In failed to load</p>';
     }
-    
+  }
+
+  // Handle Google Sign-In response
+  async function handleGoogleCredentialResponse(response) {
+    console.log('🔐 Google credential received');
+
+    const idToken = response.credential;
+
+    // Decode the JWT to show user info (for UI feedback only)
+    const payload = parseJwt(idToken);
+    if (payload) {
+      showGoogleUserInfo(payload);
+    }
+
+    // Send the ID token to your backend for verification
+    await verifyGoogleToken(idToken);
+  }
+
+  // Parse JWT token (client-side only for display purposes)
+  function parseJwt(token) {
+    try {
+      const base64Url = token.split('.')[1];
+      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+      const jsonPayload = decodeURIComponent(
+        atob(base64)
+          .split('')
+          .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+          .join('')
+      );
+      return JSON.parse(jsonPayload);
+    } catch (e) {
+      console.error('Failed to parse JWT:', e);
+      return null;
+    }
+  }
+
+  // Show Google user info in UI
+  function showGoogleUserInfo(payload) {
+    const userInfo = document.getElementById('googleUserInfo');
+    const userPic = document.getElementById('googleUserPic');
+    const userName = document.getElementById('googleUserName');
+    const userEmail = document.getElementById('googleUserEmail');
+
+    userPic.src = payload.picture || '';
+    userName.textContent = payload.name || 'Google User';
+    userEmail.textContent = payload.email || '';
+    userInfo.classList.add('visible');
+  }
+
+  // Send Google ID token to backend for verification
+  async function verifyGoogleToken(idToken) {
     const btn = document.getElementById('loginBtn');
     const originalText = btn.innerHTML;
     setButtonLoading(btn, true, originalText);
-    
+
     try {
-      const response = await fetch(`${API_BASE}/login`, {
+      const url = `${API_BASE}/auth/google`;
+      console.log(`📡 POST ${url} (Google OAuth)`);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 15000);
+
+      const response = await fetch(url, {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
         },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ 
+          credential: idToken,
+          clientId: GOOGLE_CLIENT_ID
+        }),
+        signal: controller.signal
       });
-      
+
+      clearTimeout(timeoutId);
+
       const data = await response.json();
-      
+
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.error || data.message || 'Google authentication failed');
       }
-      
+
       // Store token and user info
       if (data.token) {
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('linkqueue_session', JSON.stringify({
+        const storage = data.rememberMe !== false ? localStorage : sessionStorage;
+        storage.setItem('auth_token', data.token);
+        storage.setItem('linkqueue_session', JSON.stringify({
           userId: data.user.userId,
           email: data.user.email,
           name: data.user.name,
           role: data.user.role,
-          loggedInAt: Date.now()
+          loggedInAt: Date.now(),
+          authProvider: 'google'
         }));
       }
-      
-      showToast(data.message || `Welcome back, ${data.user.name}!`);
-      
+
+      showToast(data.message || `Welcome, ${data.user.name}!`);
+
       // Redirect based on role
       setTimeout(() => {
         if (data.user.role === 'admin') {
@@ -410,66 +1058,406 @@
           window.location.href = 'user-dashboard.html';
         }
       }, 1200);
-      
+
+    } catch (error) {
+      console.error('Google auth error:', error);
+      if (error.name === 'AbortError') {
+        showToast('Request timed out. Please try again.', true);
+      } else {
+        showToast(error.message, true);
+      }
+      setButtonLoading(btn, false, originalText);
+      document.getElementById('googleUserInfo').classList.remove('visible');
+    }
+  }
+
+  // Rate limiting configuration
+  const RATE_LIMIT = {
+    maxAttempts: 5,
+    windowMs: 15 * 60 * 1000,
+    lockoutMs: 30 * 1000
+  };
+
+  function getLoginAttempts() {
+    const attempts = localStorage.getItem('login_attempts');
+    return attempts ? JSON.parse(attempts) : { count: 0, lastAttempt: 0, locked: false, lockoutEnd: 0 };
+  }
+
+  function setLoginAttempts(data) {
+    localStorage.setItem('login_attempts', JSON.stringify(data));
+  }
+
+  function checkRateLimit() {
+    const attempts = getLoginAttempts();
+    const now = Date.now();
+
+    if (now - attempts.lastAttempt > RATE_LIMIT.windowMs) {
+      attempts.count = 0;
+      attempts.locked = false;
+    }
+
+    if (attempts.locked && now < attempts.lockoutEnd) {
+      const waitSeconds = Math.ceil((attempts.lockoutEnd - now) / 1000);
+      showRateLimitWarning(waitSeconds);
+      return false;
+    }
+
+    if (attempts.count >= RATE_LIMIT.maxAttempts) {
+      attempts.locked = true;
+      attempts.lockoutEnd = now + RATE_LIMIT.lockoutMs;
+      setLoginAttempts(attempts);
+      showRateLimitWarning(RATE_LIMIT.lockoutMs / 1000);
+      return false;
+    }
+
+    return true;
+  }
+
+  function recordFailedAttempt() {
+    const attempts = getLoginAttempts();
+    attempts.count++;
+    attempts.lastAttempt = Date.now();
+    setLoginAttempts(attempts);
+  }
+
+  function resetAttempts() {
+    localStorage.removeItem('login_attempts');
+  }
+
+  function showRateLimitWarning(seconds) {
+    const warning = document.getElementById('rateLimitWarning');
+    const waitTime = document.getElementById('waitTime');
+    waitTime.textContent = seconds;
+    warning.classList.add('visible');
+
+    let remaining = seconds;
+    const interval = setInterval(() => {
+      remaining--;
+      if (remaining <= 0) {
+        clearInterval(interval);
+        warning.classList.remove('visible');
+      } else {
+        waitTime.textContent = remaining;
+      }
+    }, 1000);
+  }
+
+  function showToast(message, isError = false, isWarning = false) {
+    let existingToast = document.querySelector('.toast');
+    if(existingToast) existingToast.remove();
+    let toast = document.createElement('div');
+    toast.className = 'toast' + (isError ? ' error' : isWarning ? ' warning' : '');
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('aria-live', 'polite');
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : isWarning ? 'fa-clock' : 'fa-check-circle'}" aria-hidden="true"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+
+  function setButtonLoading(btn, isLoading, originalText = null) {
+    if (!btn) return;
+
+    if (isLoading) {
+      btn.disabled = true;
+      btn.innerHTML = '<i class="fas fa-spinner fa-pulse" aria-hidden="true"></i> Logging in...';
+      btn.setAttribute('aria-busy', 'true');
+    } else {
+      btn.disabled = false;
+      btn.innerHTML = originalText || '<i class="fas fa-arrow-right-to-bracket" aria-hidden="true"></i> Login';
+      btn.setAttribute('aria-busy', 'false');
+    }
+  }
+
+  // Password visibility toggle
+  document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+    const passwordInput = document.getElementById('loginPassword');
+    const icon = this.querySelector('i');
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      icon.classList.remove('fa-eye');
+      icon.classList.add('fa-eye-slash');
+      this.setAttribute('aria-label', 'Hide password');
+    } else {
+      passwordInput.type = 'password';
+      icon.classList.remove('fa-eye-slash');
+      icon.classList.add('fa-eye');
+      this.setAttribute('aria-label', 'Show password');
+    }
+  });
+
+  // Password strength indicator
+  document.getElementById('loginPassword').addEventListener('input', function() {
+    const password = this.value;
+    const container = document.getElementById('passwordStrengthContainer');
+    const strength = document.getElementById('passwordStrength');
+    const text = document.getElementById('passwordStrengthText');
+
+    if (password.length === 0) {
+      container.style.display = 'none';
+      return;
+    }
+
+    container.style.display = 'block';
+
+    let score = 0;
+    if (password.length >= 8) score++;
+    if (password.length >= 12) score++;
+    if (/[A-Z]/.test(password)) score++;
+    if (/[0-9]/.test(password)) score++;
+    if (/[^A-Za-z0-9]/.test(password)) score++;
+
+    strength.className = 'password-strength';
+    text.className = 'password-strength-text';
+
+    if (score <= 2) {
+      strength.classList.add('weak');
+      text.classList.add('weak');
+      text.textContent = 'Weak password';
+    } else if (score <= 4) {
+      strength.classList.add('medium');
+      text.classList.add('medium');
+      text.textContent = 'Medium strength';
+    } else {
+      strength.classList.add('strong');
+      text.classList.add('strong');
+      text.textContent = 'Strong password';
+    }
+  });
+
+  // Modal functionality
+  function openModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    const focusable = modal.querySelector('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+    if (focusable) focusable.focus();
+  }
+
+  function closeModal(modalId) {
+    const modal = document.getElementById(modalId);
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  }
+
+  // Privacy Policy links
+  document.getElementById('privacyLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal('privacyModal');
+  });
+
+  document.querySelector('.privacy-policy-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal('privacyModal');
+  });
+
+  document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyModal'));
+  document.getElementById('acceptPrivacy').addEventListener('click', () => closeModal('privacyModal'));
+
+  // Terms of Service links
+  document.getElementById('termsLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal('termsModal');
+  });
+
+  document.querySelector('.terms-link').addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal('termsModal');
+  });
+
+  document.getElementById('closeTerms').addEventListener('click', () => closeModal('termsModal'));
+  document.getElementById('acceptTerms').addEventListener('click', () => closeModal('termsModal'));
+
+  // Close modal on escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      closeModal('privacyModal');
+      closeModal('termsModal');
+    }
+  });
+
+  // Close modal on overlay click
+  document.getElementById('privacyModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal('privacyModal');
+  });
+
+  document.getElementById('termsModal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeModal('termsModal');
+  });
+
+  // Form submission
+  document.getElementById('loginForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (!checkRateLimit()) {
+      return;
+    }
+
+    const email = document.getElementById('loginEmail').value.trim().toLowerCase();
+    const password = document.getElementById('loginPassword').value;
+    const privacyConsent = document.getElementById('privacyConsent').checked;
+    const rememberMe = document.getElementById('rememberMe').checked;
+
+    if (!email || !password) {
+      showToast('Please enter both email and password', true);
+      document.getElementById('loginEmail').focus();
+      return;
+    }
+
+    if (!email.includes('@') || !email.includes('.')) {
+      showToast('Please enter a valid email address', true);
+      document.getElementById('loginEmail').focus();
+      return;
+    }
+
+    if (password.length < 6) {
+      showToast('Password must be at least 6 characters', true);
+      document.getElementById('loginPassword').focus();
+      return;
+    }
+
+    if (!privacyConsent) {
+      showToast('Please agree to the Privacy Policy and Terms of Service', true);
+      document.getElementById('privacyConsent').focus();
+      return;
+    }
+
+    const btn = document.getElementById('loginBtn');
+    const originalText = btn.innerHTML;
+    setButtonLoading(btn, true, originalText);
+
+    try {
+      const url = `${API_BASE}/login`;
+      console.log(`📡 POST ${url}`);
+
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 10000);
+
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        body: JSON.stringify({ email, password, rememberMe }),
+        signal: controller.signal
+      });
+
+      clearTimeout(timeoutId);
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        recordFailedAttempt();
+        throw new Error(data.error || data.message || 'Login failed');
+      }
+
+      resetAttempts();
+
+      if (data.token) {
+        const storage = rememberMe ? localStorage : sessionStorage;
+        storage.setItem('auth_token', data.token);
+        storage.setItem('linkqueue_session', JSON.stringify({
+          userId: data.user.userId,
+          email: data.user.email,
+          name: data.user.name,
+          role: data.user.role,
+          loggedInAt: Date.now(),
+          rememberMe: rememberMe,
+          authProvider: 'email'
+        }));
+
+        if (!rememberMe) {
+          localStorage.setItem('auth_token_temp', data.token);
+          localStorage.setItem('linkqueue_session_temp', JSON.stringify({
+            userId: data.user.userId,
+            email: data.user.email,
+            name: data.user.name,
+            role: data.user.role,
+            loggedInAt: Date.now(),
+            rememberMe: false,
+            authProvider: 'email'
+          }));
+        }
+      }
+
+      showToast(data.message || `Welcome back, ${data.user.name}!`);
+
+      setTimeout(() => {
+        if (data.user.role === 'admin') {
+          window.location.href = 'admin-dashboard.html';
+        } else {
+          window.location.href = 'user-dashboard.html';
+        }
+      }, 1200);
+
     } catch (error) {
       console.error('Login error:', error);
-      showToast(error.message, true);
+      if (error.name === 'AbortError') {
+        showToast('Request timed out. Please try again.', true);
+      } else {
+        showToast(error.message, true);
+      }
       setButtonLoading(btn, false, originalText);
     }
   });
-  
+
   // Check existing session on page load
   (async function checkSession() {
-    const token = localStorage.getItem('auth_token');
-    const session = localStorage.getItem('linkqueue_session');
-    
+    const token = localStorage.getItem('auth_token') || localStorage.getItem('auth_token_temp');
+    const session = localStorage.getItem('linkqueue_session') || localStorage.getItem('linkqueue_session_temp');
+
     if (token && session) {
       try {
         const sessionData = JSON.parse(session);
-        
-        // Check if session is expired (24 hours)
-        if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) {
+
+        const maxAge = sessionData.rememberMe ? 30 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000;
+        if (Date.now() - sessionData.loggedInAt > maxAge) {
           localStorage.removeItem('auth_token');
           localStorage.removeItem('linkqueue_session');
+          localStorage.removeItem('auth_token_temp');
+          localStorage.removeItem('linkqueue_session_temp');
           return;
         }
-        
-        // Verify token with server
-        const response = await fetch(`${API_BASE}/my-queues`, {
+
+        const url = `${API_BASE}/my-queues`;
+        console.log(`📡 GET ${url} (session check)`);
+
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+
+        const response = await fetch(url, {
           headers: {
             'Authorization': `Bearer ${token}`
-          }
+          },
+          signal: controller.signal
         });
-        
+
+        clearTimeout(timeoutId);
+
         if (response.ok) {
-          // Session is valid, redirect to dashboard
           showToast(`Welcome back, ${sessionData.name}! Redirecting...`);
           setTimeout(() => {
             window.location.href = sessionData.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
           }, 1500);
         } else {
-          // Token invalid, clear storage
           localStorage.removeItem('auth_token');
           localStorage.removeItem('linkqueue_session');
+          localStorage.removeItem('auth_token_temp');
+          localStorage.removeItem('linkqueue_session_temp');
         }
       } catch(e) {
+        console.log('Session check failed:', e.message);
         localStorage.removeItem('auth_token');
         localStorage.removeItem('linkqueue_session');
+        localStorage.removeItem('auth_token_temp');
+        localStorage.removeItem('linkqueue_session_temp');
       }
     }
   })();
-  
-  // Auto-fill demo credentials from URL parameter
-  const urlParams = new URLSearchParams(window.location.search);
-  const demoEmail = urlParams.get('demo');
-  if (demoEmail === 'admin') {
-    document.getElementById('loginEmail').value = 'admin@linkqueue.com';
-    document.getElementById('loginPassword').value = 'admin123';
-    showToast('Admin demo credentials loaded. Click Login to continue.');
-  } else if (demoEmail === 'user') {
-    document.getElementById('loginEmail').value = 'demo@linkqueue.com';
-    document.getElementById('loginPassword').value = 'demo123';
-    showToast('User demo credentials loaded. Click Login to continue.');
+
+  // Prevent form resubmission on page refresh
+  if (window.history.replaceState) {
+    window.history.replaceState(null, null, window.location.href);
   }
 </script>
 </body>
