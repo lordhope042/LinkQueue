@@ -934,7 +934,7 @@
             
             showToast(data.message || `Welcome, ${data.user.name}!`);
             setTimeout(() => {
-              window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+              window.location.href = data.user.role === 'admin' ? 'dashboard.html' : 'user-dashboard.html';
             }, 1200);
           } catch (err) {
             console.error('Google auth error:', err);
@@ -1100,7 +1100,7 @@
           }));
           showToast('Registration successful! Redirecting...');
           setTimeout(() => {
-            window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+            window.location.href = data.user.role === 'admin' ? 'dashboard.html' : 'user-dashboard.html';
           }, 1200);
         } catch (err) { 
           showToast(err.message, true); 
@@ -1121,7 +1121,7 @@
           if (res.ok) { 
             showToast(`Welcome back, ${sess.name}!`); 
             setTimeout(() => {
-              window.location.href = sess.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+              window.location.href = sess.role === 'admin' ? 'dashboard.html' : 'user-dashboard.html';
             }, 1500);
           } else throw new Error('Invalid');
         } catch(e) { 
