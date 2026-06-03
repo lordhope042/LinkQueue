@@ -240,7 +240,6 @@
       padding: 0.5rem;
     }
 
-    /* Security Notice */
     .security-notice {
       background: rgba(34, 211, 238, 0.08);
       border: 1px solid rgba(34, 211, 238, 0.2);
@@ -314,7 +313,6 @@
       text-decoration: underline;
     }
 
-    /* Modal Styles */
     .modal-overlay {
       position: fixed;
       top: 0;
@@ -407,7 +405,6 @@
       padding: 0.7rem 2rem;
     }
 
-    /* Password Requirements */
     .password-requirements {
       background: rgba(0, 0, 0, 0.3);
       border-radius: 1rem;
@@ -486,7 +483,6 @@
     .match-success { color: #22D3EE; }
     .match-error { color: #ff4757; }
 
-    /* Google Sign-In */
     .social-divider {
       display: flex;
       align-items: center;
@@ -603,7 +599,6 @@
       top: 0;
     }
   </style>
-  <base target="_blank">
 </head>
 <body>
 
@@ -625,13 +620,11 @@
     <h2><i class="fas fa-user-plus" aria-hidden="true"></i> Create Account</h2>
     <div class="card-subtitle">Join LinkQueue to create queues or manage participants</div>
 
-    <!-- Security Notice -->
     <div class="security-notice" role="alert">
       <i class="fas fa-shield-alt" aria-hidden="true"></i>
       <p>Your information is secure. We encrypt all data and never store your password in plain text.</p>
     </div>
 
-    <!-- Google User Info (shown after Google sign-up) -->
     <div class="google-user-info" id="googleUserInfo">
       <img id="googleUserPic" src="" alt="Profile picture">
       <div class="user-details">
@@ -643,436 +636,120 @@
     <form id="registerForm" novalidate>
       <div class="input-group">
         <i class="fas fa-user" aria-hidden="true"></i>
-        <input 
-          type="text" 
-          id="regName" 
-          placeholder="Full Name" 
-          required 
-          autocomplete="name"
-          aria-label="Full Name"
-        >
+        <input type="text" id="regName" placeholder="Full Name" required autocomplete="name" aria-label="Full Name">
       </div>
 
       <div class="input-group">
         <i class="fas fa-envelope" aria-hidden="true"></i>
-        <input 
-          type="email" 
-          id="regEmail" 
-          placeholder="Email Address" 
-          required 
-          autocomplete="email"
-          aria-label="Email Address"
-        >
+        <input type="email" id="regEmail" placeholder="Email Address" required autocomplete="email" aria-label="Email Address">
       </div>
 
       <div class="input-group password-wrapper">
         <i class="fas fa-lock" aria-hidden="true"></i>
-        <input 
-          type="password" 
-          id="regPassword" 
-          placeholder="Password" 
-          required 
-          autocomplete="new-password"
-          aria-label="Password"
-          minlength="8"
-        >
+        <input type="password" id="regPassword" placeholder="Password" required autocomplete="new-password" aria-label="Password" minlength="8">
         <button type="button" class="toggle-password" id="togglePasswordBtn" aria-label="Toggle password visibility">
           <i class="fas fa-eye" aria-hidden="true"></i>
         </button>
       </div>
 
-      <!-- Password Requirements Section -->
       <div class="password-requirements" id="passwordRequirements" style="display: none;">
         <h4><i class="fas fa-shield-alt" aria-hidden="true"></i> Password Requirements</h4>
-        <div class="requirement" id="reqLength">
-          <i class="fas fa-times-circle" aria-hidden="true"></i>
-          <span>At least 8 characters</span>
-        </div>
-        <div class="requirement" id="reqUppercase">
-          <i class="fas fa-times-circle" aria-hidden="true"></i>
-          <span>At least one uppercase letter</span>
-        </div>
-        <div class="requirement" id="reqLowercase">
-          <i class="fas fa-times-circle" aria-hidden="true"></i>
-          <span>At least one lowercase letter</span>
-        </div>
-        <div class="requirement" id="reqNumber">
-          <i class="fas fa-times-circle" aria-hidden="true"></i>
-          <span>At least one number</span>
-        </div>
-        <div class="requirement" id="reqSpecial">
-          <i class="fas fa-times-circle" aria-hidden="true"></i>
-          <span>At least one special character (!@#$%^&*)</span>
-        </div>
-        
-        <div class="password-strength-meter">
-          <div class="password-strength-fill" id="strengthFill"></div>
-        </div>
+        <div class="requirement" id="reqLength"><i class="fas fa-times-circle"></i><span>At least 8 characters</span></div>
+        <div class="requirement" id="reqUppercase"><i class="fas fa-times-circle"></i><span>At least one uppercase letter</span></div>
+        <div class="requirement" id="reqLowercase"><i class="fas fa-times-circle"></i><span>At least one lowercase letter</span></div>
+        <div class="requirement" id="reqNumber"><i class="fas fa-times-circle"></i><span>At least one number</span></div>
+        <div class="requirement" id="reqSpecial"><i class="fas fa-times-circle"></i><span>At least one special character (!@#$%^&*)</span></div>
+        <div class="password-strength-meter"><div class="password-strength-fill" id="strengthFill"></div></div>
         <div id="strengthText" style="font-size: 0.8rem; opacity: 0.7;">Enter a password</div>
       </div>
 
-      <!-- Confirm Password Field -->
       <div class="input-group password-wrapper">
         <i class="fas fa-check-circle" aria-hidden="true"></i>
-        <input 
-          type="password" 
-          id="regConfirmPassword" 
-          placeholder="Confirm Password" 
-          required 
-          autocomplete="new-password"
-          aria-label="Confirm Password"
-        >
+        <input type="password" id="regConfirmPassword" placeholder="Confirm Password" required autocomplete="new-password" aria-label="Confirm Password">
         <button type="button" class="toggle-password" id="toggleConfirmBtn" aria-label="Toggle confirm password visibility">
           <i class="fas fa-eye" aria-hidden="true"></i>
         </button>
       </div>
 
-      <!-- Password Match Indicator -->
       <div class="password-match-indicator" id="passwordMatchIndicator" style="display: none;">
-        <i class="fas fa-times-circle" aria-hidden="true"></i>
-        <span>Passwords do not match</span>
+        <i class="fas fa-times-circle"></i><span>Passwords do not match</span>
       </div>
 
-      <!-- Privacy Consent -->
       <div class="checkbox-group">
         <input type="checkbox" id="privacyConsent" required>
-        <label for="privacyConsent">
-          I agree to the <a href="#" id="privacyLink">Privacy Policy</a> and 
-          <a href="#" id="termsLink">Terms of Service</a>
-        </label>
+        <label for="privacyConsent">I agree to the <a href="#" id="privacyLink">Privacy Policy</a> and <a href="#" id="termsLink">Terms of Service</a></label>
       </div>
 
       <button type="submit" class="btn-primary" id="registerBtn">
-        <i class="fas fa-check-circle" aria-hidden="true"></i> Register
+        <i class="fas fa-check-circle"></i> Register
       </button>
     </form>
 
     <div class="social-divider">or sign up with</div>
-
-    <!-- Google Sign-In Button Container -->
-    <div class="google-btn-container" id="googleSignInDiv">
-      <!-- Google button renders here -->
-    </div>
+    <div class="google-btn-container" id="googleSignInDiv"></div>
 
     <hr>
-
     <div style="text-align: center;">
       <p style="opacity: 0.7; margin-bottom: 1rem;">Already have an account?</p>
-      <a href="login.html" class="btn-outline">
-        <i class="fas fa-sign-in-alt" aria-hidden="true"></i> Sign In
-      </a>
+      <a href="login.html" class="btn-outline"><i class="fas fa-sign-in-alt"></i> Sign In</a>
     </div>
 
-    <!-- Privacy Footer -->
     <div class="privacy-footer">
-      <p>
-        <i class="fas fa-lock" aria-hidden="true"></i> Protected by industry-standard encryption<br>
-        <a href="#" class="privacy-policy-link">Privacy Policy</a> · 
-        <a href="#" class="terms-link">Terms of Service</a> · 
-        <a href="#" class="security-link">Security</a>
-      </p>
-      <p style="margin-top: 0.5rem; font-size: 0.75rem;">
-        © 2026 LinkQueue. All rights reserved.
-      </p>
+      <p><i class="fas fa-lock"></i> Protected by industry-standard encryption<br>
+      <a href="#" class="privacy-policy-link">Privacy Policy</a> · 
+      <a href="#" class="terms-link">Terms of Service</a> · 
+      <a href="#" class="security-link">Security</a></p>
+      <p style="margin-top: 0.5rem; font-size: 0.75rem;">© 2026 LinkQueue. All rights reserved.</p>
     </div>
-
-    <div id="registerMessage"></div>
   </div>
 </main>
 
-<!-- Privacy Policy Modal -->
+<!-- Modals -->
 <div class="modal-overlay" id="privacyModal" role="dialog" aria-modal="true" aria-labelledby="privacyTitle">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="privacyTitle"><i class="fas fa-shield-alt" aria-hidden="true"></i> Privacy Policy</h3>
-      <button class="modal-close" id="closePrivacy" aria-label="Close privacy policy">&times;</button>
-    </div>
-    <div class="modal-body">
-      <p><strong>Last updated:</strong> June 2, 2026</p>
-      <h4>1. Information We Collect</h4>
-      <p>We collect the following information when you use LinkQueue:</p>
-      <ul>
-        <li><strong>Account Information:</strong> Email address, name, and password (encrypted)</li>
-        <li><strong>Usage Data:</strong> Queue positions, session times, and feature usage</li>
-        <li><strong>Technical Data:</strong> IP address, browser type, and device information for security</li>
-        <li><strong>Google Profile Data:</strong> When using Google Sign-In, we receive your name, email, and profile picture (only with your consent)</li>
-      </ul>
-      <h4>2. How We Use Your Information</h4>
-      <ul>
-        <li>To provide and maintain our queue management services</li>
-        <li>To authenticate your identity and secure your account</li>
-        <li>To send important notifications about your queues</li>
-        <li>To improve our services and user experience</li>
-      </ul>
-      <h4>3. Data Security</h4>
-      <p>We implement industry-standard security measures including bcrypt hashing, HTTPS/TLS encryption, JWT tokens with automatic expiration, and rate limiting.</p>
-      <h4>4. Google Sign-In Data</h4>
-      <p>When you use Google Sign-In, we only request access to your basic profile (name, email, picture). Your Google credentials are never stored on our servers.</p>
-      <h4>5. Data Retention</h4>
-      <p>We retain your data for as long as your account is active. You can request deletion at any time.</p>
-      <h4>6. Your Rights</h4>
-      <ul>
-        <li>Right to access your personal data</li>
-        <li>Right to correct inaccurate information</li>
-        <li>Right to delete your account and data</li>
-        <li>Right to export your data</li>
-      </ul>
-      <h4>7. Contact Us</h4>
-      <p>For privacy concerns, contact us at: <a href="mailto:privacy@linkqueue.com">privacy@linkqueue.com</a></p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-primary" id="acceptPrivacy">I Understand</button>
-    </div>
-  </div>
+  <div class="modal-content"><div class="modal-header"><h3 id="privacyTitle"><i class="fas fa-shield-alt"></i> Privacy Policy</h3><button class="modal-close" id="closePrivacy">&times;</button></div>
+  <div class="modal-body"><p><strong>Last updated:</strong> June 2, 2026</p><h4>1. Information We Collect</h4><p>We collect email, name, encrypted password, usage data, and optionally Google profile data.</p><h4>2. How We Use Your Information</h4><p>To provide queue management services, authenticate users, and improve our platform.</p><h4>3. Data Security</h4><p>We use bcrypt hashing, HTTPS encryption, and JWT tokens.</p><h4>4. Contact Us</h4><p>privacy@linkqueue.com</p></div>
+  <div class="modal-footer"><button class="btn-primary" id="acceptPrivacy">I Understand</button></div></div>
 </div>
 
-<!-- Terms of Service Modal -->
 <div class="modal-overlay" id="termsModal" role="dialog" aria-modal="true" aria-labelledby="termsTitle">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="termsTitle"><i class="fas fa-file-contract" aria-hidden="true"></i> Terms of Service</h3>
-      <button class="modal-close" id="closeTerms" aria-label="Close terms of service">&times;</button>
-    </div>
-    <div class="modal-body">
-      <p><strong>Last updated:</strong> June 2, 2026</p>
-      <h4>1. Acceptance of Terms</h4>
-      <p>By accessing or using LinkQueue, you agree to be bound by these Terms of Service.</p>
-      <h4>2. Use of Service</h4>
-      <ul>
-        <li>You must provide accurate and complete information</li>
-        <li>You are responsible for maintaining your account security</li>
-        <li>You agree not to misuse or attempt to disrupt the service</li>
-        <li>You must be at least 13 years old to use this service</li>
-      </ul>
-      <h4>3. Account Security</h4>
-      <p>You are responsible for keeping your password secure. Notify us immediately of any unauthorized access.</p>
-      <h4>4. Service Availability</h4>
-      <p>We strive for 99.9% uptime but do not guarantee uninterrupted service.</p>
-      <h4>5. Limitation of Liability</h4>
-      <p>LinkQueue is provided "as is" without warranties. We are not liable for indirect or consequential damages.</p>
-      <h4>6. Changes to Terms</h4>
-      <p>We may update these terms. Continued use after changes constitutes acceptance.</p>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-primary" id="acceptTerms">I Agree</button>
-    </div>
-  </div>
+  <div class="modal-content"><div class="modal-header"><h3 id="termsTitle"><i class="fas fa-file-contract"></i> Terms of Service</h3><button class="modal-close" id="closeTerms">&times;</button></div>
+  <div class="modal-body"><p><strong>Last updated:</strong> June 2, 2026</p><h4>1. Acceptance of Terms</h4><p>By using LinkQueue you agree to these terms.</p><h4>2. Account Security</h4><p>You are responsible for maintaining your account security.</p><h4>3. Service Availability</h4><p>We strive for 99.9% uptime but do not guarantee uninterrupted service.</p></div>
+  <div class="modal-footer"><button class="btn-primary" id="acceptTerms">I Agree</button></div></div>
 </div>
 
-<!-- Google Identity Services Library -->
-<script src="https://accounts.google.com/gsi/client" async defer onload="onGoogleScriptLoad()"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 
 <script>
-  // Dynamic API configuration
+  // API configuration
   const API_BASE = (() => {
     const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:3000/api';
-    }
-    return '/api';
+    if (hostname === 'localhost' || hostname === '127.0.0.1') return 'http://localhost:3000/api';
+    return 'https://linkqueues.onrender.com/api';
   })();
-
   console.log('🌐 API Base URL:', API_BASE);
 
-  // Google Client ID
   const GOOGLE_CLIENT_ID = '654664096853-ueh05m9pbte2uffo2a0c77sak4atjbu5.apps.googleusercontent.com';
-
   let googleInitialized = false;
-
-  function onGoogleScriptLoad() {
-    console.log('📦 Google Identity Services script loaded');
-    initializeGoogleSignIn();
-  }
-
-  document.addEventListener('DOMContentLoaded', function() {
-    console.log('📄 DOM loaded, checking Google...');
-    if (typeof google !== 'undefined' && google.accounts && google.accounts.id && !googleInitialized) {
-      initializeGoogleSignIn();
-    }
-  });
-
-  function initializeGoogleSignIn() {
-    if (googleInitialized) return;
-
-    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
-      console.log('⏳ Google Identity Services not yet available, will retry...');
-      setTimeout(initializeGoogleSignIn, 500);
-      return;
-    }
-
-    try {
-      google.accounts.id.initialize({
-        client_id: GOOGLE_CLIENT_ID,
-        callback: handleGoogleCredentialResponse,
-        auto_select: false,
-        cancel_on_tap_outside: true,
-        context: 'signup',
-        ux_mode: 'popup'
-      });
-
-      google.accounts.id.renderButton(
-        document.getElementById('googleSignInDiv'),
-        {
-          type: 'standard',
-          theme: 'filled_black',
-          size: 'large',
-          shape: 'pill',
-          text: 'signup_with',
-          logo_alignment: 'center',
-          width: 320
-        }
-      );
-
-      googleInitialized = true;
-      console.log('✅ Google Sign-In initialized successfully');
-    } catch (error) {
-      console.error('❌ Failed to initialize Google Sign-In:', error);
-      const container = document.getElementById('googleSignInDiv');
-      container.innerHTML = '<p style="font-size:0.8rem; opacity:0.6; text-align:center; color:#ff4757;"><i class="fas fa-exclamation-circle"></i> Google Sign-In failed to load</p>';
-    }
-  }
-
-  async function handleGoogleCredentialResponse(response) {
-    console.log('🔐 Google credential received');
-    const idToken = response.credential;
-    const payload = parseJwt(idToken);
-    if (payload) showGoogleUserInfo(payload);
-    await verifyGoogleToken(idToken);
-  }
-
-  function parseJwt(token) {
-    try {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(
-        atob(base64).split('').map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)).join('')
-      );
-      return JSON.parse(jsonPayload);
-    } catch (e) {
-      console.error('Failed to parse JWT:', e);
-      return null;
-    }
-  }
-
-  function showGoogleUserInfo(payload) {
-    const userInfo = document.getElementById('googleUserInfo');
-    const userPic = document.getElementById('googleUserPic');
-    const userName = document.getElementById('googleUserName');
-    const userEmail = document.getElementById('googleUserEmail');
-
-    userPic.src = payload.picture || '';
-    userName.textContent = payload.name || 'Google User';
-    userEmail.textContent = payload.email || '';
-    userInfo.classList.add('visible');
-  }
-
-  async function verifyGoogleToken(idToken) {
-    const btn = document.getElementById('registerBtn');
-    const originalText = btn.innerHTML;
-    setButtonLoading(btn, true, originalText);
-
-    try {
-      const url = `${API_BASE}/auth/google`;
-      console.log(`📡 POST ${url} (Google Sign-Up)`);
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 15000);
-
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-Requested-With': 'XMLHttpRequest'
-        },
-        body: JSON.stringify({
-          credential: idToken,
-          clientId: GOOGLE_CLIENT_ID
-        }),
-        signal: controller.signal
-      });
-
-      clearTimeout(timeoutId);
-      const data = await response.json();
-
-      if (!response.ok) throw new Error(data.error || data.message || 'Google authentication failed');
-
-      if (data.token) {
-        localStorage.setItem('auth_token', data.token);
-        localStorage.setItem('linkqueue_session', JSON.stringify({
-          userId: data.user.userId,
-          email: data.user.email,
-          name: data.user.name,
-          role: data.user.role,
-          loggedInAt: Date.now(),
-          authProvider: 'google'
-        }));
-      }
-
-      showToast(data.message || `Welcome, ${data.user.name}!`);
-      setTimeout(() => {
-        window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
-      }, 1200);
-    } catch (error) {
-      console.error('Google auth error:', error);
-      showToast(error.message, true);
-      setButtonLoading(btn, false, originalText);
-      document.getElementById('googleUserInfo').classList.remove('visible');
-    }
-  }
 
   // Toast notification
   function showToast(message, isError = false) {
-    let existingToast = document.querySelector('.toast');
-    if (existingToast) existingToast.remove();
-    let toast = document.createElement('div');
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+    const toast = document.createElement('div');
     toast.className = 'toast' + (isError ? ' error' : '');
     toast.setAttribute('role', 'alert');
-    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}" aria-hidden="true"></i> ${message}`;
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
     document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 3500);
+    setTimeout(() => toast.remove(), 4000);
   }
 
   function setButtonLoading(btn, isLoading, originalText = null) {
     if (!btn) return;
-    if (isLoading) {
-      btn.disabled = true;
-      btn.innerHTML = '<i class="fas fa-spinner fa-pulse" aria-hidden="true"></i> Processing...';
-    } else {
-      btn.disabled = false;
-      btn.innerHTML = originalText || '<i class="fas fa-check-circle" aria-hidden="true"></i> Register';
-    }
+    btn.disabled = isLoading;
+    btn.innerHTML = isLoading ? '<i class="fas fa-spinner fa-pulse"></i> Processing...' : (originalText || '<i class="fas fa-check-circle"></i> Register');
   }
 
-  // Password toggle buttons
-  document.getElementById('togglePasswordBtn').addEventListener('click', function() {
-    const passwordInput = document.getElementById('regPassword');
-    const icon = this.querySelector('i');
-    if (passwordInput.type === 'password') {
-      passwordInput.type = 'text';
-      icon.classList.remove('fa-eye');
-      icon.classList.add('fa-eye-slash');
-    } else {
-      passwordInput.type = 'password';
-      icon.classList.remove('fa-eye-slash');
-      icon.classList.add('fa-eye');
-    }
-  });
-
-  document.getElementById('toggleConfirmBtn').addEventListener('click', function() {
-    const confirmInput = document.getElementById('regConfirmPassword');
-    const icon = this.querySelector('i');
-    if (confirmInput.type === 'password') {
-      confirmInput.type = 'text';
-      icon.classList.remove('fa-eye');
-      icon.classList.add('fa-eye-slash');
-    } else {
-      confirmInput.type = 'password';
-      icon.classList.remove('fa-eye-slash');
-      icon.classList.add('fa-eye');
-    }
-  });
-
-  // Password validation functions
+  // Password validation
   function validatePassword(password) {
     return {
       length: password.length >= 8,
@@ -1083,222 +760,182 @@
     };
   }
 
-  function isPasswordValid(requirements) {
-    return Object.values(requirements).every(v => v === true);
-  }
-
   function updatePasswordStrength(password) {
-    const requirements = validatePassword(password);
-    const metCount = Object.values(requirements).filter(v => v).length;
-
-    document.getElementById('reqLength').classList.toggle('met', requirements.length);
-    document.getElementById('reqLength').querySelector('i').className = requirements.length ? 'fas fa-check-circle' : 'fas fa-times-circle';
-    document.getElementById('reqUppercase').classList.toggle('met', requirements.uppercase);
-    document.getElementById('reqUppercase').querySelector('i').className = requirements.uppercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
-    document.getElementById('reqLowercase').classList.toggle('met', requirements.lowercase);
-    document.getElementById('reqLowercase').querySelector('i').className = requirements.lowercase ? 'fas fa-check-circle' : 'fas fa-times-circle';
-    document.getElementById('reqNumber').classList.toggle('met', requirements.number);
-    document.getElementById('reqNumber').querySelector('i').className = requirements.number ? 'fas fa-check-circle' : 'fas fa-times-circle';
-    document.getElementById('reqSpecial').classList.toggle('met', requirements.special);
-    document.getElementById('reqSpecial').querySelector('i').className = requirements.special ? 'fas fa-check-circle' : 'fas fa-times-circle';
-
-    const strengthFill = document.getElementById('strengthFill');
-    const strengthText = document.getElementById('strengthText');
-    strengthFill.className = 'password-strength-fill';
-
-    if (password.length === 0) {
-      strengthFill.style.width = '0%';
-      strengthText.textContent = 'Enter a password';
-    } else if (metCount <= 2) {
-      strengthFill.classList.add('strength-weak');
-      strengthText.textContent = 'Weak password';
-    } else if (metCount === 3) {
-      strengthFill.classList.add('strength-fair');
-      strengthText.textContent = 'Fair password';
-    } else if (metCount === 4) {
-      strengthFill.classList.add('strength-good');
-      strengthText.textContent = 'Good password';
-    } else {
-      strengthFill.classList.add('strength-strong');
-      strengthText.textContent = 'Strong password!';
-    }
-    return requirements;
+    const req = validatePassword(password);
+    const metCount = Object.values(req).filter(v => v).length;
+    const elements = ['reqLength', 'reqUppercase', 'reqLowercase', 'reqNumber', 'reqSpecial'];
+    elements.forEach(id => document.getElementById(id).classList.toggle('met', req[id.replace('req', '').toLowerCase()] || req[id === 'reqLength' ? 'length' : id === 'reqUppercase' ? 'uppercase' : id === 'reqLowercase' ? 'lowercase' : id === 'reqNumber' ? 'number' : 'special']));
+    elements.forEach(id => { const icon = document.getElementById(id)?.querySelector('i'); if(icon) icon.className = (req[id === 'reqLength' ? 'length' : id === 'reqUppercase' ? 'uppercase' : id === 'reqLowercase' ? 'lowercase' : id === 'reqNumber' ? 'number' : 'special']) ? 'fas fa-check-circle' : 'fas fa-times-circle'; });
+    const fill = document.getElementById('strengthFill');
+    const text = document.getElementById('strengthText');
+    fill.className = 'password-strength-fill';
+    if (!password.length) { fill.style.width = '0%'; text.textContent = 'Enter a password'; }
+    else if (metCount <= 2) { fill.classList.add('strength-weak'); text.textContent = 'Weak password'; }
+    else if (metCount === 3) { fill.classList.add('strength-fair'); text.textContent = 'Fair password'; }
+    else if (metCount === 4) { fill.classList.add('strength-good'); text.textContent = 'Good password'; }
+    else { fill.classList.add('strength-strong'); text.textContent = 'Strong password!'; }
   }
 
   function checkPasswordMatch() {
-    const password = document.getElementById('regPassword').value;
-    const confirmPassword = document.getElementById('regConfirmPassword').value;
+    const pwd = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regConfirmPassword').value;
     const indicator = document.getElementById('passwordMatchIndicator');
-
-    if (confirmPassword.length === 0) {
-      indicator.style.display = 'none';
-      return true;
-    }
-
+    if (!confirm.length) { indicator.style.display = 'none'; return true; }
     indicator.style.display = 'flex';
-    const match = password === confirmPassword;
-
-    if (match) {
-      indicator.className = 'password-match-indicator match-success';
-      indicator.querySelector('i').className = 'fas fa-check-circle';
-      indicator.querySelector('span').textContent = 'Passwords match';
-    } else {
-      indicator.className = 'password-match-indicator match-error';
-      indicator.querySelector('i').className = 'fas fa-times-circle';
-      indicator.querySelector('span').textContent = 'Passwords do not match';
-    }
+    const match = pwd === confirm;
+    indicator.className = `password-match-indicator ${match ? 'match-success' : 'match-error'}`;
+    indicator.querySelector('i').className = match ? 'fas fa-check-circle' : 'fas fa-times-circle';
+    indicator.querySelector('span').textContent = match ? 'Passwords match' : 'Passwords do not match';
     return match;
   }
 
-  // Password input events
-  const passwordInput = document.getElementById('regPassword');
-  const confirmInput = document.getElementById('regConfirmPassword');
-  const requirementsDiv = document.getElementById('passwordRequirements');
-
-  passwordInput.addEventListener('focus', () => requirementsDiv.style.display = 'block');
-  passwordInput.addEventListener('input', () => {
-    updatePasswordStrength(passwordInput.value);
-    if (confirmInput.value) checkPasswordMatch();
-  });
-  confirmInput.addEventListener('input', checkPasswordMatch);
-
-  // Modal functionality
-  function openModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-  }
-
-  function closeModal(modalId) {
-    const modal = document.getElementById(modalId);
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-  }
-
-  document.getElementById('privacyLink').addEventListener('click', (e) => { e.preventDefault(); openModal('privacyModal'); });
-  document.querySelector('.privacy-policy-link').addEventListener('click', (e) => { e.preventDefault(); openModal('privacyModal'); });
-  document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyModal'));
-  document.getElementById('acceptPrivacy').addEventListener('click', () => closeModal('privacyModal'));
-
-  document.getElementById('termsLink').addEventListener('click', (e) => { e.preventDefault(); openModal('termsModal'); });
-  document.querySelector('.terms-link').addEventListener('click', (e) => { e.preventDefault(); openModal('termsModal'); });
-  document.getElementById('closeTerms').addEventListener('click', () => closeModal('termsModal'));
-  document.getElementById('acceptTerms').addEventListener('click', () => closeModal('termsModal'));
-
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal('privacyModal');
-      closeModal('termsModal');
+  // Google Sign-In initialization
+  function initGoogleSignIn() {
+    if (googleInitialized) return;
+    if (typeof google === 'undefined' || !google.accounts || !google.accounts.id) {
+      setTimeout(initGoogleSignIn, 300);
+      return;
     }
-  });
+    try {
+      google.accounts.id.initialize({
+        client_id: GOOGLE_CLIENT_ID,
+        callback: async (response) => {
+          console.log('🔐 Google credential received');
+          const btn = document.getElementById('registerBtn');
+          const originalText = btn.innerHTML;
+          setButtonLoading(btn, true, originalText);
+          try {
+            const res = await fetch(`${API_BASE}/auth/google`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ credential: response.credential, clientId: GOOGLE_CLIENT_ID })
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || data.message || 'Google auth failed');
+            if (data.token) {
+              localStorage.setItem('auth_token', data.token);
+              localStorage.setItem('linkqueue_session', JSON.stringify({
+                userId: data.user.userId, email: data.user.email, name: data.user.name,
+                role: data.user.role, loggedInAt: Date.now(), authProvider: 'google'
+              }));
+            }
+            showToast(data.message || `Welcome, ${data.user.name}!`);
+            setTimeout(() => window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html', 1200);
+          } catch (err) {
+            console.error('Google auth error:', err);
+            showToast(err.message || 'Google authentication failed', true);
+            setButtonLoading(btn, false, originalText);
+            document.getElementById('googleUserInfo').classList.remove('visible');
+          }
+        },
+        auto_select: false, cancel_on_tap_outside: true, context: 'signup', ux_mode: 'popup'
+      });
+      google.accounts.id.renderButton(document.getElementById('googleSignInDiv'), {
+        type: 'standard', theme: 'filled_black', size: 'large', shape: 'pill', text: 'signup_with', width: 320
+      });
+      googleInitialized = true;
+      console.log('✅ Google Sign-In ready');
+    } catch (err) { console.error('Google init error:', err); }
+  }
 
-  document.getElementById('privacyModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal('privacyModal');
-  });
-  document.getElementById('termsModal').addEventListener('click', (e) => {
-    if (e.target === e.currentTarget) closeModal('termsModal');
-  });
-
-  // API Helper
+  // Regular registration
   async function registerUser(name, email, password) {
-    const url = `${API_BASE}/register`;
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const res = await fetch(`${API_BASE}/register`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password })
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.error || data.message || 'Registration failed');
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || data.message || 'Registration failed');
     return data;
   }
 
-  function saveSession(data) {
-    localStorage.setItem('auth_token', data.token);
-    localStorage.setItem('linkqueue_session', JSON.stringify({
-      userId: data.user.userId,
-      email: data.user.email,
-      name: data.user.name,
-      role: data.user.role,
-      loggedInAt: Date.now()
-    }));
-  }
+  // DOM Elements & Event Listeners
+  document.addEventListener('DOMContentLoaded', () => {
+    initGoogleSignIn();
 
-  // Form submission
-  document.getElementById('registerForm').addEventListener('submit', async (e) => {
-    e.preventDefault();
+    // Password toggles
+    document.getElementById('togglePasswordBtn').addEventListener('click', function() {
+      const inp = document.getElementById('regPassword');
+      const icon = this.querySelector('i');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
+    document.getElementById('toggleConfirmBtn').addEventListener('click', function() {
+      const inp = document.getElementById('regConfirmPassword');
+      const icon = this.querySelector('i');
+      inp.type = inp.type === 'password' ? 'text' : 'password';
+      icon.className = inp.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+    });
 
-    const name = document.getElementById('regName').value;
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    const confirmPassword = document.getElementById('regConfirmPassword').value;
-    const privacyConsent = document.getElementById('privacyConsent').checked;
-    const btn = document.getElementById('registerBtn');
-    const originalText = btn.innerHTML;
+    const pwdInput = document.getElementById('regPassword');
+    const confirmInput = document.getElementById('regConfirmPassword');
+    const reqDiv = document.getElementById('passwordRequirements');
 
-    if (!name || !email || !password || !confirmPassword) {
-      return showToast('All fields are required', true);
-    }
-    if (!email.includes('@')) {
-      return showToast('Invalid email address', true);
-    }
+    pwdInput.addEventListener('focus', () => reqDiv.style.display = 'block');
+    pwdInput.addEventListener('input', () => { updatePasswordStrength(pwdInput.value); if (confirmInput.value) checkPasswordMatch(); });
+    confirmInput.addEventListener('input', checkPasswordMatch);
 
-    const requirements = validatePassword(password);
-    if (!isPasswordValid(requirements)) {
-      requirementsDiv.style.display = 'block';
-      return showToast('Password does not meet all requirements', true);
-    }
-    if (password !== confirmPassword) {
-      return showToast('Passwords do not match', true);
-    }
-    if (!privacyConsent) {
-      return showToast('Please agree to the Privacy Policy and Terms of Service', true);
-    }
+    // Modal handlers
+    function openModal(id) { document.getElementById(id).classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeModal(id) { document.getElementById(id).classList.remove('active'); document.body.style.overflow = ''; }
+    document.getElementById('privacyLink').addEventListener('click', e => { e.preventDefault(); openModal('privacyModal'); });
+    document.querySelector('.privacy-policy-link').addEventListener('click', e => { e.preventDefault(); openModal('privacyModal'); });
+    document.getElementById('closePrivacy').addEventListener('click', () => closeModal('privacyModal'));
+    document.getElementById('acceptPrivacy').addEventListener('click', () => closeModal('privacyModal'));
+    document.getElementById('termsLink').addEventListener('click', e => { e.preventDefault(); openModal('termsModal'); });
+    document.querySelector('.terms-link').addEventListener('click', e => { e.preventDefault(); openModal('termsModal'); });
+    document.getElementById('closeTerms').addEventListener('click', () => closeModal('termsModal'));
+    document.getElementById('acceptTerms').addEventListener('click', () => closeModal('termsModal'));
+    window.addEventListener('keydown', e => { if (e.key === 'Escape') { closeModal('privacyModal'); closeModal('termsModal'); } });
+    document.getElementById('privacyModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('privacyModal'); });
+    document.getElementById('termsModal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal('termsModal'); });
 
-    try {
-      setButtonLoading(btn, true, originalText);
-      const data = await registerUser(name, email, password);
-      saveSession(data);
-      showToast('Registration successful! Redirecting...');
-      setTimeout(() => {
-        window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
-      }, 1200);
-    } catch (err) {
-      console.error('Registration error:', err);
-      showToast(err.message || 'Registration failed', true);
-      setButtonLoading(btn, false, originalText);
-    }
-  });
+    // Form submit
+    document.getElementById('registerForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = document.getElementById('regName').value;
+      const email = document.getElementById('regEmail').value;
+      const password = document.getElementById('regPassword').value;
+      const confirm = document.getElementById('regConfirmPassword').value;
+      const consent = document.getElementById('privacyConsent').checked;
+      const btn = document.getElementById('registerBtn');
+      const originalText = btn.innerHTML;
 
-  // Check existing session
-  (async function checkSession() {
-    const token = localStorage.getItem('auth_token');
-    const session = localStorage.getItem('linkqueue_session');
-    if (token && session) {
+      if (!name || !email || !password || !confirm) return showToast('All fields are required', true);
+      if (!email.includes('@')) return showToast('Invalid email address', true);
+      const req = validatePassword(password);
+      if (!Object.values(req).every(v => v)) { reqDiv.style.display = 'block'; return showToast('Password does not meet requirements', true); }
+      if (password !== confirm) return showToast('Passwords do not match', true);
+      if (!consent) return showToast('Please agree to Privacy Policy and Terms', true);
+
       try {
-        const sessionData = JSON.parse(session);
-        if (Date.now() - sessionData.loggedInAt > 24 * 60 * 60 * 1000) throw new Error('Session expired');
-        const url = `${API_BASE}/my-queues`;
-        const response = await fetch(url, { headers: { 'Authorization': `Bearer ${token}` } });
-        if (response.ok) {
-          showToast(`Welcome back, ${sessionData.name}! Redirecting...`);
-          setTimeout(() => {
-            window.location.href = sessionData.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
-          }, 1500);
-        } else {
-          localStorage.removeItem('auth_token');
-          localStorage.removeItem('linkqueue_session');
-        }
-      } catch(e) {
-        console.log('Session check failed:', e.message);
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('linkqueue_session');
-      }
-    }
-  })();
+        setButtonLoading(btn, true, originalText);
+        const data = await registerUser(name, email, password);
+        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('linkqueue_session', JSON.stringify({
+          userId: data.user.userId, email: data.user.email, name: data.user.name,
+          role: data.user.role, loggedInAt: Date.now()
+        }));
+        showToast('Registration successful! Redirecting...');
+        setTimeout(() => window.location.href = data.user.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html', 1200);
+      } catch (err) { showToast(err.message, true); setButtonLoading(btn, false, originalText); }
+    });
 
-  if (window.history.replaceState) {
-    window.history.replaceState(null, null, window.location.href);
-  }
+    // Session check
+    (async () => {
+      const token = localStorage.getItem('auth_token');
+      const session = localStorage.getItem('linkqueue_session');
+      if (token && session) {
+        try {
+          const sess = JSON.parse(session);
+          if (Date.now() - sess.loggedInAt > 24 * 3600000) throw new Error('Expired');
+          const res = await fetch(`${API_BASE}/my-queues`, { headers: { 'Authorization': `Bearer ${token}` } });
+          if (res.ok) { showToast(`Welcome back, ${sess.name}!`); setTimeout(() => window.location.href = sess.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html', 1500); }
+          else throw new Error('Invalid');
+        } catch(e) { localStorage.removeItem('auth_token'); localStorage.removeItem('linkqueue_session'); }
+      }
+    })();
+  });
 </script>
 </body>
 </html>
