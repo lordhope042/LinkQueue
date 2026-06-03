@@ -1053,7 +1053,7 @@
       // Redirect based on role
       setTimeout(() => {
         if (data.user.role === 'admin') {
-          window.location.href = 'admin-dashboard.html';
+          window.location.href = 'dashboard.html';
         } else {
           window.location.href = 'user-dashboard.html';
         }
@@ -1384,7 +1384,7 @@
 
       setTimeout(() => {
         if (data.user.role === 'admin') {
-          window.location.href = 'admin-dashboard.html';
+          window.location.href = 'dashboard.html';
         } else {
           window.location.href = 'user-dashboard.html';
         }
@@ -1437,7 +1437,7 @@
         if (response.ok) {
           showToast(`Welcome back, ${sessionData.name}! Redirecting...`);
           setTimeout(() => {
-            window.location.href = sessionData.role === 'admin' ? 'admin-dashboard.html' : 'user-dashboard.html';
+            window.location.href = sessionData.role === 'admin' ? 'dashboard.html' : 'user-dashboard.html';
           }, 1500);
         } else {
           localStorage.removeItem('auth_token');
